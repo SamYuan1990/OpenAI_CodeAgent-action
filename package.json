@@ -1,16 +1,16 @@
 {
-  "name": "javascript-action",
-  "description": "GitHub Actions JavaScript Template",
+  "name": "OpenAI_CodeAgent-action",
+  "description": "A Github action which invokes openAI API as GenAI agent and coding in pipeline offline.",
   "version": "0.0.0",
   "author": "",
   "private": true,
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/SamYuan1990/OpenAI_CodeAgent-action#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/SamYuan1990/OpenAI_CodeAgent-action.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "https://github.com/SamYuan1990/OpenAI_CodeAgent-action/issues"
   },
   "keywords": [
     "GitHub",

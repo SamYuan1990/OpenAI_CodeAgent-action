@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const { wait } = require('./wait')
 
 /**
  * The main function for the action.
@@ -14,7 +13,6 @@ async function run() {
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
     core.debug(new Date().toTimeString())
 
     // Set outputs for other workflow steps to use
