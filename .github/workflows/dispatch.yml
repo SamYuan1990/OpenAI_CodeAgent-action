@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Dispatch Trigger
 
 on:
   workflow_dispatch:
@@ -21,5 +21,5 @@ jobs:
         uses: ./
         with:
           baseURL: https://api.deepseek.com
-          apiKey: { { secrets.API_KEY } }
+          apiKey: {{ secrets.API_KEY }}
           fileOverWrite: false
