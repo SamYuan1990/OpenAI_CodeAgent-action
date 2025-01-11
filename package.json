@@ -64,7 +64,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "openai": "^4.78.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

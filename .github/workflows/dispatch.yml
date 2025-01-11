@@ -1,0 +1,25 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-action:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Test Local Action
+        id: test-action
+        uses: ./
+        with:
+          baseURL: https://api.deepseek.com
+          apiKey: { { secrets.API_KEY } }
+          fileOverWrite: false
