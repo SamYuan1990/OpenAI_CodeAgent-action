@@ -1,0 +1,52 @@
+{
+  "tasks": [
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/main.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/main{{index}}.test.js"
+    },
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/aiagent.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/aiagent{{index}}.test.js"
+    },
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/file_handler.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/file_handler{{index}}.test.js"
+    },
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/ouputprocessor.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/ouputprocessor{{index}}.test.js"
+    },
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/inputprocessor.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/inputprocessor{{index}}.test.js"
+    },
+    {
+      "id": "my_example_task",
+      "inputFilePath": "./src/genaitask.js",
+      "inputFileProcessMethod": "by_function",
+      "prompt": "Please help me create unit test file for this function with jest framework, here is the file:",
+      "outputProcessMethod": "regex_match",
+      "outputFilePath": "./__tests__/genaitask{{index}}.test.js"
+    }
+  ]
+}
