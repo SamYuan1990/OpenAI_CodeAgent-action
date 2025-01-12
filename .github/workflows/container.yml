@@ -34,7 +34,7 @@ jobs:
           context: .
           # push: true
           tags: |
-            ghcr.io/samyuan1990/openAI_codeAgent-action/tape:latest
+            ghcr.io/samyuan1990/openAI_codeAgent-action:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
