@@ -64,6 +64,7 @@ describe('generateGenAItaskQueue', () => {
     expect(result).toEqual([
       {
         id: 'task10',
+        code_language: 'js',
         prompt: 'Generate code',
         content: 'function foo() { return "bar"; }',
         outputProcessMethod: 'method1',
@@ -131,6 +132,7 @@ describe('generateGenAItaskQueue', () => {
     expect(result).toEqual([
       {
         id: 'task10',
+        code_language: 'js',
         prompt: 'Generate code',
         content: 'function foo() { return "bar"; }',
         outputProcessMethod: 'method1',
@@ -138,6 +140,7 @@ describe('generateGenAItaskQueue', () => {
       },
       {
         id: 'task11',
+        code_language: 'js',
         prompt: 'Generate code',
         content: 'function baz() { return "qux"; }',
         outputProcessMethod: 'method1',

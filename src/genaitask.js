@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const fs = require('fs')
 const { parseFileToAST, extractAllFunctions } = require('./inputprocessor')
+const { extractGolangFunctions } = require('./golangprocessor')
 
 async function generateGenAItaskQueue(task) {
   const GenAITaskQueue = []
@@ -10,9 +11,26 @@ async function generateGenAItaskQueue(task) {
   core.info(task.prompt)
   core.info(task.inputFileProcessMethod)
   if (task.inputFileProcessMethod === 'by_function') {
-    const code = fs.readFileSync(task.inputFilePath, 'utf8')
-    const ast = parseFileToAST(task.inputFilePath)
-    const funcsfound = extractAllFunctions(ast, code)
+    let funcsfound = []
+    let code_language = 'js'
+    switch (true) {
+      case task.inputFilePath.includes('_test.go'):
+        funcsfound = await extractGolangFunctions(task.inputFilePath, true)
+        code_language = 'go'
+        break
+      case task.inputFilePath.includes('.go'):
+        funcsfound = await extractGolangFunctions(task.inputFilePath)
+        code_language = 'go'
+        break
+      default:
+        // eslint-disable-next-line no-case-declarations
+        const code = fs.readFileSync(task.inputFilePath, 'utf8')
+        // eslint-disable-next-line no-case-declarations
+        const ast = parseFileToAST(task.inputFilePath)
+        funcsfound = extractAllFunctions(ast, code)
+        break
+    }
+
     for (let index = 0; index < funcsfound.length; index++) {
       const tempTask = {}
       const func = funcsfound[index]
@@ -24,6 +42,7 @@ async function generateGenAItaskQueue(task) {
       tempTask.content = func.content
       tempTask.outputProcessMethod = task.outputProcessMethod
       tempTask.outputFilePath = task.outputFilePath.replace('{{index}}', index)
+      tempTask.code_language = code_language
       core.debug(tempTask.outputFilePath)
       GenAITaskQueue.push(tempTask)
     }

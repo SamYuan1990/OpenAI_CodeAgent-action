@@ -15386,6 +15386,7 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
 const { parseFileToAST, extractAllFunctions } = __nccwpck_require__(6333)
+const { extractGolangFunctions } = __nccwpck_require__(6159)
 
 async function generateGenAItaskQueue(task) {
   const GenAITaskQueue = []
@@ -15395,9 +15396,26 @@ async function generateGenAItaskQueue(task) {
   core.info(task.prompt)
   core.info(task.inputFileProcessMethod)
   if (task.inputFileProcessMethod === 'by_function') {
-    const code = fs.readFileSync(task.inputFilePath, 'utf8')
-    const ast = parseFileToAST(task.inputFilePath)
-    const funcsfound = extractAllFunctions(ast, code)
+    let funcsfound = []
+    let code_language = 'js'
+    switch (true) {
+      case task.inputFilePath.includes('_test.go'):
+        funcsfound = await extractGolangFunctions(task.inputFilePath, true)
+        code_language = 'go'
+        break
+      case task.inputFilePath.includes('.go'):
+        funcsfound = await extractGolangFunctions(task.inputFilePath)
+        code_language = 'go'
+        break
+      default:
+        // eslint-disable-next-line no-case-declarations
+        const code = fs.readFileSync(task.inputFilePath, 'utf8')
+        // eslint-disable-next-line no-case-declarations
+        const ast = parseFileToAST(task.inputFilePath)
+        funcsfound = extractAllFunctions(ast, code)
+        break
+    }
+
     for (let index = 0; index < funcsfound.length; index++) {
       const tempTask = {}
       const func = funcsfound[index]
@@ -15409,6 +15427,7 @@ async function generateGenAItaskQueue(task) {
       tempTask.content = func.content
       tempTask.outputProcessMethod = task.outputProcessMethod
       tempTask.outputFilePath = task.outputFilePath.replace('{{index}}', index)
+      tempTask.code_language = code_language
       core.debug(tempTask.outputFilePath)
       GenAITaskQueue.push(tempTask)
     }
@@ -15419,6 +15438,122 @@ async function generateGenAItaskQueue(task) {
 module.exports = {
   generateGenAItaskQueue
 }
+
+
+/***/ }),
+
+/***/ 6159:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(9896)
+const readline = __nccwpck_require__(3785)
+
+// 提取 Go 文件中的函数
+function extractGolangFunctions(filePath, isTestFile = false) {
+  return new Promise((resolve, reject) => {
+    const functions = []
+    const rl = readline.createInterface({
+      input: fs.createReadStream(filePath),
+      output: process.stdout,
+      terminal: false
+    })
+
+    let inFunction = false
+    let functionName = ''
+    let functionBody = ''
+    let inDescribe = false
+    let describeName = ''
+    let inIt = false
+    let itName = ''
+
+    rl.on('line', line => {
+      line = line.trim()
+
+      if (isTestFile) {
+        // 提取 Ginkgo 的 Describe 块
+        if (line.startsWith('Describe(')) {
+          inDescribe = true
+          describeName = line.split('"')[1] // 获取 Describe 的描述
+        } else if (inDescribe && line.startsWith('It(')) {
+          inIt = true
+          itName = line.split('"')[1] // 获取 It 的描述
+        } else if (inIt && line === '})') {
+          inIt = false
+          functions.push({
+            type: 'testcase',
+            describe: describeName,
+            it: itName,
+            content: functionBody.trim()
+          })
+          functionBody = ''
+        } else if (inDescribe && line === '})') {
+          inDescribe = false
+          describeName = ''
+        }
+
+        if (inIt) {
+          functionBody += `${line}\n`
+        }
+      } else {
+        // 提取普通函数
+        if (line.startsWith('func ')) {
+          inFunction = true
+          functionName = line.split(' ')[1].split('(')[0]
+          functionBody = `${line}\n`
+        } else if (inFunction) {
+          functionBody += `${line}\n`
+
+          if (line === '}') {
+            inFunction = false
+            functions.push({
+              type: 'function',
+              name: functionName,
+              content: functionBody.trim()
+            })
+            functionBody = ''
+          }
+        }
+      }
+    })
+
+    rl.on('close', () => {
+      resolve(functions)
+    })
+
+    rl.on('error', err => {
+      reject(err)
+    })
+  })
+}
+
+module.exports = {
+  extractGolangFunctions
+}
+
+// 主函数
+/*async function test() {
+  try {
+    // 提取 example.go 中的函数
+    const functions = await extractFunctions('./example.go')
+    console.log('Functions in example.go:')
+    for (let i = 0; i < functions.length; i++) {
+      const func = functions[i]
+      console.log(`Type: ${func.type}, Name: ${func.name}`)
+      console.log(`Body:\n${func.body}\n`)
+    }
+
+    // 提取 example_test.go 中的测试用例
+    const testCases = await extractFunctions('./example_test.go', true)
+    console.log('Test cases in example_test.go:')
+    for (let i = 0; i < testCases.length; i++) {
+      const testCase = testCases[i]
+      console.log(`Describe: ${testCase.describe}, It: ${testCase.it}`)
+      console.log(`Body:\n${testCase.body}\n`)
+    }
+  } catch (err) {
+    console.error('Error:', err)
+  }
+}*/
 
 
 /***/ }),
@@ -15580,14 +15715,25 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const { writeFileForAarray } = __nccwpck_require__(1108)
 
+const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
+const js_replacer = /```javascript|```([\r|\n]*?)###/g
+
+const golang_regex = /```go([\s\S]*?)```([\r|\n]*?)###/g
+const golang_replacer = /```go|```([\r|\n]*?)###/g
+
 function processOutput(dataFromAIAgent, GenAItask) {
   const fileOverWrite = core.getInput('fileOverWrite', { required: true })
+  let my_regex = js_regex
+  let my_replacer = js_replacer
+  if (GenAItask.code_language === 'go') {
+    my_regex = golang_regex
+    my_replacer = golang_replacer
+  }
   if (GenAItask.outputProcessMethod === 'regex_match') {
-    const regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
-    const matches = dataFromAIAgent.match(regex)
+    const matches = dataFromAIAgent.match(my_regex)
     if (matches) {
       const contents = matches.map(match =>
-        match.replace(/```javascript|```([\r|\n]*?)###/g, '').trim()
+        match.replace(my_replacer, '').trim()
       )
       if (fileOverWrite === 'true') {
         writeFileForAarray(GenAItask.outputFilePath, contents)
@@ -15725,6 +15871,14 @@ module.exports = require("path");
 
 "use strict";
 module.exports = require("punycode");
+
+/***/ }),
+
+/***/ 3785:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("readline");
 
 /***/ }),
 
