@@ -5,6 +5,8 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
+
 
 jobs:
   test-action:
@@ -22,7 +24,7 @@ jobs:
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
-          fileOverWrite: false
+          fileOverWrite: true
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
