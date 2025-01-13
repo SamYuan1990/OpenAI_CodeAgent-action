@@ -23,3 +23,14 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           fileOverWrite: false
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
+          branch: auto-pr-branch  # 新分支名称
+          base: main  # 目标分支
+          title: "Automated PR: Update generated files"
+          body: "This is an automated pull request created by GitHub Actions."
+          commit-message: "Auto-generated changes"
+          labels: automated  # 可选：为 PR 添加标签
