@@ -13,6 +13,7 @@ deployment or private Gen AI API endpoint. So provide a container version for
 you to integrate with your own CI system.
 
 # To use with Tasks.json
+
 ## Input adaopters
 
 ## Output adaopters
@@ -28,4 +29,5 @@ you to integrate with your own CI system.
 
 # For Developer/contributor for this REPO.
 
-The processTask will create a queue for tasks going to process to GenAI, so there going to have another queue as GenAI task queue.
+The processTask will create a queue for tasks going to process to GenAI, so
+there going to have another queue as GenAI task queue.

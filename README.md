@@ -3,41 +3,60 @@
 [![Lint Codebase](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml)
 [![Continuous Integration](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml)
 
-Ref From LLMs to LLM-based Agents for Software Engineering: A Survey of Current, Challenges and Future[1], in this paper which listed 6 topics in software development and provided 2 approaches as LLM and LLM-based agents.
+Ref From LLMs to LLM-based Agents for Software Engineering: A Survey of Current,
+Challenges and Future[1], in this paper which listed 6 topics in software
+development and provided 2 approaches as LLM and LLM-based agents.
 
-Considering with opensource community and repo development process, which is a typical async cooperation. Requirements from anywhere and anytime, and developer just randomly pick them up...
-Assuming that from requirement to opensource release as an end to end opensource software development process, it can adopted into those 6 topics. Those can been treated as 6 async pipelines.
-I suppose most common pipeline is CI pipeline via Software Development.
+Considering with opensource community and repo development process, which is a
+typical async cooperation. Requirements from anywhere and anytime, and developer
+just randomly pick them up... Assuming that from requirement to opensource
+release as an end to end opensource software development process, it can adopted
+into those 6 topics. Those can been treated as 6 async pipelines. I suppose most
+common pipeline is CI pipeline via Software Development.
 
-| Topic | LLM or LLM-based Agents | Are we going to impl? | Current comments |
-|---|---|---| ---|
-|  Requirement Engineering and Documentation: Capturing, analyzing, and documenting software requirements, as well as generating user manuals and technical documentation. | Yes | Yes and No | As opensource code repos on github, which we can't automate from here. For example, we can't make everyone's requirement as a valid requirement. OR limited by content size of today's LLM, auto generate end user document with all codes in a repo is ... But I suppose what we can try for now is to generate code level document and format as go document. |
-| Code Generation and Software Development | Yes | Yes and No | I suppose copilot mothed already make a great work for this. But we can start with some test code generate. |
-| Autonomous Learning and Decision Making | Yes | No | From ethics points of view, we don't make any auto merge to defualt branch's work in this repo. |
-| Software Design and Evaluation | Yes | Not for now | With the limitation with content size, I am not sure if put all the codes belows to a specific repo to LLM is possible or not. Or we can start with functional level improvement?  |
-|  Software Test Generation | Yes | Yes | If you running with TDD, it doesn't matter that LLM genreate more test code to improve your test coverage. |
-|  Software Security & Maintenance | Yes | No | For example Rust or Fuzzing test, there already lots of tools provides reliable and repeatable result. Considering one of LLM's hallucination or ethics, not considered as feature of this repo. |
+| Topic                                                                                                                                                                   | LLM or LLM-based Agents | Are we going to impl? | Current comments                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Requirement Engineering and Documentation: Capturing, analyzing, and documenting software requirements, as well as generating user manuals and technical documentation. | Yes                     | Yes and No            | As opensource code repos on github, which we can't automate from here. For example, we can't make everyone's requirement as a valid requirement. OR limited by content size of today's LLM, auto generate end user document with all codes in a repo is ... But I suppose what we can try for now is to generate code level document and format as go document. |
+| Code Generation and Software Development                                                                                                                                | Yes                     | Yes and No            | I suppose copilot mothed already make a great work for this. But we can start with some test code generate.                                                                                                                                                                                                                                                     |
+| Autonomous Learning and Decision Making                                                                                                                                 | Yes                     | No                    | From ethics points of view, we don't make any auto merge to defualt branch's work in this repo.                                                                                                                                                                                                                                                                 |
+| Software Design and Evaluation                                                                                                                                          | Yes                     | Not for now           | With the limitation with content size, I am not sure if put all the codes belows to a specific repo to LLM is possible or not. Or we can start with functional level improvement?                                                                                                                                                                               |
+| Software Test Generation                                                                                                                                                | Yes                     | Yes                   | If you running with TDD, it doesn't matter that LLM genreate more test code to improve your test coverage.                                                                                                                                                                                                                                                      |
+| Software Security & Maintenance                                                                                                                                         | Yes                     | No                    | For example Rust or Fuzzing test, there already lots of tools provides reliable and repeatable result. Considering one of LLM's hallucination or ethics, not considered as feature of this repo.                                                                                                                                                                |
 
-Wait, when we talk about pipeline, why not integrate AI agent with Github Action?
- Before we start, one thing to high light is that how we interaction with LLM, etiher multi-agents or singe agents?
+Wait, when we talk about pipeline, why not integrate AI agent with Github
+Action? Before we start, one thing to high light is that how we interaction with
+LLM, etiher multi-agents or singe agents?
 
- ```
- invoke_via_network(API_endpoint, access_token, prompt, role, content)  
- ```
-> Reminder: Today's LLM, we still suffer from limitation as content size, hallucination. The key is prompt and content.
+```
+invoke_via_network(API_endpoint, access_token, prompt, role, content)
+```
 
-The answer means we need to make a balance among LLM's result, Human's subjective, existing tools.
+> Reminder: Today's LLM, we still suffer from limitation as content size,
+> hallucination. But either langchain or openAI agent, the key for your business
+> is prompt and content.
 
-For example:
-Human's subjective: To generate test case for a sepcific function to improve test coverage.
-Existing tools: Test coverage, regex to fetch content from file.
+The answer means we need to make a balance among LLM's result, Human's
+subjective, existing tools.
 
-If we just make reliable and repeatable adopters get specific content from content background(description in a new issue, files in PR?) to avoid send everything to LLM to save your cost and avoid content limitation. 
-> The approach to get specific content either configurable from manual or predefined(as git diff). 
+For example: Human's subjective: To generate test case for a sepcific function
+to improve test coverage. Existing tools: Test coverage, regex to fetch content
+from file.
+
+If we just make reliable and repeatable adopters get specific content from
+content background(description in a new issue, files in PR?) to avoid send
+everything to LLM to save your cost and avoid content limitation.
+
+> The approach to get specific content either configurable from manual or
+> predefined(as git diff).
 
 Adding Human's subjective as prompt before the content, send to LLM.
 
-Once LLM response, we just using predefined to filter result out into predefined output.(as regex from \```golang {code block} ``` to a specific golang code file)
+Once LLM response, we just using predefined to filter result out into predefined
+output.(as regex from \```golang {code block} ``` to a specific golang code
+file)
+
+After all aboves are completed, which is OpenAI code Agent action, provides
+capbility to user to integrate AI agent with their pipeline.
 
 ## [Features](./features.md)
 
@@ -54,7 +73,6 @@ on:
 permissions:
   contents: read
   pull-requests: write
-
 
 jobs:
   test-action:
@@ -79,11 +97,11 @@ jobs:
         with:
           token: ${{ secrets.MyPATToken }}
           branch: auto-pr-branch
-          base: main 
-          title: "Automated PR: Update generated files"
-          body: "This is an automated pull request created by GitHub Actions."
-          commit-message: "Auto-generated changes"
-          labels: automated 
+          base: main
+          title: 'Automated PR: Update generated files'
+          body: 'This is an automated pull request created by GitHub Actions.'
+          commit-message: 'Auto-generated changes'
+          labels: automated
 ```
 
 ## Inputs(TBD)
@@ -92,7 +110,7 @@ jobs:
 | ------------------------ | ------- | --------------------------------------------------------------- |
 | `OpenAI_API_ENDPOINT`    | `n/A`   | The openAI API endpoint or your Gen AI service                  |
 | `OpenAI_API_AccessToken` | `n/A`   | The Access token for openAI API endpoint or your Gen AI service |
-| `fileOverWrite` | `n/A` | Write file or not |
+| `fileOverWrite`          | `n/A`   | Write file or not                                               |
 
 [Tasks.json](./Tasks.json) to define the tasks to GenAI. For detail define for
 [task](./features.md#define-a-pipeline-like-process-flow).
@@ -111,5 +129,8 @@ npm run all
 npx local-action . src/main.js .env.example
 ```
 
-## Ref 
-[1] From LLMs to LLM-based Agents for Software Engineering: A Survey of Current, Challenges and Future, arXiv:2408.02479v1 [cs.SE] for this version, https://doi.org/10.48550/arXiv.2408.02479
+## Ref
+
+[1] From LLMs to LLM-based Agents for Software Engineering: A Survey of Current,
+Challenges and Future, arXiv:2408.02479v1 [cs.SE] for this version,
+https://doi.org/10.48550/arXiv.2408.02479
