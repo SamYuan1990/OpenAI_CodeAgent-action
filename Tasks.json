@@ -2,7 +2,7 @@
   "tasks": [
     {
       "id": "my_example_js_task_new_file",
-      "inputFilePath": "./src/golangprocessor.js",
+      "inputFilePath": "./src/languageprocessor/golangprocessor.js",
       "inputFileProcessMethod": "by_function",
       "prompt": "Please help me create unit test file for this function with jest framework, here is the function:",
       "outputProcessMethod": "regex_match",
@@ -18,7 +18,7 @@
     },
     {
       "id": "my_example_task_for_modified_file",
-      "inputFilePath": "./src/ouputprocessor.js",
+      "inputFilePath": "./src/outputhandler/ouputprocessor.js",
       "inputFileProcessMethod": "by_function",
       "prompt": "Please help me create unit test file for this function with jest framework, here is the function:",
       "outputProcessMethod": "regex_match",
