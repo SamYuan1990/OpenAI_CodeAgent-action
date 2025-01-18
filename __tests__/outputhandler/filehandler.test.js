@@ -1,6 +1,6 @@
 const fs = require('fs')
 const core = require('@actions/core')
-const { writeFileForAarray } = require('../src/file_handler') // Adjust the path accordingly
+const { writeFileForAarray } = require('../../src/outputhandler/file_handler') // Adjust the path accordingly
 
 // Mock the fs module
 jest.mock('fs')

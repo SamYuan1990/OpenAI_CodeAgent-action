@@ -14,11 +14,11 @@ jest.mock('@actions/core', () => ({
 }))
 
 // Mocking the external functions
-const { processOutput } = require('../src/ouputprocessor')
+const { processOutput } = require('../src/outputhandler/ouputprocessor')
 const { invokeAIviaAgent } = require('../src/aiagent')
 const { generateGenAItaskQueue } = require('../src/genaitask')
 
-jest.mock('../src/ouputprocessor', () => ({
+jest.mock('../src/outputhandler/ouputprocessor', () => ({
   processOutput: jest.fn()
 }))
 

@@ -3,6 +3,7 @@ const readline = require('readline')
 
 // 提取 Go 文件中的函数
 function extractGolangFunctions(filePath, isTestFile = false) {
+  console.log('debug', isTestFile)
   return new Promise((resolve, reject) => {
     const functions = []
     const rl = readline.createInterface({
@@ -24,12 +25,19 @@ function extractGolangFunctions(filePath, isTestFile = false) {
 
       if (isTestFile) {
         // 提取 Ginkgo 的 Describe 块
+        if (inDescribe) {
+          console.log(line)
+        }
         if (line.startsWith('Describe(')) {
           inDescribe = true
+          console.log('find Describe')
           describeName = line.split('"')[1] // 获取 Describe 的描述
+          console.log(describeName)
         } else if (inDescribe && line.startsWith('It(')) {
           inIt = true
+          console.log('find it')
           itName = line.split('"')[1] // 获取 It 的描述
+          console.log(itName)
         } else if (inIt && line === '})') {
           inIt = false
           functions.push({

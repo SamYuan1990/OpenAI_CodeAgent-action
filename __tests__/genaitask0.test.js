@@ -1,9 +1,12 @@
 const fs = require('fs')
 const { generateGenAItaskQueue } = require('../src/genaitask') // Adjust the path accordingly
 const core = require('@actions/core') // Assuming core is from @actions/core
-const { parseFileToAST, extractAllFunctions } = require('../src/inputprocessor') // Adjust the path accordingly
+const {
+  parseFileToAST,
+  extractAllFunctions
+} = require('../src/languageprocessor/inputprocessor') // Adjust the path accordingly
 
-jest.mock('../src/inputprocessor', () => ({
+jest.mock('../src/languageprocessor/inputprocessor', () => ({
   parseFileToAST: jest.fn(),
   extractAllFunctions: jest.fn()
 }))

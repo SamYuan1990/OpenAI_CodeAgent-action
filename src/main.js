@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const fs = require('fs')
 const path = require('path')
-const { processOutput } = require('./ouputprocessor')
+const { processOutput } = require('./outputhandler/ouputprocessor')
 const { invokeAIviaAgent } = require('./aiagent')
 const { generateGenAItaskQueue } = require('./genaitask')
 

@@ -1,7 +1,12 @@
 const core = require('@actions/core')
 const fs = require('fs')
-const { parseFileToAST, extractAllFunctions } = require('./inputprocessor')
-const { extractGolangFunctions } = require('./golangprocessor')
+const {
+  parseFileToAST,
+  extractAllFunctions
+} = require('./languageprocessor/inputprocessor')
+const {
+  extractGolangFunctions
+} = require('./languageprocessor/golangprocessor')
 
 async function generateGenAItaskQueue(task) {
   const GenAITaskQueue = []

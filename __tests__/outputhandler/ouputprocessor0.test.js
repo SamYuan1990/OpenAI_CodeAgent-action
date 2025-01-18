@@ -1,6 +1,6 @@
-const { processOutput } = require('../src/ouputprocessor') // Adjust the path accordingly
+const { processOutput } = require('../../src/outputhandler/ouputprocessor') // Adjust the path accordingly
 const core = require('@actions/core')
-const { writeFileForAarray } = require('../src/file_handler') // Adjust the path accordingly
+const { writeFileForAarray } = require('../../src/outputhandler/file_handler') // Adjust the path accordingly
 
 jest.mock('@actions/core', () => ({
   getInput: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock('@actions/core', () => ({
   info: jest.fn()
 }))
 
-jest.mock('../src/file_handler', () => ({
+jest.mock('../../src/outputhandler/file_handler', () => ({
   writeFileForAarray: jest.fn()
 }))
 

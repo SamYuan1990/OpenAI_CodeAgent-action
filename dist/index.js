@@ -15356,37 +15356,18 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1108:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(7484)
-const fs = __nccwpck_require__(9896)
-
-function writeFileForAarray(filePath, content) {
-  const WriteContent = content.join()
-  core.debug(WriteContent)
-  try {
-    fs.writeFileSync(filePath, WriteContent, 'utf8')
-    core.info('file writed')
-  } catch (err) {
-    core.info(`file write error: ${err.message}`)
-  }
-}
-
-module.exports = {
-  writeFileForAarray
-}
-
-
-/***/ }),
-
 /***/ 8288:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
-const { parseFileToAST, extractAllFunctions } = __nccwpck_require__(6333)
-const { extractGolangFunctions } = __nccwpck_require__(6159)
+const {
+  parseFileToAST,
+  extractAllFunctions
+} = __nccwpck_require__(4618)
+const {
+  extractGolangFunctions
+} = __nccwpck_require__(9122)
 
 async function generateGenAItaskQueue(task) {
   const GenAITaskQueue = []
@@ -15442,7 +15423,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6159:
+/***/ 9122:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(9896)
@@ -15450,6 +15431,7 @@ const readline = __nccwpck_require__(3785)
 
 // 提取 Go 文件中的函数
 function extractGolangFunctions(filePath, isTestFile = false) {
+  console.log('debug', isTestFile)
   return new Promise((resolve, reject) => {
     const functions = []
     const rl = readline.createInterface({
@@ -15471,12 +15453,19 @@ function extractGolangFunctions(filePath, isTestFile = false) {
 
       if (isTestFile) {
         // 提取 Ginkgo 的 Describe 块
+        if (inDescribe) {
+          console.log(line)
+        }
         if (line.startsWith('Describe(')) {
           inDescribe = true
+          console.log('find Describe')
           describeName = line.split('"')[1] // 获取 Describe 的描述
+          console.log(describeName)
         } else if (inDescribe && line.startsWith('It(')) {
           inIt = true
+          console.log('find it')
           itName = line.split('"')[1] // 获取 It 的描述
+          console.log(itName)
         } else if (inIt && line === '})') {
           inIt = false
           functions.push({
@@ -15558,7 +15547,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6333:
+/***/ 4618:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(9896)
@@ -15640,7 +15629,7 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
-const { processOutput } = __nccwpck_require__(1326)
+const { processOutput } = __nccwpck_require__(2170)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const { generateGenAItaskQueue } = __nccwpck_require__(8288)
 
@@ -15709,11 +15698,35 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1326:
+/***/ 616:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
-const { writeFileForAarray } = __nccwpck_require__(1108)
+const fs = __nccwpck_require__(9896)
+
+function writeFileForAarray(filePath, content) {
+  const WriteContent = content.join()
+  core.debug(WriteContent)
+  try {
+    fs.writeFileSync(filePath, WriteContent, 'utf8')
+    core.info('file writed')
+  } catch (err) {
+    core.info(`file write error: ${err.message}`)
+  }
+}
+
+module.exports = {
+  writeFileForAarray
+}
+
+
+/***/ }),
+
+/***/ 2170:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(7484)
+const { writeFileForAarray } = __nccwpck_require__(616)
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g
