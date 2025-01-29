@@ -1,5 +1,5 @@
 # 使用官方 Ubuntu 作为基础镜像
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 # 设置环境变量以避免交互式提示
 ENV DEBIAN_FRONTEND=noninteractive
@@ -31,3 +31,5 @@ RUN npm install
 COPY . .
 
 RUN npx local-action . src/main.js .env.example
+
+CMD [echo, hello]
