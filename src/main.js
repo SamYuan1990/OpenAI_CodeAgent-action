@@ -4,7 +4,7 @@ const path = require('path')
 const { processOutput } = require('./outputhandler/ouputprocessor')
 const { invokeAIviaAgent } = require('./aiagent')
 const { generateGenAItaskQueue } = require('./genaitask')
-
+const { taskQueue } = require('./orchestration')
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -25,7 +25,8 @@ async function run() {
     const baseURL = core.getInput('baseURL', { required: true })
     const apiKey = core.getInput('apiKey', { required: true })
     const model = core.getInput('model', { required: true })
-
+    const maxIterations = core.getInput('maxIterations', { required: true })
+    taskQueue.setmaxIterations(maxIterations)
     for (const task of tasksData.tasks) {
       core.info(`start process task into GenAI task`, task.id)
       const GenAItaskQueue = await generateGenAItaskQueue(task)
