@@ -60,3 +60,4 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           fileOverWrite: false
+          model: deepseek-chat

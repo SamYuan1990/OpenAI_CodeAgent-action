@@ -43,7 +43,13 @@ describe('invokeAIviaAgent', () => {
     const prompt = 'Test prompt'
 
     // Act
-    const result = await invokeAIviaAgent(baseURL, apiKey, fileContent, prompt)
+    const result = await invokeAIviaAgent(
+      baseURL,
+      apiKey,
+      fileContent,
+      prompt,
+      'deepseek-chat'
+    )
 
     // Assert
     expect(OpenAI).toHaveBeenCalledWith({
@@ -59,7 +65,7 @@ describe('invokeAIviaAgent', () => {
       model: 'deepseek-chat'
     })
 
-    expect(core.debug).toHaveBeenCalledWith('Mocked AI response')
+    expect(core.info).toHaveBeenCalledWith('Mocked AI response')
     expect(result).toBe('Mocked AI response')
   })
 
@@ -80,7 +86,7 @@ describe('invokeAIviaAgent', () => {
 
     // Act & Assert
     await expect(
-      invokeAIviaAgent(baseURL, apiKey, fileContent, prompt)
+      invokeAIviaAgent(baseURL, apiKey, fileContent, prompt, 'deepseek-chat')
     ).rejects.toThrow('API call failed')
   })
 })
