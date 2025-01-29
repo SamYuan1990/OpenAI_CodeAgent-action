@@ -4,6 +4,9 @@ author: 'Your name or organization here'
 
 # Define your inputs here.
 inputs:
+  dryRun:
+    description: dryRun option
+
   baseURL:
     description: 'url for your openAI API endpoint'
   apiKey:
