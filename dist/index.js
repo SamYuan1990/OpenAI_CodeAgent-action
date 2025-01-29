@@ -15638,7 +15638,7 @@ const path = __nccwpck_require__(6928)
 const { processOutput } = __nccwpck_require__(2170)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const { generateGenAItaskQueue } = __nccwpck_require__(8288)
-
+const { taskQueue } = __nccwpck_require__(2443)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -15659,11 +15659,19 @@ async function run() {
     const baseURL = core.getInput('baseURL', { required: true })
     const apiKey = core.getInput('apiKey', { required: true })
     const model = core.getInput('model', { required: true })
+    let maxIterations = 0
+    maxIterations = core.getInput('maxIterations')
+    taskQueue.setmaxIterations(maxIterations)
+
+    // a repo scanner
+    // make file, function tree
+    // for file, function tree take actions, replace Tasks.json
 
     for (const task of tasksData.tasks) {
       core.info(`start process task into GenAI task`, task.id)
       const GenAItaskQueue = await generateGenAItaskQueue(task)
       core.info(GenAItaskQueue.length, 'Gen AI task been found')
+      // todo: make this in part of orchestration
       for (let index = 0; index < GenAItaskQueue.length; index++) {
         core.debug(GenAItaskQueue[index].id)
         core.debug(GenAItaskQueue[index].prompt)
@@ -15701,6 +15709,48 @@ async function run() {
 
 module.exports = {
   run
+}
+
+
+/***/ }),
+
+/***/ 2443:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(7484)
+
+const taskQueue = {
+  tasks: [], // 任务队列
+  counter: 0, // 计数器
+  maxIterations: 10, // 最大循环次数
+
+  // 添加任务到队列
+  addTask(task) {
+    this.tasks.push(task)
+  },
+
+  setmaxIterations(maxIterations) {
+    this.maxIterations = maxIterations
+  },
+
+  // 运行任务队列
+  run() {
+    while (this.counter < this.maxIterations && this.tasks.length > 0) {
+      const task = this.tasks.shift() // 从队列中取出一个任务
+      task() // 执行任务
+      this.counter++ // 增加计数器
+    }
+
+    if (this.counter >= this.maxIterations) {
+      core.log('循环达到最大次数，终止执行。')
+    } else {
+      core.log('所有任务执行完毕。')
+    }
+  }
+}
+
+module.exports = {
+  taskQueue
 }
 
 

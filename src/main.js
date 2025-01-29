@@ -4,7 +4,7 @@ const path = require('path')
 const { processOutput } = require('./outputhandler/ouputprocessor')
 const { invokeAIviaAgent } = require('./aiagent')
 const { generateGenAItaskQueue } = require('./genaitask')
-
+const { taskQueue } = require('./orchestration')
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -25,11 +25,19 @@ async function run() {
     const baseURL = core.getInput('baseURL', { required: true })
     const apiKey = core.getInput('apiKey', { required: true })
     const model = core.getInput('model', { required: true })
+    let maxIterations = 0
+    maxIterations = core.getInput('maxIterations')
+    taskQueue.setmaxIterations(maxIterations)
+
+    // a repo scanner
+    // make file, function tree
+    // for file, function tree take actions, replace Tasks.json
 
     for (const task of tasksData.tasks) {
       core.info(`start process task into GenAI task`, task.id)
       const GenAItaskQueue = await generateGenAItaskQueue(task)
       core.info(GenAItaskQueue.length, 'Gen AI task been found')
+      // todo: make this in part of orchestration
       for (let index = 0; index < GenAItaskQueue.length; index++) {
         core.debug(GenAItaskQueue[index].id)
         core.debug(GenAItaskQueue[index].prompt)
