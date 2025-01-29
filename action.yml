@@ -8,6 +8,8 @@ inputs:
     description: 'url for your openAI API endpoint'
   apiKey:
     description: 'apikey for your openAI API endpoint'
+  model:
+    description: 'the model we are going to interact with openAI API endpoint'
   fileOverWrite:
     description: 'are we going to overwrite existing file'
 

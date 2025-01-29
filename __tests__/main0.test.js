@@ -71,6 +71,7 @@ describe('run function', () => {
     core.getInput.mockImplementation(key => {
       if (key === 'baseURL') return 'http://example.com'
       if (key === 'apiKey') return 'dummy-key'
+      if (key === 'model') return 'deepseek-chat'
     })
 
     // Mock generateGenAItaskQueue to return a task queue

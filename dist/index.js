@@ -15658,6 +15658,7 @@ async function run() {
     // here are the parameters for AI Agent
     const baseURL = core.getInput('baseURL', { required: true })
     const apiKey = core.getInput('apiKey', { required: true })
+    const model = core.getInput('model', { required: true })
 
     for (const task of tasksData.tasks) {
       core.info(`start process task into GenAI task`, task.id)
@@ -15682,7 +15683,7 @@ async function run() {
           apiKey,
           GenAItaskQueue[index].content,
           GenAItaskQueue[index].prompt,
-          'deepseek-chat'
+          model
         )
         core.info(`start process output from GenAI`)
         await processOutput(dataFromAIAgent, GenAItaskQueue[index])
