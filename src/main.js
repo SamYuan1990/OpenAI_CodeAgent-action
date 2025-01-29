@@ -47,7 +47,8 @@ async function run() {
           baseURL,
           apiKey,
           GenAItaskQueue[index].content,
-          GenAItaskQueue[index].prompt
+          GenAItaskQueue[index].prompt,
+          'deepseek-chat'
         )
         core.info(`start process output from GenAI`)
         await processOutput(dataFromAIAgent, GenAItaskQueue[index])

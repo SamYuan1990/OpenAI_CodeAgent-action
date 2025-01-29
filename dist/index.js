@@ -15330,7 +15330,11 @@ module.exports.implForWrapper = function (wrapper) {
 const OpenAI = __nccwpck_require__(2583)
 const core = __nccwpck_require__(7484)
 
-async function invokeAIviaAgent(baseURL, apiKey, fileContent, prompt) {
+async function invokeAIviaAgent(baseURL, apiKey, fileContent, prompt, model) {
+  core.info(' We are going to talk with Gen AI with URL', baseURL)
+  core.info(' We are going to talk with Gen AI with Model', model)
+  core.info(' We are going to talk with Gen AI with prompt and file content')
+  core.info(`${prompt}\n${fileContent}`)
   const openai = new OpenAI({
     baseURL,
     apiKey
@@ -15343,9 +15347,11 @@ async function invokeAIviaAgent(baseURL, apiKey, fileContent, prompt) {
         content: `${prompt}\n${fileContent}`
       }
     ],
-    model: 'deepseek-chat'
+    model
   })
-  core.debug(completion.choices[0].message.content)
+  core.info('--------This is output from generate AI:--------')
+  core.info(completion.choices[0].message.content)
+  core.info('--------End of generate AI output--------')
   return completion.choices[0].message.content
 }
 
@@ -15675,7 +15681,8 @@ async function run() {
           baseURL,
           apiKey,
           GenAItaskQueue[index].content,
-          GenAItaskQueue[index].prompt
+          GenAItaskQueue[index].prompt,
+          'deepseek-chat'
         )
         core.info(`start process output from GenAI`)
         await processOutput(dataFromAIAgent, GenAItaskQueue[index])

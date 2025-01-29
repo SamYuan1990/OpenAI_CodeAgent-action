@@ -100,7 +100,8 @@ describe('run function', () => {
       'http://example.com',
       'dummy-key',
       'content1',
-      'prompt1'
+      'prompt1',
+      'deepseek-chat'
     )
     expect(processOutput).toHaveBeenCalledWith(
       mockAIData,
