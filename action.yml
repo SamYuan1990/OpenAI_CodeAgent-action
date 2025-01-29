@@ -10,10 +10,17 @@ inputs:
     description: 'apikey for your openAI API endpoint'
   model:
     description: 'the model we are going to interact with openAI API endpoint'
+  prompt:
+    description:
+      'the prompt string your are going to talk with openAI API endpoint'
   maxIterations:
     description:
       'an optional setting for the maximum number of iterations we invokes
       openAI endpoint'
+
+  dirPath:
+    description: 'the dir path of your golang code'
+
   fileOverWrite:
     description: 'are we going to overwrite existing file'
 
