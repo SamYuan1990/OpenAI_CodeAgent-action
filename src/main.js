@@ -1,7 +1,5 @@
 const core = require('@actions/core')
-const fs = require('fs')
-const path = require('path')
-const { processOutput } = require('./outputhandler/ouputprocessor')
+const { ProcessJsUnittest } = require('./outputhandler/ouputprocessor')
 const { taskQueue } = require('./orchestration')
 const OpenAI = require('openai')
 /**
@@ -18,11 +16,18 @@ async function run() {
     const prompt = core.getInput('prompt', { required: true })
     let maxIterations = 0
     maxIterations = core.getInput('maxIterations')
+    const runType = core.getInput('runType', { required: true })
+
     const dryRun = core.getInput('dryRun')
 
     taskQueue.setmaxIterations(maxIterations)
     taskQueue.setdirPath(dirPath)
-    taskQueue.GenerateGoDocTasks()
+    if (runType === 'godoc') {
+      taskQueue.GenerateGoDocTasks()
+    }
+    if (runType === 'jsunittest') {
+      taskQueue.GenerateJsUnitTestTask()
+    }
 
     core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
     core.info(` We are going to talk with Gen AI with Model${model}`)
@@ -33,7 +38,12 @@ async function run() {
       baseURL,
       apiKey
     })
-    await taskQueue.run(model, prompt, openai, dryRun, processOutput)
+    const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
+    core.info('start processing GenAI result to file')
+    core.info(GenAIresponses)
+    if (runType === 'jsunittest') {
+      ProcessJsUnittest(GenAIresponses)
+    }
     // Log the current timestamp, wait, then log the new timestamp
     core.debug('complete at:', new Date().toTimeString())
   } catch (error) {

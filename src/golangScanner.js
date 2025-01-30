@@ -29,46 +29,47 @@ function scanGoCodeDirectory(dirPath) {
       ) {
         // 如果是 Go 文件，解析文件内容
         const funcsfound = extractGolangFunctions(itemPath)
-        parseGoFile(itemPath, currentPath, funcsfound)
+        parseGoFile(resultQueue, itemPath, currentPath, funcsfound)
       }
     }
   }
-
-  // 解析 Go 文件
-  function parseGoFile(filePath, currentPath, funcsfound) {
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const fileName = path.basename(filePath)
-
-    // 正则表达式匹配函数定义和 Go Doc
-    const functionRegex = /(\/\/\s*.+\n)?func\s+([A-Za-z_]\w*)\s*\(/g
-    let match
-
-    while ((match = functionRegex.exec(fileContent)) !== null) {
-      const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
-      const functionName = match[2] // 提取函数名
-      for (let index = 0; index < funcsfound.length; index++) {
-        if (funcsfound[index].name === functionName) {
-          const content = funcsfound[index].content
-          resultQueue.push({
-            currentPath,
-            fileName,
-            functionName,
-            content,
-            hasGoDoc: !!goDoc // 是否存在 Go Doc
-          })
-        }
-      }
-    }
-  }
-
   // 开始遍历目录
   traverseDirectory(dirPath)
 
   return resultQueue
 }
 
+// 解析 Go 文件
+function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
+  const fileContent = fs.readFileSync(filePath, 'utf8')
+  const fileName = path.basename(filePath)
+
+  // 正则表达式匹配函数定义和 Go Doc
+  const functionRegex = /(\/\/[^\n]*\n)?\s*func\s+([A-Za-z_]\w*)\s*\(/g
+
+  let match
+
+  while ((match = functionRegex.exec(fileContent)) !== null) {
+    const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
+    const functionName = match[2] // 提取函数名
+    for (let index = 0; index < funcsfound.length; index++) {
+      if (funcsfound[index].name === functionName) {
+        const content = funcsfound[index].content
+        resultQueue.push({
+          currentPath,
+          fileName,
+          functionName,
+          content,
+          hasGoDoc: !!goDoc // 是否存在 Go Doc
+        })
+      }
+    }
+  }
+}
+
 module.exports = {
-  scanGoCodeDirectory
+  scanGoCodeDirectory,
+  parseGoFile
 }
 
 // 示例用法

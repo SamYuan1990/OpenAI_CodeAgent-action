@@ -20,6 +20,8 @@ inputs:
     description:
       'an optional setting for the maximum number of iterations we invokes
       openAI endpoint'
+  runType:
+    description: 'action type, jsunittest or godoc'
 
   dirPath:
     description: 'the dir path of your golang code'

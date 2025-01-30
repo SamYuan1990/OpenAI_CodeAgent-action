@@ -7,6 +7,25 @@ const js_replacer = /```javascript|```([\r|\n]*?)###/g
 const golang_regex = /```go([\s\S]*?)```([\r|\n]*?)###/g
 const golang_replacer = /```go|```([\r|\n]*?)###/g
 
+function ProcessJsUnittest(GenAIResult) {
+  const my_regex = js_regex
+  const my_replacer = js_replacer
+  for (let index = 0; index < GenAIResult.length; index++) {
+    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const filePath =
+      GenAIResult[index].currentPath.replace('src', '__test__') +
+      GenAIResult[index].functionname +
+      GenAIResult[index].filename.replace('.js', '.test.js')
+    const matches = dataFromAIAgent.match(my_regex)
+    if (matches) {
+      const contents = matches.map(match =>
+        match.replace(my_replacer, '').trim()
+      )
+      writeFileForAarray(filePath, contents)
+    }
+  }
+}
+
 function processOutput(dataFromAIAgent, GenAItask) {
   const fileOverWrite = core.getInput('fileOverWrite', { required: true })
   let my_regex = js_regex
@@ -34,5 +53,6 @@ function processOutput(dataFromAIAgent, GenAItask) {
 }
 
 module.exports = {
-  processOutput
+  processOutput,
+  ProcessJsUnittest
 }
