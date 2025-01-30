@@ -90,6 +90,7 @@ function runUnitTest() {
   const outputFilePath = './testresult.out'
 
   try {
+    execSync('npm install', { encoding: 'utf-8' })
     // 同步执行 npm run test 命令
     const stdout = execSync('npm run test', { encoding: 'utf-8' })
 
