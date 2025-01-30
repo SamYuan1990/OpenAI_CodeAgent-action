@@ -6,7 +6,7 @@ describe('scanGoCodeDirectory', () => {
   beforeEach(() => {
     // Mock the file system
     mock({
-      '/mock-dir': {
+      '/tmp': {
         'file1.go': `
           // Some Go Doc
           func FunctionA() {
@@ -39,11 +39,11 @@ describe('scanGoCodeDirectory', () => {
   })
 
   test('should scan Go files and extract function information', () => {
-    const result = scanGoCodeDirectory('/mock-dir')
+    const result = scanGoCodeDirectory('/tmp')
 
     expect(result).toEqual([
       {
-        currentPath: '/mock-dir',
+        currentPath: '/tmp',
         fileName: 'file1.go',
         functionName: 'FunctionA',
         content: `func FunctionA() {
@@ -52,7 +52,7 @@ describe('scanGoCodeDirectory', () => {
         hasGoDoc: true
       },
       {
-        currentPath: '/mock-dir',
+        currentPath: '/tmp',
         fileName: 'file1.go',
         functionName: 'FunctionB',
         content: `func FunctionB() {
@@ -61,7 +61,7 @@ describe('scanGoCodeDirectory', () => {
         hasGoDoc: false
       },
       {
-        currentPath: '/mock-dir/subdir',
+        currentPath: '/tmp/subdir',
         fileName: 'file3.go',
         functionName: 'FunctionC',
         content: `func FunctionC() {
@@ -73,7 +73,7 @@ describe('scanGoCodeDirectory', () => {
   })
 
   test('should ignore test files', () => {
-    const result = scanGoCodeDirectory('/mock-dir')
+    const result = scanGoCodeDirectory('/tmp')
 
     // Ensure that test files are ignored
     expect(result).not.toContainEqual(
