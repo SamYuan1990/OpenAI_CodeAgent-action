@@ -15358,46 +15358,47 @@ function scanGoCodeDirectory(dirPath) {
       ) {
         // 如果是 Go 文件，解析文件内容
         const funcsfound = extractGolangFunctions(itemPath)
-        parseGoFile(itemPath, currentPath, funcsfound)
+        parseGoFile(resultQueue, itemPath, currentPath, funcsfound)
       }
     }
   }
-
-  // 解析 Go 文件
-  function parseGoFile(filePath, currentPath, funcsfound) {
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const fileName = path.basename(filePath)
-
-    // 正则表达式匹配函数定义和 Go Doc
-    const functionRegex = /(\/\/\s*.+\n)?func\s+([A-Za-z_]\w*)\s*\(/g
-    let match
-
-    while ((match = functionRegex.exec(fileContent)) !== null) {
-      const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
-      const functionName = match[2] // 提取函数名
-      for (let index = 0; index < funcsfound.length; index++) {
-        if (funcsfound[index].name === functionName) {
-          const content = funcsfound[index].content
-          resultQueue.push({
-            currentPath,
-            fileName,
-            functionName,
-            content,
-            hasGoDoc: !!goDoc // 是否存在 Go Doc
-          })
-        }
-      }
-    }
-  }
-
   // 开始遍历目录
   traverseDirectory(dirPath)
 
   return resultQueue
 }
 
+// 解析 Go 文件
+function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
+  const fileContent = fs.readFileSync(filePath, 'utf8')
+  const fileName = path.basename(filePath)
+
+  // 正则表达式匹配函数定义和 Go Doc
+  const functionRegex = /(\/\/[^\n]*\n)?\s*func\s+([A-Za-z_]\w*)\s*\(/g
+
+  let match
+
+  while ((match = functionRegex.exec(fileContent)) !== null) {
+    const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
+    const functionName = match[2] // 提取函数名
+    for (let index = 0; index < funcsfound.length; index++) {
+      if (funcsfound[index].name === functionName) {
+        const content = funcsfound[index].content
+        resultQueue.push({
+          currentPath,
+          fileName,
+          functionName,
+          content,
+          hasGoDoc: !!goDoc // 是否存在 Go Doc
+        })
+      }
+    }
+  }
+}
+
 module.exports = {
-  scanGoCodeDirectory
+  scanGoCodeDirectory,
+  parseGoFile
 }
 
 // 示例用法
@@ -15412,6 +15413,7 @@ module.exports = {
 /***/ 3418:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+/* eslint-disable prettier/prettier */
 const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
@@ -15428,12 +15430,14 @@ const {
  */
 function scanJSCodeDirectory(dirPath) {
   const resultQueue = [] // 结果队列
+  console.log('complete run unit test')
 
   runUnitTest()
+  console.log('complete run unit test')
   const testUnCoverFiles = findUncoveredFiles('./testresult.out')
 
   // 递归遍历目录
-  function traverseDirectory(currentPath) {
+  function traverseJSDirectory(currentPath) {
     const items = fs.readdirSync(currentPath, { withFileTypes: true })
 
     for (const item of items) {
@@ -15441,48 +15445,48 @@ function scanJSCodeDirectory(dirPath) {
 
       if (item.isDirectory()) {
         // 如果是目录，递归遍历
-        traverseDirectory(itemPath)
+        traverseJSDirectory(itemPath)
       } else if (item.isFile() && item.name.endsWith('.js')) {
         if (testUnCoverFiles.includes(item.name)) {
           const code = fs.readFileSync(itemPath, 'utf8')
           // eslint-disable-next-line no-case-declarations
           const ast = parseFileToAST(itemPath)
           const funcsfound = extractAllFunctions(ast, code)
-          parseJSFile(itemPath, currentPath, funcsfound)
+          parseJSFile(resultQueue, itemPath, currentPath, funcsfound)
         }
       }
     }
   }
 
-  // 解析 Js 文件
-  function parseJSFile(filePath, currentPath, funcsfound) {
-    const fileName = path.basename(filePath)
-    for (let index = 0; index < funcsfound.length; index++) {
-      const content = funcsfound[index].content
-      const functionname = funcsfound[index].name
-      if (functionname !== 'anonymous') {
-        resultQueue.push({
-          currentPath,
-          fileName,
-          functionname,
-          content
-        })
-      }
-    }
-  }
-
   // 开始遍历目录
-  traverseDirectory(dirPath)
+  traverseJSDirectory(dirPath)
 
   return resultQueue
 }
 
-function findUncoveredFiles(file) {
-  const testOutput = fs.readFileSync(file, 'utf8')
+// 解析 Js 文件
+function parseJSFile(resultQueue, filePath, currentPath, funcsfound) {
+  const fileName = path.basename(filePath)
+  for (let index = 0; index < funcsfound.length; index++) {
+    const content = funcsfound[index].content
+    const functionname = funcsfound[index].name
+    if (functionname !== 'anonymous') {
+      resultQueue.push({
+        currentPath,
+        fileName,
+        functionname,
+        content
+      })
+    }
+  }
+}
+
+function findUncoveredFiles(testOutput) {
+  const fileContent = fs.readFileSync(testOutput, 'utf8')
   // 正则表达式匹配文件覆盖率的行
   const coverageRegex =
     /^\s*([^\s]+)\s+\|\s+\d+\s+\|\s+\d+\s+\|\s+\d+\s+\|\s+0\s+\|\s+([\d\s,-]+)\s*$/
-  const lines = testOutput.split('\n')
+  const lines = fileContent.split('\n')
   const uncoveredFiles = []
 
   for (const line of lines) {
@@ -15515,15 +15519,11 @@ function runUnitTest() {
 }
 
 module.exports = {
-  scanJSCodeDirectory
+  scanJSCodeDirectory,
+  findUncoveredFiles,
+  parseJSFile,
+  runUnitTest
 }
-
-// 示例用法
-/*const CodeDir = path.join(__dirname, '.') // 替换为你的 Go 代码目录路径
-const result = scanJSCodeDirectory(CodeDir)
-
-console.log(CodeDir)
-console.log(result)*/
 
 
 /***/ }),
@@ -15810,9 +15810,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
-const fs = __nccwpck_require__(9896)
-const path = __nccwpck_require__(6928)
-const { processOutput } = __nccwpck_require__(2170)
+const { ProcessJsUnittest } = __nccwpck_require__(2170)
 const { taskQueue } = __nccwpck_require__(4824)
 const OpenAI = __nccwpck_require__(2583)
 /**
@@ -15852,6 +15850,11 @@ async function run() {
       apiKey
     })
     const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
+    core.info('start processing GenAI result to file')
+    core.info(GenAIresponses)
+    if (runType === 'jsunittest') {
+      ProcessJsUnittest(GenAIresponses)
+    }
     // Log the current timestamp, wait, then log the new timestamp
     core.debug('complete at:', new Date().toTimeString())
   } catch (error) {
@@ -15924,6 +15927,10 @@ const taskQueue = {
     core.info(dryRun)
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
+      const currentPath = task.currentPath
+      const filename = task.fileName
+      const functionname = task.functionname
+      let GenAIContent = ''
       // 执行任务
       core.info('--------Invoke generate AI:--------')
       if (!dryRun) {
@@ -15938,12 +15945,9 @@ const taskQueue = {
           model
         })
         core.info('--------This is output from generate AI:--------')
-        const GenAIContent = completion.choices[0].message.content
+        GenAIContent = completion.choices[0].message.content
         core.info(GenAIContent)
         core.info('--------End of generate AI output--------')
-        const currentPath = task.currentPath
-        const filename = task.fileName
-        const functionname = task.functionname
         result.push({
           currentPath,
           filename,
@@ -15951,6 +15955,12 @@ const taskQueue = {
           GenAIContent
         })
       } else {
+        result.push({
+          currentPath,
+          filename,
+          functionname,
+          GenAIContent
+        })
         core.info(`just dry run for, ${prompt}\n${task.content}`)
       }
       this.counter++ // 增加计数器
@@ -15960,6 +15970,7 @@ const taskQueue = {
     } else {
       core.info('All tasks done')
     }
+    return result
   }
 }
 
@@ -16006,6 +16017,25 @@ const js_replacer = /```javascript|```([\r|\n]*?)###/g
 const golang_regex = /```go([\s\S]*?)```([\r|\n]*?)###/g
 const golang_replacer = /```go|```([\r|\n]*?)###/g
 
+function ProcessJsUnittest(GenAIResult) {
+  const my_regex = js_regex
+  const my_replacer = js_replacer
+  for (let index = 0; index < GenAIResult.length; index++) {
+    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const filePath =
+      GenAIResult[index].currentPath.replace('src', '__test__') +
+      GenAIResult[index].functionname +
+      GenAIResult[index].filename.replace('.js', '.test.js')
+    const matches = dataFromAIAgent.match(my_regex)
+    if (matches) {
+      const contents = matches.map(match =>
+        match.replace(my_replacer, '').trim()
+      )
+      writeFileForAarray(filePath, contents)
+    }
+  }
+}
+
 function processOutput(dataFromAIAgent, GenAItask) {
   const fileOverWrite = core.getInput('fileOverWrite', { required: true })
   let my_regex = js_regex
@@ -16033,7 +16063,8 @@ function processOutput(dataFromAIAgent, GenAItask) {
 }
 
 module.exports = {
-  processOutput
+  processOutput,
+  ProcessJsUnittest
 }
 
 
