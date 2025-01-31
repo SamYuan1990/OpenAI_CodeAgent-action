@@ -37,7 +37,14 @@ func multiLineFunction(
 ) string {
 	return fmt.Sprintf("Param1: %s, Param2: %d", param1, param2)
 }
-
+// Comments below is assisted by Gen AI
+// // main is the entry point of the program.
+// It calls several functions to demonstrate their usage:
+// - sayHello: Prints a greeting message.
+// - greet: Greets a specific person by name.
+// - add: Adds two integers and returns the result.
+// - outerFunction: Calls an inner function to demonstrate nested function usage.
+// - multiLineFunction: Demonstrates a function that returns a multi-line string.
 func main() {
 	sayHello()
 	greet("Alice")

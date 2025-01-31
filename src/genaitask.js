@@ -20,11 +20,11 @@ async function generateGenAItaskQueue(task) {
     let code_language = 'js'
     switch (true) {
       case task.inputFilePath.includes('_test.go'):
-        funcsfound = await extractGolangFunctions(task.inputFilePath, true)
+        funcsfound = extractGolangFunctions(task.inputFilePath, true)
         code_language = 'go'
         break
       case task.inputFilePath.includes('.go'):
-        funcsfound = await extractGolangFunctions(task.inputFilePath)
+        funcsfound = extractGolangFunctions(task.inputFilePath)
         code_language = 'go'
         break
       default:

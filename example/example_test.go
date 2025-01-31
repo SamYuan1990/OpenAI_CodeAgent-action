@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"fmt"
 	. "your-module-path/main" // 替换为你的模块路径
 
 	. "github.com/onsi/ginkgo/v2"
@@ -22,3 +23,7 @@ var _ = Describe("Example", func() {
 		})
 	})
 })
+
+func NewHelper() {
+	fmt.Println("Helper function")
+}

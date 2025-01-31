@@ -15324,106 +15324,206 @@ module.exports.implForWrapper = function (wrapper) {
 
 /***/ }),
 
-/***/ 4082:
+/***/ 8765:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const OpenAI = __nccwpck_require__(2583)
-const core = __nccwpck_require__(7484)
-
-async function invokeAIviaAgent(baseURL, apiKey, fileContent, prompt, model) {
-  core.info(' We are going to talk with Gen AI with URL', baseURL)
-  core.info(' We are going to talk with Gen AI with Model', model)
-  core.info(' We are going to talk with Gen AI with prompt and file content')
-  core.info(`${prompt}\n${fileContent}`)
-  const openai = new OpenAI({
-    baseURL,
-    apiKey
-  })
-  const completion = await openai.chat.completions.create({
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      {
-        role: 'user',
-        content: `${prompt}\n${fileContent}`
-      }
-    ],
-    model
-  })
-  core.info('--------This is output from generate AI:--------')
-  core.info(completion.choices[0].message.content)
-  core.info('--------End of generate AI output--------')
-  return completion.choices[0].message.content
-}
-
-module.exports = {
-  invokeAIviaAgent
-}
-
-
-/***/ }),
-
-/***/ 8288:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
-const {
-  parseFileToAST,
-  extractAllFunctions
-} = __nccwpck_require__(4618)
+const path = __nccwpck_require__(6928)
 const {
   extractGolangFunctions
 } = __nccwpck_require__(9122)
 
-async function generateGenAItaskQueue(task) {
-  const GenAITaskQueue = []
-  core.info(task.id)
-  core.info(task.inputFilePath)
-  core.info(task.outputProcessMethod)
-  core.info(task.prompt)
-  core.info(task.inputFileProcessMethod)
-  if (task.inputFileProcessMethod === 'by_function') {
-    let funcsfound = []
-    let code_language = 'js'
-    switch (true) {
-      case task.inputFilePath.includes('_test.go'):
-        funcsfound = await extractGolangFunctions(task.inputFilePath, true)
-        code_language = 'go'
-        break
-      case task.inputFilePath.includes('.go'):
-        funcsfound = await extractGolangFunctions(task.inputFilePath)
-        code_language = 'go'
-        break
-      default:
-        // eslint-disable-next-line no-case-declarations
-        const code = fs.readFileSync(task.inputFilePath, 'utf8')
-        // eslint-disable-next-line no-case-declarations
-        const ast = parseFileToAST(task.inputFilePath)
-        funcsfound = extractAllFunctions(ast, code)
-        break
-    }
+/**
+ * 扫描 Go 代码目录并构建数据结构队列
+ * @param {string} dirPath - 要扫描的 Go 代码目录路径
+ * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
+ */
+function scanGoCodeDirectory(dirPath) {
+  const resultQueue = [] // 结果队列
 
-    for (let index = 0; index < funcsfound.length; index++) {
-      const tempTask = {}
-      const func = funcsfound[index]
-      core.debug(`Function ${index}:`)
-      core.debug(`Name: ${func.name}`)
-      core.debug(`Content:\n${func.content}\n`)
-      tempTask.id = task.id + index
-      tempTask.prompt = task.prompt
-      tempTask.content = func.content
-      tempTask.outputProcessMethod = task.outputProcessMethod
-      tempTask.outputFilePath = task.outputFilePath.replace('{{index}}', index)
-      tempTask.code_language = code_language
-      core.debug(tempTask.outputFilePath)
-      GenAITaskQueue.push(tempTask)
+  // 递归遍历目录
+  function traverseDirectory(currentPath) {
+    const items = fs.readdirSync(currentPath, { withFileTypes: true })
+
+    for (const item of items) {
+      const itemPath = path.join(currentPath, item.name)
+
+      if (item.isDirectory()) {
+        // 如果是目录，递归遍历
+        traverseDirectory(itemPath)
+      } else if (
+        item.isFile() &&
+        item.name.endsWith('.go') &&
+        !item.name.endsWith('_test.go')
+      ) {
+        // 如果是 Go 文件，解析文件内容
+        const funcsfound = extractGolangFunctions(itemPath)
+        parseGoFile(resultQueue, itemPath, currentPath, funcsfound)
+      }
     }
   }
-  return GenAITaskQueue
+  // 开始遍历目录
+  traverseDirectory(dirPath)
+
+  return resultQueue
+}
+
+// 解析 Go 文件
+function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
+  const fileContent = fs.readFileSync(filePath, 'utf8')
+  const fileName = path.basename(filePath)
+
+  // 正则表达式匹配函数定义和 Go Doc
+  const functionRegex = /(\/\/[^\n]*\n)?\s*func\s+([A-Za-z_]\w*)\s*\(/g
+
+  let match
+
+  while ((match = functionRegex.exec(fileContent)) !== null) {
+    const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
+    const functionname = match[2] // 提取函数名
+    for (let index = 0; index < funcsfound.length; index++) {
+      if (funcsfound[index].name === functionname) {
+        const content = funcsfound[index].content
+        resultQueue.push({
+          currentPath,
+          fileName,
+          functionname,
+          content,
+          hasGoDoc: !!goDoc // 是否存在 Go Doc
+        })
+      }
+    }
+  }
 }
 
 module.exports = {
-  generateGenAItaskQueue
+  scanGoCodeDirectory,
+  parseGoFile
+}
+
+// 示例用法
+//const goCodeDir = path.join(__dirname, '../example') // 替换为你的 Go 代码目录路径
+//const result = scanGoCodeDirectory(goCodeDir)
+
+//console.log(result)
+
+
+/***/ }),
+
+/***/ 3418:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/* eslint-disable prettier/prettier */
+const core = __nccwpck_require__(7484)
+const fs = __nccwpck_require__(9896)
+const path = __nccwpck_require__(6928)
+const { execSync } = __nccwpck_require__(5317)
+const {
+  parseFileToAST,
+  extractAllFunctions
+} = __nccwpck_require__(4618)
+
+/**
+ * 扫描 Go 代码目录并构建数据结构队列
+ * @param {string} dirPath - 要扫描的 Go 代码目录路径
+ * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
+ */
+function scanJSCodeDirectory(dirPath) {
+  const resultQueue = [] // 结果队列
+  console.log('complete run unit test')
+
+  runUnitTest()
+  console.log('complete run unit test')
+  const testUnCoverFiles = findUncoveredFiles('./testresult.out')
+
+  // 递归遍历目录
+  function traverseJSDirectory(currentPath) {
+    const items = fs.readdirSync(currentPath, { withFileTypes: true })
+
+    for (const item of items) {
+      const itemPath = path.join(currentPath, item.name)
+
+      if (item.isDirectory()) {
+        // 如果是目录，递归遍历
+        traverseJSDirectory(itemPath)
+      } else if (item.isFile() && item.name.endsWith('.js')) {
+        if (testUnCoverFiles.includes(item.name)) {
+          const code = fs.readFileSync(itemPath, 'utf8')
+          // eslint-disable-next-line no-case-declarations
+          const ast = parseFileToAST(itemPath)
+          const funcsfound = extractAllFunctions(ast, code)
+          parseJSFile(resultQueue, itemPath, currentPath, funcsfound)
+        }
+      }
+    }
+  }
+
+  // 开始遍历目录
+  traverseJSDirectory(dirPath)
+
+  return resultQueue
+}
+
+// 解析 Js 文件
+function parseJSFile(resultQueue, filePath, currentPath, funcsfound) {
+  const fileName = path.basename(filePath)
+  for (let index = 0; index < funcsfound.length; index++) {
+    const content = funcsfound[index].content
+    const functionname = funcsfound[index].name
+    if (functionname !== 'anonymous') {
+      resultQueue.push({
+        currentPath,
+        fileName,
+        functionname,
+        content
+      })
+    }
+  }
+}
+
+function findUncoveredFiles(testOutput) {
+  const fileContent = fs.readFileSync(testOutput, 'utf8')
+  // 正则表达式匹配文件覆盖率的行
+  const coverageRegex =
+    /^\s*([^\s]+)\s+\|\s+\d+\s+\|\s+\d+\s+\|\s+\d+\s+\|\s+0\s+\|\s+([\d\s,-]+)\s*$/
+  const lines = fileContent.split('\n')
+  const uncoveredFiles = []
+
+  for (const line of lines) {
+    const match = line.match(coverageRegex)
+    if (match) {
+      const fileName = match[1]
+      uncoveredFiles.push(fileName)
+    }
+  }
+
+  return uncoveredFiles
+}
+
+function runUnitTest() {
+  // 定义输出文件路径
+  const outputFilePath = './testresult.out'
+
+  try {
+    execSync('npm install', { encoding: 'utf-8' })
+    // 同步执行 npm run test 命令
+    const stdout = execSync('npm run test', { encoding: 'utf-8' })
+
+    // 将结果同步写入文件
+    fs.writeFileSync(outputFilePath, stdout)
+
+    core.info(`run npm test success: ${outputFilePath}`)
+  } catch (error) {
+    // 捕获并处理错误
+    core.error(`fails in run npm test: ${error.message}`)
+  }
+}
+
+module.exports = {
+  scanJSCodeDirectory,
+  findUncoveredFiles,
+  parseJSFile,
+  runUnitTest
 }
 
 
@@ -15435,9 +15535,90 @@ module.exports = {
 const fs = __nccwpck_require__(9896)
 const readline = __nccwpck_require__(3785)
 
-// 提取 Go 文件中的函数
+/**
+ * 同步提取 Go 文件中的函数或测试用例
+ * @param {string} filePath - 文件路径
+ * @param {boolean} isTestFile - 是否是测试文件（默认 false）
+ * @returns {Array} - 返回提取的函数或测试用例数组
+ */
 function extractGolangFunctions(filePath, isTestFile = false) {
-  console.log('debug', isTestFile)
+  const functions = []
+  const fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
+
+  let inFunction = false
+  let functionName = ''
+  let functionBody = ''
+  let inDescribe = false
+  let describeName = ''
+  let inIt = false
+  let itName = ''
+
+  for (const line of fileContent) {
+    const trimmedLine = line.trim()
+
+    if (isTestFile) {
+      // 提取 Ginkgo 的 Describe 块
+      if (inDescribe) {
+        console.log(trimmedLine)
+      }
+      if (trimmedLine.startsWith('Describe(')) {
+        inDescribe = true
+        console.log('find Describe')
+        describeName = trimmedLine.split('"')[1] // 获取 Describe 的描述
+        console.log(describeName)
+      } else if (inDescribe && trimmedLine.startsWith('It(')) {
+        inIt = true
+        console.log('find it')
+        itName = trimmedLine.split('"')[1] // 获取 It 的描述
+        console.log(itName)
+      } else if (inIt && trimmedLine === '})') {
+        inIt = false
+        functions.push({
+          type: 'testcase',
+          describe: describeName,
+          it: itName,
+          content: functionBody.trim()
+        })
+        functionBody = ''
+      } else if (inDescribe && trimmedLine === '})') {
+        inDescribe = false
+        describeName = ''
+      }
+
+      if (inIt) {
+        functionBody += `${trimmedLine}\n`
+      }
+    } else {
+      // 提取普通函数
+      if (trimmedLine.startsWith('func ')) {
+        inFunction = true
+        functionName = trimmedLine.split(' ')[1].split('(')[0]
+        functionBody = `${trimmedLine}\n`
+      } else if (inFunction) {
+        functionBody += `${trimmedLine}\n`
+
+        if (trimmedLine === '}') {
+          inFunction = false
+          functions.push({
+            type: 'function',
+            name: functionName,
+            content: functionBody.trim()
+          })
+          functionBody = ''
+        }
+      }
+    }
+  }
+
+  return functions
+}
+
+module.exports = {
+  extractGolangFunctions
+}
+
+// 提取 Go 文件中的函数
+/*async function extractGolangFunctions_bak(filePath, isTestFile = false) {
   return new Promise((resolve, reject) => {
     const functions = []
     const rl = readline.createInterface({
@@ -15520,10 +15701,7 @@ function extractGolangFunctions(filePath, isTestFile = false) {
     })
   })
 }
-
-module.exports = {
-  extractGolangFunctions
-}
+*/
 
 // 主函数
 /*async function test() {
@@ -15633,71 +15811,56 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
-const fs = __nccwpck_require__(9896)
-const path = __nccwpck_require__(6928)
-const { processOutput } = __nccwpck_require__(2170)
-const { invokeAIviaAgent } = __nccwpck_require__(4082)
-const { generateGenAItaskQueue } = __nccwpck_require__(8288)
-const { taskQueue } = __nccwpck_require__(2443)
+const {
+  ProcessJsUnittest,
+  ProcessGoDoc
+} = __nccwpck_require__(2170)
+const { taskQueue } = __nccwpck_require__(4824)
+const OpenAI = __nccwpck_require__(2583)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
   try {
-    // here receive the Tasks.json file.
-    const tasksFilePath = path.join('Tasks.json')
-    const tasksData = JSON.parse(fs.readFileSync(tasksFilePath, 'utf8'))
-
-    // input validation for tasksData
-    if (tasksData.length === 0) {
-      core.info(`None task for process, return`)
-      return
-    }
-
     // here are the parameters for AI Agent
     const baseURL = core.getInput('baseURL', { required: true })
     const apiKey = core.getInput('apiKey', { required: true })
     const model = core.getInput('model', { required: true })
+    const dirPath = core.getInput('dirPath', { required: true })
+    const prompt = core.getInput('prompt', { required: true })
     let maxIterations = 0
     maxIterations = core.getInput('maxIterations')
+    const runType = core.getInput('runType', { required: true })
+
+    const dryRun = core.getInput('dryRun')
+
     taskQueue.setmaxIterations(maxIterations)
+    taskQueue.setdirPath(dirPath)
+    if (runType === 'godoc') {
+      taskQueue.GenerateGoDocTasks()
+    }
+    if (runType === 'jsunittest') {
+      taskQueue.GenerateJsUnitTestTask()
+    }
 
-    // a repo scanner
-    // make file, function tree
-    // for file, function tree take actions, replace Tasks.json
-
-    for (const task of tasksData.tasks) {
-      core.info(`start process task into GenAI task`, task.id)
-      const GenAItaskQueue = await generateGenAItaskQueue(task)
-      core.info(GenAItaskQueue.length, 'Gen AI task been found')
-      // todo: make this in part of orchestration
-      for (let index = 0; index < GenAItaskQueue.length; index++) {
-        core.debug(GenAItaskQueue[index].id)
-        core.debug(GenAItaskQueue[index].prompt)
-        core.debug(GenAItaskQueue[index].content)
-        core.debug(GenAItaskQueue[index].outputFilePath)
-        // input validation for AI agent
-        if (apiKey === 'dummy') {
-          core.info(`for test usage, continue`)
-          core.debug(
-            `${GenAItaskQueue[index].prompt}\n${GenAItaskQueue[index].content}`
-          )
-          continue
-        }
-        core.info(`start process task to GenAI,`, GenAItaskQueue[index].id)
-        const dataFromAIAgent = await invokeAIviaAgent(
-          baseURL,
-          apiKey,
-          GenAItaskQueue[index].content,
-          GenAItaskQueue[index].prompt,
-          model
-        )
-        core.info(`start process output from GenAI`)
-        await processOutput(dataFromAIAgent, GenAItaskQueue[index])
-        core.info(`Finish process task to GenAI`)
-      }
-      core.info(`finish process task`, task.id)
+    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
+    core.info(` We are going to talk with Gen AI with Model${model}`)
+    core.info(
+      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
+    )
+    const openai = new OpenAI({
+      baseURL,
+      apiKey
+    })
+    const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
+    core.info('start processing GenAI result to file')
+    core.info(GenAIresponses)
+    if (runType === 'godoc') {
+      ProcessGoDoc(GenAIresponses)
+    }
+    if (runType === 'jsunittest') {
+      ProcessJsUnittest(GenAIresponses)
     }
     // Log the current timestamp, wait, then log the new timestamp
     core.debug('complete at:', new Date().toTimeString())
@@ -15714,38 +15877,117 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2443:
+/***/ 4824:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
+const { scanGoCodeDirectory } = __nccwpck_require__(8765)
+const { scanJSCodeDirectory } = __nccwpck_require__(3418)
 
 const taskQueue = {
+  Functions: [],
   tasks: [], // 任务队列
   counter: 0, // 计数器
   maxIterations: 10, // 最大循环次数
+  dirPath: '',
 
-  // 添加任务到队列
-  addTask(task) {
-    this.tasks.push(task)
+  InitJsRepo() {
+    this.Functions = scanJSCodeDirectory(this.dirPath)
+  },
+
+  InitGoRepo() {
+    this.Functions = scanGoCodeDirectory(this.dirPath)
+  },
+
+  GenerateJsUnitTestTask() {
+    this.InitJsRepo(this.dirPath)
+    let counter = 0
+    for (let index = 0; index < this.Functions.length; index++) {
+      this.tasks.push(this.Functions[index])
+      counter++
+      if (counter > this.maxIterations) {
+        break
+      }
+    }
+  },
+
+  GenerateGoDocTasks() {
+    this.InitGoRepo(this.dirPath)
+    let counter = 0
+    for (let index = 0; index < this.Functions.length; index++) {
+      if (!this.Functions[index].hasGoDoc) {
+        this.tasks.push(this.Functions[index])
+        counter++
+        if (counter > this.maxIterations) {
+          break
+        }
+      }
+    }
+  },
+
+  setdirPath(dirPath) {
+    this.dirPath = dirPath
   },
 
   setmaxIterations(maxIterations) {
-    this.maxIterations = maxIterations
+    if (maxIterations) {
+      this.maxIterations = maxIterations
+    }
   },
 
   // 运行任务队列
-  run() {
+  async run(model, prompt, openai, dryRun) {
+    const result = []
+    core.info(this.counter)
+    core.info(this.maxIterations)
+    core.info(this.tasks.length)
+    core.info(dryRun)
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
-      task() // 执行任务
+      const currentPath = task.currentPath
+      const filename = task.fileName
+      const functionname = task.functionname
+      let GenAIContent = ''
+      // 执行任务
+      core.info('--------Invoke generate AI:--------')
+      if (!dryRun) {
+        const completion = await openai.chat.completions.create({
+          messages: [
+            { role: 'system', content: 'You are a helpful assistant.' },
+            {
+              role: 'user',
+              content: `${prompt}\n${task.content}`
+            }
+          ],
+          model
+        })
+        core.info('--------This is output from generate AI:--------')
+        GenAIContent = completion.choices[0].message.content
+        core.info(GenAIContent)
+        core.info('--------End of generate AI output--------')
+        result.push({
+          currentPath,
+          filename,
+          functionname,
+          GenAIContent
+        })
+      } else {
+        result.push({
+          currentPath,
+          filename,
+          functionname,
+          GenAIContent
+        })
+        core.info(`just dry run for, ${prompt}\n${task.content}`)
+      }
       this.counter++ // 增加计数器
     }
-
     if (this.counter >= this.maxIterations) {
-      core.log('循环达到最大次数，终止执行。')
+      core.info('Reach out maxIterations exit')
     } else {
-      core.log('所有任务执行完毕。')
+      core.info('All tasks done')
     }
+    return result
   }
 }
 
@@ -15780,17 +16022,194 @@ module.exports = {
 
 /***/ }),
 
+/***/ 1501:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(9896)
+const core = __nccwpck_require__(7484)
+
+/**
+ * 在 Go 文件中为特定函数插入注释
+ * @param {string} filePath - Go 文件路径
+ * @param {string} funcName - 函数名
+ * @param {string[]} comments - 要插入的注释行（数组）
+ */
+function insertCommentAboveFunction(filePath, funcName, comments) {
+  // 读取文件内容
+  const fileContent = fs.readFileSync(filePath, 'utf-8')
+
+  // 构建正则表达式，匹配函数定义
+  const funcRegex = new RegExp(`(\\n\\s*func\\s+${funcName}\\s*\\([^{]*{)`, 'g')
+
+  // 检查是否找到函数定义
+  if (!funcRegex.test(fileContent)) {
+    core.error(`未找到函数 "${funcName}" 的定义`)
+    return
+  }
+
+  // 构建注释字符串
+  const commentStr = `${comments.map(comment => `// ${comment}`).join('\n')}\n`
+
+  // 在函数定义的上一行插入注释
+  const newFileContent = fileContent.replace(funcRegex, match => {
+    // 在匹配的函数定义前插入注释
+    return `\n${commentStr}${match.trimStart()}`
+  })
+
+  // 将修改后的内容写回文件
+  fs.writeFileSync(filePath, newFileContent, 'utf-8')
+
+  core.info(`已成功在函数 "${funcName}" 的上一行插入注释`)
+}
+
+/*
+// 示例用法
+const filePath = './example/utils/utils.go' // Go 文件路径
+const funcName = 'Helper' // 函数名
+const comments = [
+  'This is a comment line 1',
+  'This is a comment line 2',
+  'This is a comment line 3'
+] // 要插入的注释
+
+insertCommentAboveFunction(filePath, funcName, comments)
+*/
+
+/**
+ * 提取 Go 代码中指定函数定义前的注释
+ * @param {string} code - Go 代码
+ * @param {string} funcName - 函数名
+ * @returns {string} - 提取的注释内容
+ */
+function extractFunctionComment(code, funcName) {
+  // 构建正则表达式，匹配函数定义前的注释
+  const regex = new RegExp(
+    `(\\/\\/[^\\n]*\\n)*\\s*func\\s+${funcName}\\s*\\(`,
+    'g'
+  )
+
+  // 查找匹配的注释
+  const match = regex.exec(code)
+  if (!match) {
+    throw new Error(`未找到函数 "${funcName}" 的注释`)
+  }
+
+  // 提取注释部分
+  const commentBlock = match[0]
+    .replace(new RegExp(`\\s*func\\s+${funcName}\\s*\\(`, 'g'), '')
+    .trim()
+  return commentBlock
+}
+
+/*
+// 示例 Go 代码
+const goCode = `
+package main
+
+import "fmt"
+
+// Helper prints a fixed message "Helper function" to the standard output (console).
+// 
+// This function is primarily intended for demonstration purposes, serving as a simple
+// example of how to define and call a function in Go. It can also be used as a
+// placeholder during development or as a debugging aid to verify code execution flow.
+//
+// Example usage:
+//
+//	Helper() // Output: Helper function
+//
+// Notes:
+// - The function does not take any parameters.
+// - The function does not return any values.
+// - The output is always "Helper function".
+func Helper() {
+    fmt.Println("Helper function")
+}
+
+func main() {
+    Helper()
+}
+`
+
+// 提取 Helper 函数的注释
+try {
+  const comment = extractFunctionComment(goCode, 'Helper')
+  console.log(comment)
+} catch (error) {
+  console.error(error.message)
+}
+*/
+module.exports = {
+  insertCommentAboveFunction,
+  extractFunctionComment
+}
+
+
+/***/ }),
+
 /***/ 2170:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
 const { writeFileForAarray } = __nccwpck_require__(616)
+const {
+  extractFunctionComment,
+  insertCommentAboveFunction
+} = __nccwpck_require__(1501)
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g
 
 const golang_regex = /```go([\s\S]*?)```([\r|\n]*?)###/g
 const golang_replacer = /```go|```([\r|\n]*?)###/g
+
+function ProcessGoDoc(GenAIResult) {
+  // step 1, get go code block from input
+  const my_regex = golang_regex
+  const my_replacer = golang_replacer
+  for (let index = 0; index < GenAIResult.length; index++) {
+    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const matches = dataFromAIAgent.match(my_regex)
+    const funcName = GenAIResult[index].functionname
+    const filePath = `${GenAIResult[index].currentPath}/${GenAIResult[index].filename}`
+    core.info(`going to process function ${funcName}`)
+    core.info(`going to process at file ${filePath}`)
+    core.info(`going to process genAI content ${dataFromAIAgent}`)
+    if (funcName === 'undefined') {
+      core.info('skip anonymous function')
+      continue
+    }
+    if (matches) {
+      const code_contents = matches.map(match =>
+        match.replace(my_replacer, '').trim()
+      )
+      // step 2, get comments from contents
+      const content = extractFunctionComment(code_contents, funcName)
+      // step 3, write comments into file
+      const comments = ['Comments below is assisted by Gen AI', content]
+      insertCommentAboveFunction(filePath, funcName, comments)
+    }
+  }
+}
+
+function ProcessJsUnittest(GenAIResult) {
+  const my_regex = js_regex
+  const my_replacer = js_replacer
+  for (let index = 0; index < GenAIResult.length; index++) {
+    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const filePath =
+      GenAIResult[index].currentPath.replace('src', '__test__') +
+      GenAIResult[index].functionname +
+      GenAIResult[index].filename.replace('.js', '.test.js')
+    const matches = dataFromAIAgent.match(my_regex)
+    if (matches) {
+      const contents = matches.map(match =>
+        match.replace(my_replacer, '').trim()
+      )
+      writeFileForAarray(filePath, contents)
+    }
+  }
+}
 
 function processOutput(dataFromAIAgent, GenAItask) {
   const fileOverWrite = core.getInput('fileOverWrite', { required: true })
@@ -15819,7 +16238,9 @@ function processOutput(dataFromAIAgent, GenAItask) {
 }
 
 module.exports = {
-  processOutput
+  processOutput,
+  ProcessJsUnittest,
+  ProcessGoDoc
 }
 
 
@@ -16539,7 +16960,7 @@ exports.FormData = void 0;
 const util_1 = __nccwpck_require__(9023);
 const File_1 = __nccwpck_require__(8177);
 const isFile_1 = __nccwpck_require__(6873);
-const isBlob_1 = __nccwpck_require__(4824);
+const isBlob_1 = __nccwpck_require__(2443);
 const isFunction_1 = __nccwpck_require__(5687);
 const deprecateConstructorEntries_1 = __nccwpck_require__(2200);
 class FormData {
@@ -16909,7 +17330,7 @@ __exportStar(__nccwpck_require__(8177), exports);
 
 /***/ }),
 
-/***/ 4824:
+/***/ 2443:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
