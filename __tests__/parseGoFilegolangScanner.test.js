@@ -43,7 +43,7 @@ describe('parseGoFile', () => {
       {
         currentPath: '/some/path',
         fileName: 'example.go',
-        functionName: 'exampleFunction',
+        functionname: 'exampleFunction',
         content: 'func exampleFunction() {}',
         hasGoDoc: true
       }
@@ -84,7 +84,7 @@ describe('parseGoFile', () => {
       {
         currentPath: '/some/path',
         fileName: 'example.go',
-        functionName: 'exampleFunction',
+        functionname: 'exampleFunction',
         content: 'func exampleFunction() {}',
         hasGoDoc: false
       }
@@ -125,14 +125,14 @@ describe('parseGoFile', () => {
       {
         currentPath: '/some/path',
         fileName: 'example.go',
-        functionName: 'exampleFunction1',
+        functionname: 'exampleFunction1',
         content: 'func exampleFunction1() {}',
         hasGoDoc: true
       },
       {
         currentPath: '/some/path',
         fileName: 'example.go',
-        functionName: 'exampleFunction2',
+        functionname: 'exampleFunction2',
         content: 'func exampleFunction2() {}',
         hasGoDoc: false
       }

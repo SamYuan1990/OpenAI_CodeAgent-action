@@ -1,11 +1,44 @@
 const core = require('@actions/core')
 const { writeFileForAarray } = require('./file_handler')
+const {
+  extractFunctionComment,
+  insertCommentAboveFunction
+} = require('./goDoc')
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g
 
 const golang_regex = /```go([\s\S]*?)```([\r|\n]*?)###/g
 const golang_replacer = /```go|```([\r|\n]*?)###/g
+
+function ProcessGoDoc(GenAIResult) {
+  // step 1, get go code block from input
+  const my_regex = golang_regex
+  const my_replacer = golang_replacer
+  for (let index = 0; index < GenAIResult.length; index++) {
+    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const matches = dataFromAIAgent.match(my_regex)
+    const funcName = GenAIResult[index].functionname
+    const filePath = `${GenAIResult[index].currentPath}/${GenAIResult[index].filename}`
+    core.info(`going to process function ${funcName}`)
+    core.info(`going to process at file ${filePath}`)
+    core.info(`going to process genAI content ${dataFromAIAgent}`)
+    if (funcName === 'undefined') {
+      core.info('skip anonymous function')
+      continue
+    }
+    if (matches) {
+      const code_contents = matches.map(match =>
+        match.replace(my_replacer, '').trim()
+      )
+      // step 2, get comments from contents
+      const content = extractFunctionComment(code_contents, funcName)
+      // step 3, write comments into file
+      const comments = ['Comments below is assisted by Gen AI', content]
+      insertCommentAboveFunction(filePath, funcName, comments)
+    }
+  }
+}
 
 function ProcessJsUnittest(GenAIResult) {
   const my_regex = js_regex
@@ -54,5 +87,6 @@ function processOutput(dataFromAIAgent, GenAItask) {
 
 module.exports = {
   processOutput,
-  ProcessJsUnittest
+  ProcessJsUnittest,
+  ProcessGoDoc
 }

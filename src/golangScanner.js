@@ -51,14 +51,14 @@ function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
 
   while ((match = functionRegex.exec(fileContent)) !== null) {
     const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
-    const functionName = match[2] // 提取函数名
+    const functionname = match[2] // 提取函数名
     for (let index = 0; index < funcsfound.length; index++) {
-      if (funcsfound[index].name === functionName) {
+      if (funcsfound[index].name === functionname) {
         const content = funcsfound[index].content
         resultQueue.push({
           currentPath,
           fileName,
-          functionName,
+          functionname,
           content,
           hasGoDoc: !!goDoc // 是否存在 Go Doc
         })

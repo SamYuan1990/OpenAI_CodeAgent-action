@@ -19,16 +19,26 @@ const taskQueue = {
 
   GenerateJsUnitTestTask() {
     this.InitJsRepo(this.dirPath)
+    let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
       this.tasks.push(this.Functions[index])
+      counter++
+      if (counter > this.maxIterations) {
+        break
+      }
     }
   },
 
   GenerateGoDocTasks() {
     this.InitGoRepo(this.dirPath)
+    let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
       if (!this.Functions[index].hasGoDoc) {
         this.tasks.push(this.Functions[index])
+        counter++
+        if (counter > this.maxIterations) {
+          break
+        }
       }
     }
   },

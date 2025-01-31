@@ -1,5 +1,8 @@
 const core = require('@actions/core')
-const { ProcessJsUnittest } = require('./outputhandler/ouputprocessor')
+const {
+  ProcessJsUnittest,
+  ProcessGoDoc
+} = require('./outputhandler/ouputprocessor')
 const { taskQueue } = require('./orchestration')
 const OpenAI = require('openai')
 /**
@@ -41,6 +44,9 @@ async function run() {
     const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
     core.info('start processing GenAI result to file')
     core.info(GenAIresponses)
+    if (runType === 'godoc') {
+      ProcessGoDoc(GenAIresponses)
+    }
     if (runType === 'jsunittest') {
       ProcessJsUnittest(GenAIresponses)
     }
