@@ -25,6 +25,7 @@ jobs:
           go install github.com/devops-kung-fu/bomber@latest 
           syft scan . -o cyclonedx-json  > sbom.json 
           bomber scan ./sbom.json --output=json --debug > cve.json
+          cat cve.json
 
       - name: Test Local Action
         id: test-action
