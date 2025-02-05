@@ -56854,8 +56854,6 @@ module.exports = {
   fromCVEToPodDeployment
 }
 
-//fromCVEToPodDeployment()
-
 
 /***/ }),
 
@@ -57350,10 +57348,10 @@ const {
   ProcessJsUnittest,
   ProcessGoDoc
 } = __nccwpck_require__(2170)
-const fromCVEToPodDeployment = __nccwpck_require__(5585)
+const { fromCVEToPodDeployment } = __nccwpck_require__(5585)
 const { taskQueue } = __nccwpck_require__(4824)
 const OpenAI = __nccwpck_require__(2583)
-const invokeAIviaAgent = __nccwpck_require__(4082)
+const { invokeAIviaAgent } = __nccwpck_require__(4082)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
