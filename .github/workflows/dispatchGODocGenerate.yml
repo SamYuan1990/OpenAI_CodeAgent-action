@@ -1,4 +1,4 @@
-name: Dispatch Trigger
+name: Go Doc Generate
 
 on:
   workflow_dispatch:
@@ -24,6 +24,12 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           fileOverWrite: true
+          model: deepseek-chat
+          dirPath: ./example
+          prompt: please help me with document for the function below,
+          maxIterations: 10
+          dryRun: true
+          runType: jsunittest
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7

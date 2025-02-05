@@ -66,6 +66,8 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "acorn": "^8.14.0",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
     "mock-fs": "^5.4.1",
     "openai": "^4.78.1"
   },
