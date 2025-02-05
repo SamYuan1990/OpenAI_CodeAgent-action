@@ -20,13 +20,11 @@ jobs:
       - uses: actions/setup-go@v5
 
       - name: generate CVE.json
-        run:
-          curl -sSfL
-          https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s
-          -- -b /usr/local/bin go install
-          github.com/devops-kung-fu/bomber@latest syft scan . -o
-          cyclonedx-json  > sbom.json bomber scan ./sbom.json --output=json
-          --debug > cve.json
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          go install github.com/devops-kung-fu/bomber@latest 
+          syft scan . -o cyclonedx-json  > sbom.json 
+          bomber scan ./sbom.json --output=json --debug > cve.json
 
       - name: Test Local Action
         id: test-action
