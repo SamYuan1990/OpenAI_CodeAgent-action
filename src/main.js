@@ -3,8 +3,10 @@ const {
   ProcessJsUnittest,
   ProcessGoDoc
 } = require('./outputhandler/ouputprocessor')
+const { fromCVEToPodDeployment } = require('./cve')
 const { taskQueue } = require('./orchestration')
 const OpenAI = require('openai')
+const { invokeAIviaAgent } = require('./aiagent')
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -31,12 +33,26 @@ async function run() {
     if (runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
-
     core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
     core.info(` We are going to talk with Gen AI with Model${model}`)
     core.info(
       ` We are going to talk with Gen AI with prompt and file content ${prompt}`
     )
+    core.info(`runtype ${runType}`)
+    if (runType === 'CVE2Deployment') {
+      core.info('running type CVE2Deployment')
+      const content = await fromCVEToPodDeployment()
+      const LLMresponse = await invokeAIviaAgent(
+        baseURL,
+        apiKey,
+        content,
+        prompt,
+        model
+      )
+      core.info(LLMresponse)
+      return
+    }
+
     const openai = new OpenAI({
       baseURL,
       apiKey
