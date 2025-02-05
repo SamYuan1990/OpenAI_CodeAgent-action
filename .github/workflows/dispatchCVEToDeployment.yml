@@ -23,7 +23,7 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
           go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan . -o cyclonedx-json  > sbom.json 
+          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
           cat sbom.json
           bomber scan ./sbom.json --output=json --debug > cve.json
           cat cve.json
