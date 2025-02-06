@@ -36,10 +36,18 @@ jobs:
           apiKey: ${{ secrets.API_KEY }}
           fileOverWrite: true
           model: deepseek-chat
-          dirPath: ./example
+          dirPath: ./example/deployment/exporter.yaml
           prompt:
             please give me a pod deployment suggestion, according to CVSS 3.1
-            here
+            scrore and deployment.yaml,
           maxIterations: 10
           dryRun: true
           runType: CVE2Deployment
+
+      - name: Create new issue
+        uses: imjohnbo/issue-bot@v3
+        with:
+          title: AutoBumpUpVersionReminder
+          body: |-
+            :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
+            ${{ steps.test-action.outputs.LLMresponse }}
