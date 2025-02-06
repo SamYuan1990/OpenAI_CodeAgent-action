@@ -57342,6 +57342,7 @@ const { fromCVEToPodDeployment } = __nccwpck_require__(5585)
 const { taskQueue } = __nccwpck_require__(4824)
 const OpenAI = __nccwpck_require__(2583)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
+const fs = __nccwpck_require__(9896)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -57376,7 +57377,9 @@ async function run() {
     core.info(`runtype ${runType}`)
     if (runType === 'CVE2Deployment') {
       core.info('running type CVE2Deployment')
-      const content = await fromCVEToPodDeployment()
+      const css_content = await fromCVEToPodDeployment()
+      const fileContent = fs.readFileSync(dirPath, 'utf8')
+      const content = `${css_content},${fileContent}`
       const LLMresponse = await invokeAIviaAgent(
         baseURL,
         apiKey,
@@ -57385,6 +57388,7 @@ async function run() {
         model
       )
       core.info(LLMresponse)
+      core.setOutput('LLMresponse', LLMresponse)
       return
     }
 
