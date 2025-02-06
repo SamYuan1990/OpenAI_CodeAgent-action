@@ -63,22 +63,24 @@ async function fetchSeverityScoreBreakdown(url) {
     // 发送HTTP GET请求
     core.info(`start to fetch CVE details ${url}`)
     const response = await axios.get(url)
-    const cvssMetrics = response.data.containers.adp[0].metrics.find(metric => metric.cvssV3_1);
+    const cvssMetrics = response.data.containers.adp[0].metrics.find(
+      metric => metric.cvssV3_1
+    )
     if (cvssMetrics && cvssMetrics.cvssV3_1) {
-      const cvssV3_1 = cvssMetrics.cvssV3_1;
+      const cvssV3_1 = cvssMetrics.cvssV3_1
       return {
         //baseSeverity: cvssV3_1.baseSeverity,
         'Attack vector': cvssV3_1.attackVector,
         'Attack complexity': cvssV3_1.attackComplexity,
         'Privileges required': cvssV3_1.privilegesRequired,
         'User interaction': cvssV3_1.userInteraction,
-        'Scope': cvssV3_1.scope,
+        Scope: cvssV3_1.scope,
         Confidentiality: cvssV3_1.confidentialityImpact,
         'Integrity impact': cvssV3_1.integrityImpact,
-        'Availability impact': cvssV3_1.availabilityImpact,
-      };
+        'Availability impact': cvssV3_1.availabilityImpact
+      }
     } else {
-      return null;
+      return null
     }
   } catch (error) {
     console.error(`Error fetching ${url}:`, error)
@@ -133,7 +135,7 @@ async function fromCVEToPodDeployment() {
     const match = url.match(cvePattern)
     const cveInfo = match ? match[0] : null
 
-    if(cveInfo === null) {
+    if (cveInfo === null) {
       continue
     }
 
