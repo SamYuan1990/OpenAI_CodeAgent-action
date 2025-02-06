@@ -187,5 +187,3 @@ async function fromCVEToPodDeployment() {
 module.exports = {
   fromCVEToPodDeployment
 }
-
-fromCVEToPodDeployment()

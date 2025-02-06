@@ -56844,8 +56844,6 @@ module.exports = {
   fromCVEToPodDeployment
 }
 
-fromCVEToPodDeployment()
-
 
 /***/ }),
 
