@@ -3,6 +3,10 @@
 [![Lint Codebase](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml)
 [![Continuous Integration](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml)
 
+Intelligentize various pipelines based on the given repo, and stabilize the
+results of source code and various tools. Under artificial consciousness
+(prompt), analyze through large models.
+
 Ref From LLMs to LLM-based Agents for Software Engineering: A Survey of Current,
 Challenges and Future[1], in this paper which listed 6 topics in software
 development and provided 2 approaches as LLM and LLM-based agents.
