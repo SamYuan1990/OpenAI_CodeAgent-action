@@ -56616,32 +56616,32 @@ module.exports.implForWrapper = function (wrapper) {
 /***/ 4082:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const OpenAI = __nccwpck_require__(2583)
 const core = __nccwpck_require__(7484)
 
-async function invokeAIviaAgent(baseURL, apiKey, fileContent, prompt, model) {
-  core.info(' We are going to talk with Gen AI with URL', baseURL)
+async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   core.info(' We are going to talk with Gen AI with Model', model)
   core.info(' We are going to talk with Gen AI with prompt and file content')
   core.info(`${prompt}\n${fileContent}`)
-  const openai = new OpenAI({
-    baseURL,
-    apiKey
-  })
-  const completion = await openai.chat.completions.create({
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      {
-        role: 'user',
-        content: `${prompt}\n${fileContent}`
-      }
-    ],
-    model
-  })
-  core.info('--------This is output from generate AI:--------')
-  core.info(completion.choices[0].message.content)
-  core.info('--------End of generate AI output--------')
-  return completion.choices[0].message.content
+  if (!dryRun) {
+    core.info('--------Invoke generate AI:--------')
+    const completion = await openai.chat.completions.create({
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        {
+          role: 'user',
+          content: `${prompt}\n${fileContent}`
+        }
+      ],
+      model
+    })
+    core.info('--------This is output from generate AI:--------')
+    core.info(completion.choices[0].message.content)
+    core.info('--------End of generate AI output--------')
+    return completion.choices[0].message.content
+  } else {
+    core.info(`just dry run for, ${prompt}\n${fileContent}`)
+    return ''
+  }
 }
 
 module.exports = {
@@ -57360,6 +57360,18 @@ async function run() {
     const runType = core.getInput('runType', { required: true })
 
     const dryRun = core.getInput('dryRun')
+    // creation of AI agent
+    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
+    core.info(` We are going to talk with Gen AI with Model${model}`)
+    core.info(
+      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
+    )
+
+    const openai = new OpenAI({
+      baseURL,
+      apiKey
+    })
+    // end of AI Agent creation
 
     taskQueue.setmaxIterations(maxIterations)
     taskQueue.setdirPath(dirPath)
@@ -57369,11 +57381,6 @@ async function run() {
     if (runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
-    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
-    core.info(` We are going to talk with Gen AI with Model${model}`)
-    core.info(
-      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
-    )
     core.info(`runtype ${runType}`)
     if (runType === 'CVE2Deployment') {
       core.info('running type CVE2Deployment')
@@ -57381,24 +57388,17 @@ async function run() {
       const fileContent = fs.readFileSync(dirPath, 'utf8')
       const content = `${css_content},${fileContent}`
       const LLMresponse = await invokeAIviaAgent(
-        baseURL,
-        apiKey,
-        content,
+        openai,
+        model,
         prompt,
-        model
+        dryRun,
+        content
       )
-      core.info(LLMresponse)
       core.setOutput('LLMresponse', LLMresponse)
       return
     }
-
-    const openai = new OpenAI({
-      baseURL,
-      apiKey
-    })
-    const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
+    const GenAIresponses = await taskQueue.run(openai, model, prompt, dryRun)
     core.info('start processing GenAI result to file')
-    core.info(GenAIresponses)
     if (runType === 'godoc') {
       ProcessGoDoc(GenAIresponses)
     }
@@ -57426,6 +57426,7 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const { scanGoCodeDirectory } = __nccwpck_require__(8765)
 const { scanJSCodeDirectory } = __nccwpck_require__(3418)
+const { invokeAIviaAgent } = __nccwpck_require__(4082)
 
 const taskQueue = {
   Functions: [],
@@ -57479,50 +57480,27 @@ const taskQueue = {
   },
 
   // 运行任务队列
-  async run(model, prompt, openai, dryRun) {
+  async run(openai, model, prompt, dryRun) {
     const result = []
-    core.info(this.counter)
-    core.info(this.maxIterations)
-    core.info(this.tasks.length)
-    core.info(dryRun)
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const currentPath = task.currentPath
       const filename = task.fileName
       const functionname = task.functionname
-      let GenAIContent = ''
+      const GenAIContent = await invokeAIviaAgent(
+        openai,
+        model,
+        prompt,
+        dryRun,
+        task.content
+      )
       // 执行任务
-      core.info('--------Invoke generate AI:--------')
-      if (!dryRun) {
-        const completion = await openai.chat.completions.create({
-          messages: [
-            { role: 'system', content: 'You are a helpful assistant.' },
-            {
-              role: 'user',
-              content: `${prompt}\n${task.content}`
-            }
-          ],
-          model
-        })
-        core.info('--------This is output from generate AI:--------')
-        GenAIContent = completion.choices[0].message.content
-        core.info(GenAIContent)
-        core.info('--------End of generate AI output--------')
-        result.push({
-          currentPath,
-          filename,
-          functionname,
-          GenAIContent
-        })
-      } else {
-        result.push({
-          currentPath,
-          filename,
-          functionname,
-          GenAIContent
-        })
-        core.info(`just dry run for, ${prompt}\n${task.content}`)
-      }
+      result.push({
+        currentPath,
+        filename,
+        functionname,
+        GenAIContent
+      })
       this.counter++ // 增加计数器
     }
     if (this.counter >= this.maxIterations) {
