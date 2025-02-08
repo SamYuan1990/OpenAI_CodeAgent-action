@@ -25,6 +25,18 @@ async function run() {
     const runType = core.getInput('runType', { required: true })
 
     const dryRun = core.getInput('dryRun')
+    // creation of AI agent
+    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
+    core.info(` We are going to talk with Gen AI with Model${model}`)
+    core.info(
+      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
+    )
+
+    const openai = new OpenAI({
+      baseURL,
+      apiKey
+    })
+    // end of AI Agent creation
 
     taskQueue.setmaxIterations(maxIterations)
     taskQueue.setdirPath(dirPath)
@@ -34,11 +46,6 @@ async function run() {
     if (runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
-    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
-    core.info(` We are going to talk with Gen AI with Model${model}`)
-    core.info(
-      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
-    )
     core.info(`runtype ${runType}`)
     if (runType === 'CVE2Deployment') {
       core.info('running type CVE2Deployment')
@@ -46,24 +53,17 @@ async function run() {
       const fileContent = fs.readFileSync(dirPath, 'utf8')
       const content = `${css_content},${fileContent}`
       const LLMresponse = await invokeAIviaAgent(
-        baseURL,
-        apiKey,
-        content,
+        openai,
+        model,
         prompt,
-        model
+        dryRun,
+        content
       )
-      core.info(LLMresponse)
       core.setOutput('LLMresponse', LLMresponse)
       return
     }
-
-    const openai = new OpenAI({
-      baseURL,
-      apiKey
-    })
-    const GenAIresponses = await taskQueue.run(model, prompt, openai, dryRun)
+    const GenAIresponses = await taskQueue.run(openai, model, prompt, dryRun)
     core.info('start processing GenAI result to file')
-    core.info(GenAIresponses)
     if (runType === 'godoc') {
       ProcessGoDoc(GenAIresponses)
     }
