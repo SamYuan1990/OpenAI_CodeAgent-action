@@ -58,7 +58,14 @@ async function start() {
       content
     )
     // output processor
-    core.setOutput('LLMresponse', LLMresponse)
+    //   const prompt_info = {
+    // model,
+    // final_prompt,
+    // hashValue,
+    // prompt_precent,
+    // content_precent
+    // }
+    core.setOutput('LLMresponse', LLMresponse.response)
     // General output to folder
     // Set Action output
     return
