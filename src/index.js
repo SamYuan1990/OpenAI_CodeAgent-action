@@ -31,13 +31,20 @@ async function start() {
     prompt
   }
 
+  // controler group
   const dryRun = core.getInput('dryRun')
   core.info(`dry run? ${dryRun}`)
-
   const runType = core.getInput('runType', { required: true })
   core.info(`Will execute for ${runType}`)
+
+  const maxIterations = core.getInput('maxIterations')
+  const control_group = {
+    maxIterations,
+    runType
+  }
+
   // once off tasks
-  if (runType === 'CVE2Deployment') {
+  if (control_group.runType === 'CVE2Deployment') {
     core.info('running type CVE2Deployment')
     const deploymentfile = core.getInput('deploymentfile', { required: true })
     const css_content = await fromCVEToPodDeployment()
@@ -57,7 +64,7 @@ async function start() {
     return
   }
   // AST tasks
-  run(openai, model_parameters, runType, dryRun)
+  run(openai, model_parameters, control_group, dryRun)
 }
 
 start()

@@ -57343,21 +57343,19 @@ const { taskQueue } = __nccwpck_require__(4824)
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run(openai, model_parameters, runType, dryRun) {
+async function run(openai, model_parameters, control_group, dryRun) {
   try {
     const dirPath = core.getInput('dirPath', { required: true })
-    let maxIterations = 0
-    maxIterations = core.getInput('maxIterations')
     // for case loop AST
     // 1st level file reader
     // as AST scan result for your repo
     // define a json structure....
-    taskQueue.setmaxIterations(maxIterations)
+    taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
-    if (runType === 'godoc') {
+    if (control_group.runType === 'godoc') {
       taskQueue.GenerateGoDocTasks()
     }
-    if (runType === 'jsunittest') {
+    if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
     // loop AST tasks
@@ -57372,10 +57370,10 @@ async function run(openai, model_parameters, runType, dryRun) {
     // General output to folder
     // Set Action output
     // specific processor action on source code
-    if (runType === 'godoc') {
+    if (control_group.runType === 'godoc') {
       ProcessGoDoc(GenAIresponses)
     }
-    if (runType === 'jsunittest') {
+    if (control_group.runType === 'jsunittest') {
       ProcessJsUnittest(GenAIresponses)
     }
   } catch (error) {
@@ -84481,13 +84479,20 @@ async function start() {
     prompt
   }
 
+  // controler group
   const dryRun = core.getInput('dryRun')
   core.info(`dry run? ${dryRun}`)
-
   const runType = core.getInput('runType', { required: true })
   core.info(`Will execute for ${runType}`)
+
+  const maxIterations = core.getInput('maxIterations')
+  const control_group = {
+    maxIterations,
+    runType
+  }
+
   // once off tasks
-  if (runType === 'CVE2Deployment') {
+  if (control_group.runType === 'CVE2Deployment') {
     core.info('running type CVE2Deployment')
     const deploymentfile = core.getInput('deploymentfile', { required: true })
     const css_content = await fromCVEToPodDeployment()
@@ -84507,7 +84512,7 @@ async function start() {
     return
   }
   // AST tasks
-  run(openai, model_parameters, runType, dryRun)
+  run(openai, model_parameters, control_group, dryRun)
 }
 
 start()
