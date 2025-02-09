@@ -56617,11 +56617,29 @@ module.exports.implForWrapper = function (wrapper) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(7484)
+const crypto = __nccwpck_require__(6982)
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   core.info(' We are going to talk with Gen AI with Model', model)
   core.info(' We are going to talk with Gen AI with prompt and file content')
   core.info(`${prompt}\n${fileContent}`)
+  const final_prompt = `${prompt}\n${fileContent}`
+  const hash = crypto.createHash('sha256')
+  hash.update(final_prompt)
+  const hashValue = hash.digest('hex')
+  // process hash and prompt metric here
+  // hash
+  // prompt metric
+  const prompt_precent = calculatePercentage(prompt, final_prompt)
+  const content_precent = calculatePercentage(fileContent, final_prompt)
+  const prompt_info = {
+    model,
+    final_prompt,
+    hashValue,
+    prompt_precent,
+    content_precent
+  }
+
   if (!dryRun) {
     core.info('--------Invoke generate AI:--------')
     const completion = await openai.chat.completions.create({
@@ -56637,11 +56655,29 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     core.info('--------This is output from generate AI:--------')
     core.info(completion.choices[0].message.content)
     core.info('--------End of generate AI output--------')
-    return completion.choices[0].message.content
+    // hash
+    // prompt metric
+    // response
+    prompt_info.response = completion.choices[0].message.content
   } else {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
-    return ''
+    // hash
+    // prompt metric
+    prompt_info.response = ''
   }
+  return prompt_info
+}
+
+function calculatePercentage(substring, totalString) {
+  const substringLength = substring.length
+  const totalStringLength = totalString.length
+  if (totalStringLength === 0) {
+    throw new Error('Total string length must be greater than zero')
+  }
+
+  // 计算百分比
+  const percentage = (substringLength / totalStringLength) * 100
+  return percentage
 }
 
 module.exports = {
@@ -57463,12 +57499,13 @@ const taskQueue = {
         dryRun,
         task.content
       )
+      const LLMresponse = GenAIContent.response
       // 执行任务
       result.push({
         currentPath,
         filename,
         functionname,
-        GenAIContent
+        LLMresponse
       })
       this.counter++ // 增加计数器
     }
@@ -84506,7 +84543,14 @@ async function start() {
       content
     )
     // output processor
-    core.setOutput('LLMresponse', LLMresponse)
+    //   const prompt_info = {
+    // model,
+    // final_prompt,
+    // hashValue,
+    // prompt_precent,
+    // content_precent
+    // }
+    core.setOutput('LLMresponse', LLMresponse.response)
     // General output to folder
     // Set Action output
     return

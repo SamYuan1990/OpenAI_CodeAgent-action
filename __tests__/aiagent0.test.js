@@ -65,7 +65,7 @@ describe('invokeAIviaAgent', () => {
     })
 
     expect(core.info).toHaveBeenCalledWith('Mocked AI response')
-    expect(result).toBe('Mocked AI response')
+    expect(result.response).toBe('Mocked AI response')
   })
 
   it('should handle errors and throw if OpenAI API call fails', async () => {
