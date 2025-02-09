@@ -18741,7 +18741,7 @@ var fs = __nccwpck_require__(9896);
 var Stream = (__nccwpck_require__(2203).Stream);
 var mime = __nccwpck_require__(4096);
 var asynckit = __nccwpck_require__(1324);
-var populate = __nccwpck_require__(1835);
+var populate = __nccwpck_require__(4216);
 
 // Public API
 module.exports = FormData;
@@ -19236,7 +19236,7 @@ FormData.prototype.toString = function () {
 
 /***/ }),
 
-/***/ 1835:
+/***/ 4216:
 /***/ ((module) => {
 
 // populates missing values
@@ -40209,7 +40209,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4031:
+/***/ 6412:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -40625,7 +40625,7 @@ const { pipeline } = __nccwpck_require__(7075)
 const { fetching } = __nccwpck_require__(4398)
 const { makeRequest } = __nccwpck_require__(9967)
 const { webidl } = __nccwpck_require__(5893)
-const { EventSourceStream } = __nccwpck_require__(4031)
+const { EventSourceStream } = __nccwpck_require__(6412)
 const { parseMIMEType } = __nccwpck_require__(1900)
 const { createFastMessageEvent } = __nccwpck_require__(5188)
 const { isNetworkError } = __nccwpck_require__(9051)
@@ -57338,75 +57338,44 @@ const {
   ProcessJsUnittest,
   ProcessGoDoc
 } = __nccwpck_require__(2170)
-const { fromCVEToPodDeployment } = __nccwpck_require__(5585)
 const { taskQueue } = __nccwpck_require__(4824)
-const OpenAI = __nccwpck_require__(2583)
-const { invokeAIviaAgent } = __nccwpck_require__(4082)
-const fs = __nccwpck_require__(9896)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run() {
+async function run(openai, model_parameters, control_group, dryRun) {
   try {
-    // here are the parameters for AI Agent
-    const baseURL = core.getInput('baseURL', { required: true })
-    const apiKey = core.getInput('apiKey', { required: true })
-    const model = core.getInput('model', { required: true })
     const dirPath = core.getInput('dirPath', { required: true })
-    const prompt = core.getInput('prompt', { required: true })
-    let maxIterations = 0
-    maxIterations = core.getInput('maxIterations')
-    const runType = core.getInput('runType', { required: true })
-
-    const dryRun = core.getInput('dryRun')
-    // creation of AI agent
-    core.info(` We are going to talk with Gen AI with URL ${baseURL}`)
-    core.info(` We are going to talk with Gen AI with Model${model}`)
-    core.info(
-      ` We are going to talk with Gen AI with prompt and file content ${prompt}`
-    )
-
-    const openai = new OpenAI({
-      baseURL,
-      apiKey
-    })
-    // end of AI Agent creation
-
-    taskQueue.setmaxIterations(maxIterations)
+    // for case loop AST
+    // 1st level file reader
+    // as AST scan result for your repo
+    // define a json structure....
+    taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
-    if (runType === 'godoc') {
+    if (control_group.runType === 'godoc') {
       taskQueue.GenerateGoDocTasks()
     }
-    if (runType === 'jsunittest') {
+    if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
-    core.info(`runtype ${runType}`)
-    if (runType === 'CVE2Deployment') {
-      core.info('running type CVE2Deployment')
-      const css_content = await fromCVEToPodDeployment()
-      const fileContent = fs.readFileSync(dirPath, 'utf8')
-      const content = `${css_content},${fileContent}`
-      const LLMresponse = await invokeAIviaAgent(
-        openai,
-        model,
-        prompt,
-        dryRun,
-        content
-      )
-      core.setOutput('LLMresponse', LLMresponse)
-      return
-    }
-    const GenAIresponses = await taskQueue.run(openai, model, prompt, dryRun)
+    // loop AST tasks
+    const GenAIresponses = await taskQueue.run(
+      openai,
+      model_parameters.model,
+      model_parameters.prompt,
+      dryRun
+    )
+    // output processor
     core.info('start processing GenAI result to file')
-    if (runType === 'godoc') {
+    // General output to folder
+    // Set Action output
+    // specific processor action on source code
+    if (control_group.runType === 'godoc') {
       ProcessGoDoc(GenAIresponses)
     }
-    if (runType === 'jsunittest') {
+    if (control_group.runType === 'jsunittest') {
       ProcessJsUnittest(GenAIresponses)
     }
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug('complete at:', new Date().toTimeString())
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
@@ -64369,7 +64338,7 @@ var _AbstractPage_client;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isObj = exports.toBase64 = exports.getHeader = exports.getRequiredHeader = exports.isHeadersProtocol = exports.isRunningInBrowser = exports.debug = exports.hasOwn = exports.isEmptyObj = exports.maybeCoerceBoolean = exports.maybeCoerceFloat = exports.maybeCoerceInteger = exports.coerceBoolean = exports.coerceFloat = exports.coerceInteger = exports.readEnv = exports.ensurePresent = exports.castToError = exports.sleep = exports.safeJSON = exports.isRequestOptions = exports.createResponseHeaders = exports.PagePromise = exports.AbstractPage = exports.APIClient = exports.APIPromise = exports.createForm = exports.multipartFormRequestOptions = exports.maybeMultipartFormRequestOptions = void 0;
 const version_1 = __nccwpck_require__(3287);
-const streaming_1 = __nccwpck_require__(4216);
+const streaming_1 = __nccwpck_require__(1835);
 const error_1 = __nccwpck_require__(3269);
 const index_1 = __nccwpck_require__(9941);
 const uploads_1 = __nccwpck_require__(7861);
@@ -66806,7 +66775,7 @@ var _AssistantStream_instances, _AssistantStream_events, _AssistantStream_runSte
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AssistantStream = void 0;
 const Core = __importStar(__nccwpck_require__(7376));
-const streaming_1 = __nccwpck_require__(4216);
+const streaming_1 = __nccwpck_require__(1835);
 const error_1 = __nccwpck_require__(3269);
 const EventStream_1 = __nccwpck_require__(4283);
 class AssistantStream extends EventStream_1.EventStream {
@@ -67413,7 +67382,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ChatCompletionStream = void 0;
 const error_1 = __nccwpck_require__(3269);
 const AbstractChatCompletionRunner_1 = __nccwpck_require__(2883);
-const streaming_1 = __nccwpck_require__(4216);
+const streaming_1 = __nccwpck_require__(1835);
 const parser_1 = __nccwpck_require__(1368);
 const parser_2 = __nccwpck_require__(6107);
 class ChatCompletionStream extends AbstractChatCompletionRunner_1.AbstractChatCompletionRunner {
@@ -68515,8 +68484,8 @@ exports.Audio = void 0;
 const resource_1 = __nccwpck_require__(5535);
 const SpeechAPI = __importStar(__nccwpck_require__(40));
 const speech_1 = __nccwpck_require__(40);
-const TranscriptionsAPI = __importStar(__nccwpck_require__(6412));
-const transcriptions_1 = __nccwpck_require__(6412);
+const TranscriptionsAPI = __importStar(__nccwpck_require__(4031));
+const transcriptions_1 = __nccwpck_require__(4031);
 const TranslationsAPI = __importStar(__nccwpck_require__(2882));
 const translations_1 = __nccwpck_require__(2882);
 class Audio extends resource_1.APIResource {
@@ -68562,7 +68531,7 @@ exports.Speech = Speech;
 
 /***/ }),
 
-/***/ 6412:
+/***/ 4031:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -70570,7 +70539,7 @@ Uploads.Parts = parts_1.Parts;
 
 /***/ }),
 
-/***/ 4216:
+/***/ 1835:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -84481,8 +84450,75 @@ var __webpack_exports__ = {};
  * The entrypoint for the action.
  */
 const { run } = __nccwpck_require__(7936)
+const core = __nccwpck_require__(7484)
+const OpenAI = __nccwpck_require__(2583)
+const { fromCVEToPodDeployment } = __nccwpck_require__(5585)
+const { invokeAIviaAgent } = __nccwpck_require__(4082)
+const fs = __nccwpck_require__(9896)
 
-run()
+async function start() {
+  const baseURL = core.getInput('baseURL', { required: true })
+  core.info(`We are going to talk with Gen AI with URL ${baseURL}`)
+
+  const apiKey = core.getInput('apiKey', { required: true })
+  // creation of AI agent
+  const openai = new OpenAI({
+    baseURL,
+    apiKey
+  })
+  // end of AI Agent creation
+  const model = core.getInput('model', { required: true })
+  core.info(`We are going to talk with Gen AI with Model${model}`)
+  const prompt = core.getInput('prompt', { required: true })
+  core.info(
+    `We are going to talk with Gen AI with prompt and file content ${prompt}`
+  )
+
+  const model_parameters = {
+    model,
+    prompt
+  }
+
+  // controler group
+  const dryRun = core.getInput('dryRun')
+  core.info(`dry run? ${dryRun}`)
+  const runType = core.getInput('runType', { required: true })
+  core.info(`Will execute for ${runType}`)
+
+  const maxIterations = core.getInput('maxIterations')
+  const control_group = {
+    maxIterations,
+    runType
+  }
+
+  // once off tasks
+  if (control_group.runType === 'CVE2Deployment') {
+    core.info('running type CVE2Deployment')
+    const deploymentfile = core.getInput('deploymentfile', { required: true })
+    const css_content = await fromCVEToPodDeployment()
+    const fileContent = fs.readFileSync(deploymentfile, 'utf8')
+    const content = `${css_content},${fileContent}`
+    const LLMresponse = await invokeAIviaAgent(
+      openai,
+      model_parameters.model,
+      model_parameters.prompt,
+      dryRun,
+      content
+    )
+    // output processor
+    core.setOutput('LLMresponse', LLMresponse)
+    // General output to folder
+    // Set Action output
+    return
+  }
+  // AST tasks
+  run(openai, model_parameters, control_group, dryRun)
+}
+
+start()
+
+// Log the current timestamp, wait, then log the new timestamp
+core.debug('complete at:', new Date().toTimeString())
 
 module.exports = __webpack_exports__;
 /******/ })()
