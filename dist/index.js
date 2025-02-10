@@ -19492,6 +19492,7 @@ const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const fs = __nccwpck_require__(9896)
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
+  const result = []
   core.info('running type CVE2Deployment')
   const deploymentfile = core.getInput('deploymentfile', { required: true })
   const cvss_content = await fromCVEToPodDeployment()
@@ -19504,7 +19505,8 @@ async function cvss_deployment(openai, model_parameters, dryRun) {
     dryRun,
     content
   )
-  return [LLMresponse]
+  result.push(LLMresponse)
+  return result
 }
 
 module.exports = {
@@ -19680,7 +19682,7 @@ function processOutput(LLMresponses) {
   // Set Action output
   core.setOutput('avg_prompt_precent', avg_prompt_precent)
   core.setOutput('avg_content_precent', avg_content_precent)
-  if (LLMresponses.length === 0) {
+  if (LLMresponses.length === 1) {
     core.info(LLMresponses[0])
     core.setOutput('LLMresponse', LLMresponses[0].response)
     core.setOutput('final_prompt', LLMresponses[0].final_prompt)

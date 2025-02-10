@@ -4,6 +4,7 @@ const { invokeAIviaAgent } = require('../aiagent')
 const fs = require('fs')
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
+  const result = []
   core.info('running type CVE2Deployment')
   const deploymentfile = core.getInput('deploymentfile', { required: true })
   const cvss_content = await fromCVEToPodDeployment()
@@ -16,7 +17,8 @@ async function cvss_deployment(openai, model_parameters, dryRun) {
     dryRun,
     content
   )
-  return [LLMresponse]
+  result.push(LLMresponse)
+  return result
 }
 
 module.exports = {
