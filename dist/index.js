@@ -84577,8 +84577,8 @@ var __webpack_exports__ = {};
 const { run } = __nccwpck_require__(7936)
 const core = __nccwpck_require__(7484)
 const OpenAI = __nccwpck_require__(2583)
-const cvss_deployment = __nccwpck_require__(4636)
-const processOutput = __nccwpck_require__(7362)
+const { cvss_deployment } = __nccwpck_require__(4636)
+const { processOutput } = __nccwpck_require__(7362)
 
 async function start() {
   const baseURL = core.getInput('baseURL', { required: true })

@@ -4,8 +4,8 @@
 const { run } = require('./main')
 const core = require('@actions/core')
 const OpenAI = require('openai')
-const cvss_deployment = require('./onceoffTasks/cvssDeployment')
-const processOutput = require('./outputhandler/generalOutputProcessor')
+const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
+const { processOutput } = require('./outputhandler/generalOutputProcessor')
 
 async function start() {
   const baseURL = core.getInput('baseURL', { required: true })
