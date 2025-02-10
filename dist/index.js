@@ -57432,7 +57432,7 @@ module.exports = {
 
 const core = __nccwpck_require__(7484)
 const { fromCVEToPodDeployment } = __nccwpck_require__(6817)
-const { invokeAIviaAgent } = __nccwpck_require__(4433)
+const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const fs = __nccwpck_require__(9896)
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
@@ -57857,14 +57857,6 @@ module.exports = {
   ProcessJsUnittest,
   ProcessGoDoc
 }
-
-
-/***/ }),
-
-/***/ 4433:
-/***/ ((module) => {
-
-module.exports = eval("require")("./aiagent");
 
 
 /***/ }),

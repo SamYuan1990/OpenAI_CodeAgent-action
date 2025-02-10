@@ -1,6 +1,6 @@
 const core = require('@actions/core')
 const { fromCVEToPodDeployment } = require('./cve')
-const { invokeAIviaAgent } = require('./aiagent')
+const { invokeAIviaAgent } = require('../aiagent')
 const fs = require('fs')
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
