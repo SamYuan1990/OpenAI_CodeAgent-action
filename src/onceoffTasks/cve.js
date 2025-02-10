@@ -1,5 +1,4 @@
 const axios = require('axios')
-const cheerio = require('cheerio')
 const fs = require('fs')
 const core = require('@actions/core')
 

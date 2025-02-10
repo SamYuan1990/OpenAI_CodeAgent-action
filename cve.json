@@ -1,0 +1,210 @@
+{
+	"meta": {
+		"generator": "bomber",
+		"url": "https://github.com/devops-kung-fu/bomber",
+		"version": "0.5.1",
+		"provider": "osv",
+		"severityFilter": "",
+		"date": "2025-02-03T10:53:59.819159+08:00"
+	},
+	"files": [
+		{
+			"name": "./sbom.json",
+			"sha256": "991b095ad6262fd5787a88da02ac4c2c2c01f646b6ac7006dc956a66997fe0cf"
+		}
+	],
+	"licenses": [
+		"BSD-3-Clause"
+	],
+	"summary": {
+		"Unspecified": 10,
+		"Low": 0,
+		"Moderate": 5,
+		"High": 3,
+		"Critical": 1
+	},
+	"packages": [
+		{
+			"coordinates": "pkg:golang/golang.org/x/crypto@v0.26.0",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2024-45337",
+					"title": "Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass in golang.org/x/crypto",
+					"description": "Applications and libraries which misuse the ServerConfig.PublicKeyCallback callback may be susceptible to an authorization bypass.\n\nThe documentation for ServerConfig.PublicKeyCallback says that \"A call to this function does not guarantee that the key offered is in fact used to authenticate.\" Specifically, the SSH protocol allows clients to inquire about whether a public key is acceptable before proving control of the corresponding private key. PublicKeyCallback may be called with multiple keys, and the order in which the keys were provided cannot be used to infer which key the client successfully authenticated with, if any. Some applications, which store the key(s) passed to PublicKeyCallback (or derived information) and make security relevant determinations based on it once the connection is established, may make incorrect assumptions.\n\nFor example, an attacker may send public keys A and B, and then authenticate with A. PublicKeyCallback would be called only twice, first with A and then with B. A vulnerable application may then make authorization decisions based on key B for which the attacker does not actually control the private key.\n\nSince this API is widely misused, as a partial mitigation golang.org/x/crypto@v0.31.0 enforces the property that, when successfully authenticating via public key, the last key passed to ServerConfig.PublicKeyCallback will be the key used to authenticate the connection. PublicKeyCallback will now be called multiple times with the same key, if necessary. Note that the client may still not control the last key passed to PublicKeyCallback if the connection is then authenticated with a different method, such as PasswordCallback, KeyboardInteractiveCallback, or NoClientAuth.\n\nUsers should be using the Extensions field of the Permissions return value from the various authentication callbacks to record data associated with the authentication attempt instead of referencing external state. Once the connection is established the state corresponding to the successful authentication attempt can be retrieved via the ServerConn.Permissions field. Note that some third-party libraries misuse the Permissions type by sharing it across authentication attempts; users of third-party libraries should refer to the relevant projects for guidance.",
+					"cve": "CVE-2024-45337,GO-2024-3321",
+					"severity": "CRITICAL",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-45337",
+					"title": "Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass in golang.org/x/crypto",
+					"description": "Applications and libraries which misuse the ServerConfig.PublicKeyCallback callback may be susceptible to an authorization bypass.\n\nThe documentation for ServerConfig.PublicKeyCallback says that \"A call to this function does not guarantee that the key offered is in fact used to authenticate.\" Specifically, the SSH protocol allows clients to inquire about whether a public key is acceptable before proving control of the corresponding private key. PublicKeyCallback may be called with multiple keys, and the order in which the keys were provided cannot be used to infer which key the client successfully authenticated with, if any. Some applications, which store the key(s) passed to PublicKeyCallback (or derived information) and make security relevant determinations based on it once the connection is established, may make incorrect assumptions.\n\nFor example, an attacker may send public keys A and B, and then authenticate with A. PublicKeyCallback would be called only twice, first with A and then with B. A vulnerable application may then make authorization decisions based on key B for which the attacker does not actually control the private key.\n\nSince this API is widely misused, as a partial mitigation golang.org/x/cry...@v0.31.0 enforces the property that, when successfully authenticating via public key, the last key passed to ServerConfig.PublicKeyCallback will be the key used to authenticate the connection. PublicKeyCallback will now be called multiple times with the same key, if necessary. Note that the client may still not control the last key passed to PublicKeyCallback if the connection is then authenticated with a different method, such as PasswordCallback, KeyboardInteractiveCallback, or NoClientAuth.\n\nUsers should be using the Extensions field of the Permissions return value from the various authentication callbacks to record data associated with the authentication attempt instead of referencing external state. Once the connection is established the state corresponding to the successful authentication attempt can be retrieved via the ServerConn.Permissions field. Note that some third-party libraries misuse the Permissions type by sharing it across authentication attempts; users of third-party libraries should refer to the relevant projects for guidance.",
+					"cve": "CVE-2024-45337,GHSA-v778-237x-gjrc",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		},
+		{
+			"coordinates": "pkg:golang/golang.org/x/net@v0.28.0",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2024-45338",
+					"title": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+					"description": "An attacker can craft an input to the Parse functions that would be processed non-linearly with respect to its length, resulting in extremely slow parsing. This could cause a denial of service.",
+					"cve": "CVE-2024-45338,GO-2024-3333",
+					"severity": "HIGH",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-45338",
+					"title": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+					"description": "An attacker can craft an input to the Parse functions that would be processed non-linearly with respect to its length, resulting in extremely slow parsing. This could cause a denial of service.",
+					"cve": "CVE-2024-45338,GHSA-w32m-9786-jp63",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		},
+		{
+			"coordinates": "pkg:golang/golang.org/x/net@v0.7.0",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2023-3978",
+					"title": "Improper rendering of text nodes in golang.org/x/net/html",
+					"description": "Text nodes not in the HTML namespace are incorrectly literally rendered, causing text which should be escaped to not be. This could lead to an XSS attack. ",
+					"cve": "CGA-jr9g-hfr2-5vmj,CGA-mfqp-7753-ccr9,CGA-qf3j-6m98-rg7r,CVE-2023-3978,GO-2023-1988",
+					"severity": "MODERATE",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-3978",
+					"title": "Improper rendering of text nodes in golang.org/x/net/html",
+					"description": "Text nodes not in the HTML namespace are incorrectly literally rendered, causing text which should be escaped to not be. This could lead to an XSS attack.",
+					"cve": "CGA-jr9g-hfr2-5vmj,CGA-mfqp-7753-ccr9,CGA-qf3j-6m98-rg7r,CVE-2023-3978,GHSA-2wrh-6pvc-2jm9",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-39325",
+					"title": "HTTP/2 rapid reset can cause excessive work in net/http",
+					"description": "A malicious HTTP/2 client which rapidly creates requests and immediately resets them can cause excessive server resource consumption. While the total number of requests is bounded by the http2.Server.MaxConcurrentStreams setting, resetting an in-progress request allows the attacker to create a new request while the existing one is still executing. \n\nWith the fix applied, HTTP/2 servers now bound the number of simultaneously executing handler goroutines to the stream concurrency limit (MaxConcurrentStreams). New requests arriving when at the limit (which can only happen after the client has reset an existing, in-flight request) will be queued until a handler exits. If the request queue grows too large, the server will terminate the connection. \n\nThis issue is also fixed in golang.org/x/net/http2 for users manually configuring HTTP/2.\n\nThe default stream concurrency limit is 250 streams (requests) per HTTP/2 connection. This value may be adjusted using the golang.org/x/net/http2 package; see the Server.MaxConcurrentStreams setting and the ConfigureServer function.",
+					"cve": "BIT-golang-2023-39325,CGA-c883-3x62-q4fw,CGA-m3p7-vc9x-9mvf,CGA-rvxr-6g26-7h84,CVE-2023-39325,GO-2023-2102",
+					"severity": "HIGH",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-44487",
+					"title": "HTTP/2 Stream Cancellation Attack",
+					"description": "## HTTP/2 Rapid reset attack\nThe HTTP/2 protocol allows clients to indicate to the server that a previous stream should be canceled by sending a RST_STREAM frame. The protocol does not require the client and server to coordinate the cancellation in any way, the client may do it unilaterally. The client may also assume that the cancellation will take effect immediately when the server receives the RST_STREAM frame, before any other data from that TCP connection is processed.\n\nAbuse of this feature is called a Rapid Reset attack because it relies on the ability for an endpoint to send a RST_STREAM frame immediately after sending a request frame, which makes the other endpoint start working and then rapidly resets the request. The request is canceled, but leaves the HTTP/2 connection open. \n\nThe HTTP/2 Rapid Reset attack built on this capability is simple: The client opens a large number of streams at once as in the standard HTTP/2 attack, but rather than waiting for a response to each request stream from the server or proxy, the client cancels each request immediately.\n\nThe ability to reset streams immediately allows each connection to have an indefinite number of requests in flight. By explicitly canceling the requests, the attacker never exceeds the limit on the number of concurrent open streams. The number of in-flight requests is no longer dependent on the round-trip time (RTT), but only on the available network bandwidth.\n\nIn a typical HTTP/2 server implementation, the server will still have to do significant amounts of work for canceled requests, such as allocating new stream data structures, parsing the query and doing header decompression, and mapping the URL to a resource. For reverse proxy implementations, the request may be proxied to the backend server before the RST_STREAM frame is processed. The client on the other hand paid almost no costs for sending the requests. This creates an exploitable cost asymmetry between the server and the client.\n\nMultiple software artifacts implementing HTTP/2 are affected. This advisory was originally ingested from the `swift-nio-http2` repo advisory and their original conent follows.\n\n## swift-nio-http2 specific advisory\nswift-nio-http2 is vulnerable to a denial-of-service vulnerability in which a malicious client can create and then reset a large number of HTTP/2 streams in a short period of time. This causes swift-nio-http2 to commit to a large amount of expensive work which it then throws away, including creating entirely new `Channel`s to serve the traffic. This can easily overwhelm an `EventLoop` and prevent it from making forward progress.\n\nswift-nio-http2 1.28 contains a remediation for this issue that applies reset counter using a sliding window. This constrains the number of stream resets that may occur in a given window of time. Clients violating this limit will have their connections torn down. This allows clients to continue to cancel streams for legitimate reasons, while constraining malicious actors.",
+					"cve": "BIT-apisix-2023-44487,BIT-aspnet-core-2023-44487,BIT-contour-2023-44487,BIT-dotnet-2023-44487,BIT-dotnet-sdk-2023-44487,BIT-envoy-2023-44487,BIT-golang-2023-44487,BIT-jenkins-2023-44487,BIT-kong-2023-44487,BIT-nginx-2023-44487,BIT-nginx-ingress-controller-2023-44487,BIT-node-2023-44487,BIT-node-min-2023-44487,BIT-solr-2023-44487,BIT-tomcat-2023-44487,BIT-varnish-2023-44487,CGA-4mmr-qwxr-f88g,CGA-5jp5-95p2-jw83,CGA-5v4r-558c-254r,CGA-9w4r-68hh-64j5,CGA-m49h-wjp5-j434,CGA-mp43-q6p3-96v2,CVE-2023-44487,GHSA-m425-mq94-257g,GO-2023-2153",
+					"severity": "MODERATE",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-39325",
+					"title": "HTTP/2 rapid reset can cause excessive work in net/http",
+					"description": "A malicious HTTP/2 client which rapidly creates requests and immediately resets them can cause excessive server resource consumption. While the total number of requests is bounded by the http2.Server.MaxConcurrentStreams setting, resetting an in-progress request allows the attacker to create a new request while the existing one is still executing.\n\nWith the fix applied, HTTP/2 servers now bound the number of simultaneously executing handler goroutines to the stream concurrency limit (MaxConcurrentStreams). New requests arriving when at the limit (which can only happen after the client has reset an existing, in-flight request) will be queued until a handler exits. If the request queue grows too large, the server will terminate the connection.\n\nThis issue is also fixed in golang.org/x/net/http2 for users manually configuring HTTP/2.\n\nThe default stream concurrency limit is 250 streams (requests) per HTTP/2 connection. This value may be adjusted using the golang.org/x/net/http2 package; see the Server.MaxConcurrentStreams setting and the ConfigureServer function.",
+					"cve": "BIT-golang-2023-39325,CGA-c883-3x62-q4fw,CGA-m3p7-vc9x-9mvf,CGA-rvxr-6g26-7h84,CVE-2023-39325,GHSA-4374-p667-p6c8",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-45288",
+					"title": "net/http, x/net/http2: close connections when receiving too many headers",
+					"description": "An attacker may cause an HTTP/2 endpoint to read arbitrary amounts of header data by sending an excessive number of CONTINUATION frames. Maintaining HPACK state requires parsing and processing all HEADERS and CONTINUATION frames on a connection. When a request's headers exceed MaxHeaderBytes, no memory is allocated to store the excess headers, but they are still parsed. This permits an attacker to cause an HTTP/2 endpoint to read arbitrary amounts of header data, all associated with a request which is going to be rejected. These headers can include Huffman-encoded data which is significantly more expensive for the receiver to decode than for an attacker to send. The fix sets a limit on the amount of excess header frames we will process before closing a connection.",
+					"cve": "BIT-golang-2023-45288,CGA-8q47-wf6v-wqg5,CGA-c6f9-jh7g-69mj,CGA-grww-v9jg-rhw2,CVE-2023-45288,GO-2024-2687",
+					"severity": "MODERATE",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2023-45288",
+					"title": "HTTP/2 CONTINUATION flood in net/http",
+					"description": "An attacker may cause an HTTP/2 endpoint to read arbitrary amounts of header data by sending an excessive number of CONTINUATION frames.\n\nMaintaining HPACK state requires parsing and processing all HEADERS and CONTINUATION frames on a connection. When a request's headers exceed MaxHeaderBytes, no memory is allocated to store the excess headers, but they are still parsed.\n\nThis permits an attacker to cause an HTTP/2 endpoint to read arbitrary amounts of header data, all associated with a request which is going to be rejected. These headers can include Huffman-encoded data which is significantly more expensive for the receiver to decode than for an attacker to send.\n\nThe fix sets a limit on the amount of excess header frames we will process before closing a connection.",
+					"cve": "BIT-golang-2023-45288,CGA-8q47-wf6v-wqg5,CGA-c6f9-jh7g-69mj,CGA-grww-v9jg-rhw2,CVE-2023-45288,GHSA-4v7x-pqxf-cx7m",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-45338",
+					"title": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+					"description": "An attacker can craft an input to the Parse functions that would be processed non-linearly with respect to its length, resulting in extremely slow parsing. This could cause a denial of service.",
+					"cve": "CVE-2024-45338,GO-2024-3333",
+					"severity": "HIGH",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-45338",
+					"title": "Non-linear parsing of case-insensitive content in golang.org/x/net/html",
+					"description": "An attacker can craft an input to the Parse functions that would be processed non-linearly with respect to its length, resulting in extremely slow parsing. This could cause a denial of service.",
+					"cve": "CVE-2024-45338,GHSA-w32m-9786-jp63",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		},
+		{
+			"coordinates": "pkg:golang/golang.org/x/sys@v0.0.0-20210112080510-489259a85091",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2022-29526",
+					"title": "golang.org/x/sys/unix has Incorrect privilege reporting in syscall",
+					"description": "Go before 1.17.10 and 1.18.x before 1.18.2 has Incorrect Privilege Reporting in syscall. When called with a non-zero flags parameter, the Faccessat function could incorrectly report that a file is accessible.\n\n### Specific Go Packages Affected\ngolang.org/x/sys/unix",
+					"cve": "BIT-golang-2022-29526,CVE-2022-29526,GO-2022-0493",
+					"severity": "MODERATE",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2022-29526",
+					"title": "Incorrect privilege reporting in syscall and golang.org/x/sys/unix",
+					"description": "When called with a non-zero flags parameter, the Faccessat function can incorrectly report that a file is accessible.",
+					"cve": "BIT-golang-2022-29526,CVE-2022-29526,GHSA-p782-xgp4-8hr8",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		},
+		{
+			"coordinates": "pkg:golang/google.golang.org/protobuf@v1.28.1",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2024-24786",
+					"title": "Golang protojson.Unmarshal function infinite loop when unmarshaling certain forms of invalid JSON",
+					"description": "The protojson.Unmarshal function can enter an infinite loop when unmarshaling certain forms of invalid JSON. This condition can occur when unmarshaling into a message which contains a google.protobuf.Any value, or when the UnmarshalOptions.DiscardUnknown option is set.",
+					"cve": "CGA-2vgr-6mqh-4r48,CGA-v9cm-f6x8-5vj7,CVE-2024-24786,GO-2024-2611",
+					"severity": "MODERATE",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-24786",
+					"title": "Infinite loop in JSON unmarshaling in google.golang.org/protobuf",
+					"description": "The protojson.Unmarshal function can enter an infinite loop when unmarshaling certain forms of invalid JSON. This condition can occur when unmarshaling into a message which contains a google.protobuf.Any value, or when the UnmarshalOptions.DiscardUnknown option is set.",
+					"cve": "CGA-2vgr-6mqh-4r48,CGA-v9cm-f6x8-5vj7,CVE-2024-24786,GHSA-8r3f-844c-mc37",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		},
+		{
+			"coordinates": "pkg:golang/stdlib@1.23.1",
+			"vulnerabilities": [
+				{
+					"id": "CVE-2024-45341",
+					"title": "Usage of IPv6 zone IDs can bypass URI name constraints in crypto/x509",
+					"description": "A certificate with a URI which has a IPv6 address with a zone ID may incorrectly satisfy a URI name constraint that applies to the certificate chain.\n\nCertificates containing URIs are not permitted in the web PKI, so this only affects users of private PKIs which make use of URIs.",
+					"cve": "BIT-golang-2024-45341,CVE-2024-45341",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				},
+				{
+					"id": "CVE-2024-45336",
+					"title": "Sensitive headers incorrectly sent after cross-domain redirect in net/http",
+					"description": "The HTTP client drops sensitive headers after following a cross-domain redirect. For example, a request to a.com/ containing an Authorization header which is redirected to b.com/ will not send that header to b.com.\n\nIn the event that the client received a subsequent same-domain redirect, however, the sensitive headers would be restored. For example, a chain of redirects from a.com/, to b.com/1, and finally to b.com/2 would incorrectly send the Authorization header to b.com/2.",
+					"cve": "BIT-golang-2024-45336,CVE-2024-45336",
+					"severity": "UNSPECIFIED",
+					"epss": {}
+				}
+			]
+		}
+	]
+}
