@@ -39,6 +39,7 @@ function processOutput(LLMresponses) {
   core.setOutput('avg_prompt_precent', avg_prompt_precent)
   core.setOutput('avg_content_precent', avg_content_precent)
   if (LLMresponses.length === 0) {
+    core.info(LLMresponses[0])
     core.setOutput('LLMresponse', LLMresponses[0].response)
     core.setOutput('final_prompt', LLMresponses[0].final_prompt)
   }
