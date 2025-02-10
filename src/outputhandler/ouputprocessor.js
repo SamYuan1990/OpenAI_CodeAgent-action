@@ -16,10 +16,10 @@ function ProcessGoDoc(GenAIResult) {
   const my_regex = golang_regex
   const my_replacer = golang_replacer
   for (let index = 0; index < GenAIResult.length; index++) {
-    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const dataFromAIAgent = GenAIResult[index].response
     const matches = dataFromAIAgent.match(my_regex)
-    const funcName = GenAIResult[index].functionname
-    const filePath = `${GenAIResult[index].currentPath}/${GenAIResult[index].filename}`
+    const funcName = GenAIResult[index].meta.functionname
+    const filePath = `${GenAIResult[index].meta.currentPath}/${GenAIResult[index].meta.filename}`
     core.info(`going to process function ${funcName}`)
     core.info(`going to process at file ${filePath}`)
     core.info(`going to process genAI content ${dataFromAIAgent}`)
@@ -44,11 +44,11 @@ function ProcessJsUnittest(GenAIResult) {
   const my_regex = js_regex
   const my_replacer = js_replacer
   for (let index = 0; index < GenAIResult.length; index++) {
-    const dataFromAIAgent = GenAIResult[index].GenAIContent
+    const dataFromAIAgent = GenAIResult[index].response
     const filePath =
-      GenAIResult[index].currentPath.replace('src', '__test__') +
-      GenAIResult[index].functionname +
-      GenAIResult[index].filename.replace('.js', '.test.js')
+      GenAIResult[index].meta.currentPath.replace('src', '__test__') +
+      GenAIResult[index].meta.functionname +
+      GenAIResult[index].meta.filename.replace('.js', '.test.js')
     const matches = dataFromAIAgent.match(my_regex)
     if (matches) {
       const contents = matches.map(match =>

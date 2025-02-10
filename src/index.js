@@ -1,14 +1,13 @@
 /**
  * The entrypoint for the action.
  */
-const { run } = require('./main')
+const { runAst } = require('./main')
 const core = require('@actions/core')
 const OpenAI = require('openai')
-const { fromCVEToPodDeployment } = require('./cve')
-const { invokeAIviaAgent } = require('./aiagent')
-const fs = require('fs')
+const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
+const { processOutput } = require('./outputhandler/generalOutputProcessor')
 
-async function start() {
+async function run() {
   const baseURL = core.getInput('baseURL', { required: true })
   core.info(`We are going to talk with Gen AI with URL ${baseURL}`)
 
@@ -42,39 +41,17 @@ async function start() {
     maxIterations,
     runType
   }
-
+  let LLMresponses = []
   // once off tasks
   if (control_group.runType === 'CVE2Deployment') {
-    core.info('running type CVE2Deployment')
-    const deploymentfile = core.getInput('deploymentfile', { required: true })
-    const css_content = await fromCVEToPodDeployment()
-    const fileContent = fs.readFileSync(deploymentfile, 'utf8')
-    const content = `${css_content},${fileContent}`
-    const LLMresponse = await invokeAIviaAgent(
-      openai,
-      model_parameters.model,
-      model_parameters.prompt,
-      dryRun,
-      content
-    )
-    // output processor
-    //   const prompt_info = {
-    // model,
-    // final_prompt,
-    // hashValue,
-    // prompt_precent,
-    // content_precent
-    // }
-    core.setOutput('LLMresponse', LLMresponse.response)
-    // General output to folder
-    // Set Action output
-    return
+    LLMresponses = cvss_deployment(openai, model_parameters, dryRun)
+  } else {
+    // AST tasks
+    runAst(openai, model_parameters, control_group, dryRun)
   }
-  // AST tasks
-  run(openai, model_parameters, control_group, dryRun)
+  processOutput(LLMresponses)
+  // Log the current timestamp, wait, then log the new timestamp
+  core.debug('complete at:', new Date().toTimeString())
 }
 
-start()
-
-// Log the current timestamp, wait, then log the new timestamp
-core.debug('complete at:', new Date().toTimeString())
+run()

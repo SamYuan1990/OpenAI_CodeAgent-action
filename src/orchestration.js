@@ -69,14 +69,13 @@ const taskQueue = {
         dryRun,
         task.content
       )
-      const LLMresponse = GenAIContent.response
-      // 执行任务
-      result.push({
+      const meta = {
         currentPath,
         filename,
-        functionname,
-        LLMresponse
-      })
+        functionname
+      }
+      // 执行任务
+      result.push(GenAIContent, meta)
       this.counter++ // 增加计数器
     }
     if (this.counter >= this.maxIterations) {

@@ -8,7 +8,7 @@ const { taskQueue } = require('./orchestration')
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run(openai, model_parameters, control_group, dryRun) {
+async function runAst(openai, model_parameters, control_group, dryRun) {
   try {
     const dirPath = core.getInput('dirPath', { required: true })
     // for case loop AST
@@ -48,5 +48,5 @@ async function run(openai, model_parameters, control_group, dryRun) {
 }
 
 module.exports = {
-  run
+  runAst
 }
