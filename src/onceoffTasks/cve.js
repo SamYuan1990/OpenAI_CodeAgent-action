@@ -115,8 +115,10 @@ async function fromCVEToPodDeployment() {
 
   // 提取所有的 vulnerabilities.id 字段
   const vulnerabilityIds = new Set() // 使用 Set 去重
+  // eslint-disable-next-line github/array-foreach
   data.packages.forEach(content => {
     core.info(`scan package ${content}`)
+    // eslint-disable-next-line github/array-foreach
     content.vulnerabilities.forEach(vulnerability => {
       vulnerabilityIds.add(vulnerability.id)
     })
