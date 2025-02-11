@@ -22,10 +22,12 @@ const taskQueue = {
     this.InitJsRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
-      this.tasks.push(this.Functions[index])
-      counter++
-      if (counter > this.maxIterations) {
-        break
+      if (!this.Functions[index].isCovered) {
+        this.tasks.push(this.Functions[index])
+        counter++
+        if (counter > this.maxIterations) {
+          break
+        }
       }
     }
   },
@@ -59,7 +61,6 @@ const taskQueue = {
     const result = []
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
-      const currentPath = task.currentPath
       const filename = task.fileName
       const functionname = task.functionname
       const GenAIContent = await invokeAIviaAgent(
@@ -70,12 +71,12 @@ const taskQueue = {
         task.content
       )
       const meta = {
-        currentPath,
         filename,
         functionname
       }
+      GenAIContent.meta = meta
       // 执行任务
-      result.push(GenAIContent, meta)
+      result.push(GenAIContent)
       this.counter++ // 增加计数器
     }
     if (this.counter >= this.maxIterations) {
@@ -83,6 +84,7 @@ const taskQueue = {
     } else {
       core.info('All tasks done')
     }
+    core.info(`complete ${result.length} jobs`)
     return result
   }
 }

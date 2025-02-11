@@ -47,11 +47,16 @@ async function run() {
     LLMresponses = cvss_deployment(openai, model_parameters, dryRun)
   } else {
     // AST tasks
-    runAst(openai, model_parameters, control_group, dryRun)
+    LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
   }
+  core.info(`debug ${LLMresponses.length}`)
   processOutput(LLMresponses)
   // Log the current timestamp, wait, then log the new timestamp
   core.debug('complete at:', new Date().toTimeString())
 }
 
-run()
+//run()
+
+module.exports = {
+  run
+}

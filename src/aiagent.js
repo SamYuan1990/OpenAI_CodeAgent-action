@@ -15,13 +15,15 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   const prompt_precent = calculatePercentage(prompt, final_prompt)
   const content_precent = calculatePercentage(fileContent, final_prompt)
   const response = ''
+  const meta = {}
   const prompt_info = {
     model,
     final_prompt,
     hashValue,
     response,
     prompt_precent,
-    content_precent
+    content_precent,
+    meta
   }
 
   if (!dryRun) {

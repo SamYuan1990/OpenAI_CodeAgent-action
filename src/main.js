@@ -41,6 +41,8 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     if (control_group.runType === 'jsunittest') {
       ProcessJsUnittest(GenAIresponses)
     }
+    core.info(`debug ${GenAIresponses.length}`)
+    return GenAIresponses
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)

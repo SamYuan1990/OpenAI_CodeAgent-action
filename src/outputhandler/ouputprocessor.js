@@ -46,7 +46,7 @@ function ProcessJsUnittest(GenAIResult) {
   for (let index = 0; index < GenAIResult.length; index++) {
     const dataFromAIAgent = GenAIResult[index].response
     const filePath =
-      GenAIResult[index].meta.currentPath.replace('src', '__test__') +
+      GenAIResult[index].meta.filename.replace('src', '../__tests__') +
       GenAIResult[index].meta.functionname +
       GenAIResult[index].meta.filename.replace('.js', '.test.js')
     const matches = dataFromAIAgent.match(my_regex)
