@@ -39,7 +39,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
       ProcessGoDoc(GenAIresponses)
     }
     if (control_group.runType === 'jsunittest') {
-      ProcessJsUnittest(GenAIresponses)
+      ProcessJsUnittest(dirPath, GenAIresponses)
     }
     core.info(`debug ${GenAIresponses.length}`)
     return GenAIresponses

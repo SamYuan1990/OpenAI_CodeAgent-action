@@ -40,15 +40,12 @@ function ProcessGoDoc(GenAIResult) {
   }
 }
 
-function ProcessJsUnittest(GenAIResult) {
+function ProcessJsUnittest(path, GenAIResult) {
   const my_regex = js_regex
   const my_replacer = js_replacer
   for (let index = 0; index < GenAIResult.length; index++) {
     const dataFromAIAgent = GenAIResult[index].response
-    const filePath =
-      GenAIResult[index].meta.filename.replace('src', '../__tests__') +
-      GenAIResult[index].meta.functionname +
-      GenAIResult[index].meta.filename.replace('.js', '.test.js')
+    const filePath = `./__tests__/${GenAIResult[index].hashValue}.test.js`
     const matches = dataFromAIAgent.match(my_regex)
     if (matches) {
       const contents = matches.map(match =>

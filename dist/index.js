@@ -14342,24 +14342,30 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   }
 
   if (!dryRun) {
-    core.info('--------Invoke generate AI:--------')
-    const completion = await openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        {
-          role: 'user',
-          content: `${prompt}\n${fileContent}`
-        }
-      ],
-      model
-    })
-    core.info('--------This is output from generate AI:--------')
-    core.info(completion.choices[0].message.content)
-    core.info('--------End of generate AI output--------')
-    // hash
-    // prompt metric
-    // response
-    prompt_info.response = completion.choices[0].message.content
+    try {
+      core.info('--------Invoke generate AI:--------')
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant.' },
+          {
+            role: 'user',
+            content: `${prompt}\n${fileContent}`
+          }
+        ],
+        model
+      })
+      core.info('--------This is output from generate AI:--------')
+      core.info(completion.choices[0].message.content)
+      core.info('--------End of generate AI output--------')
+      // hash
+      // prompt metric
+      // response
+      // todo: error handle
+      prompt_info.response = completion.choices[0].message.content
+    } catch (error) {
+      core.info(`error happen from LLM response ${error}`)
+      prompt_info.response = ''
+    }
   } else {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
@@ -14407,11 +14413,17 @@ function scanGoCodeDirectory(dirPath) {
 
   // 递归遍历目录
   function traverseDirectory(currentPath) {
-    const items = fs.readdirSync(currentPath, { withFileTypes: true })
-
+    let items
+    try {
+      items = fs.readdirSync(currentPath, { withFileTypes: true })
+    } catch (error) {
+      return
+    }
     for (const item of items) {
       const itemPath = path.join(currentPath, item.name)
-
+      if (itemPath === undefined) {
+        return
+      }
       if (item.isDirectory()) {
         // 如果是目录，递归遍历
         traverseDirectory(itemPath)
@@ -14549,29 +14561,23 @@ module.exports = {
 /* eslint-disable prettier/prettier */
 const core = __nccwpck_require__(7484)
 const { execSync } = __nccwpck_require__(5317)
-const {
-  readCoverageReport,
-  generateCoverageMap,
-  scanDirectory
-} = __nccwpck_require__(7476)
+const { parseLcovFile, scanDirectory } = __nccwpck_require__(7476)
+const path = __nccwpck_require__(6928)
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
  * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
  */
 function scanJSCodeDirectory(dirPath) {
-  console.log('complete run unit test')
   runUnitTest()
-  console.log('complete run unit test')
-  const coverageReport = readCoverageReport(dirPath)
-  const coverageMap = generateCoverageMap(coverageReport)
-  const results = scanDirectory(coverageMap, dirPath)
+  const lcovFilePath = path.join('./', 'coverage', 'lcov.info')
+  const coverageData = parseLcovFile(lcovFilePath)
+  const results = scanDirectory(coverageData, dirPath)
   return results
 }
 function runUnitTest() {
   // 定义输出文件路径
   const outputFilePath = './testresult.out'
-
   try {
     execSync('npm install', { encoding: 'utf-8' })
     // 同步执行 npm run test 命令
@@ -14605,7 +14611,12 @@ const readline = __nccwpck_require__(3785)
  */
 function extractGolangFunctions(filePath, isTestFile = false) {
   const functions = []
-  const fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
+  let fileContent
+  try {
+    fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
+  } catch (error) {
+    return functions
+  }
 
   let inFunction = false
   let functionName = ''
@@ -14796,52 +14807,61 @@ module.exports = {
 /***/ 7476:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-/* eslint-disable no-shadow */
 /* eslint-disable github/array-foreach */
+/* eslint-disable no-shadow */
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
 const parser = __nccwpck_require__(5429)
 const traverse = (__nccwpck_require__(148)["default"])
 
-// 读取 Jest 生成的覆盖率报告
-function readCoverageReport(dirpath) {
-  const coverageFilePath = path.join(
-    dirpath,
-    '../coverage',
-    'coverage-summary.json'
-  )
-  if (!fs.existsSync(coverageFilePath)) {
-    throw new Error(
-      `覆盖率报告未找到，请先运行 \`npx jest --coverage\` 生成报告。${coverageFilePath}`
-    )
-  }
-  const rawData = fs.readFileSync(coverageFilePath, 'utf-8')
-  return JSON.parse(rawData)
-}
+/**
+ * 解析 lcov.info 文件并生成函数覆盖数据结构
+ * @param {string} lcovFilePath - lcov.info 文件的路径
+ * @returns {Object} - 函数覆盖数据结构
+ */
+function parseLcovFile(lcovFilePath) {
+  const lcovContent = fs.readFileSync(lcovFilePath, 'utf-8')
+  const lines = lcovContent.split('\n')
 
-// 将覆盖率报告转换为 coverageMap
-function generateCoverageMap(coverageReport) {
-  const coverageMap = {}
+  const coverageData = {}
+  let currentFile = null
 
-  for (const [filePath, coverageData] of Object.entries(coverageReport)) {
-    const functions = coverageData.fnMap || {}
-    const functionCoverage = coverageData.f || {}
-
-    coverageMap[filePath] = {
-      functions: Object.keys(functions).map(key => {
-        const fn = functions[key]
-        const hits = functionCoverage[key] || 0
-        return {
-          name: fn.name,
-          line: fn.loc.start.line,
-          hits,
-          isCovered: hits > 0
+  lines.forEach(line => {
+    if (line.startsWith('SF:')) {
+      // 解析文件路径
+      const filePath = line.replace('SF:', '').trim()
+      currentFile = filePath
+      coverageData[currentFile] = { functions: {} }
+    } else if (line.startsWith('FN:')) {
+      // 解析函数定义
+      const line_match_rs = line.match(/FN:(\d+),(\w+)/)
+      if (line_match_rs === null) {
+        return
+      }
+      const [, lineNumber, functionName] = line_match_rs
+      if (currentFile) {
+        coverageData[currentFile].functions[functionName] = {
+          line: parseInt(lineNumber, 10),
+          covered: false // 默认未覆盖
         }
-      })
+      }
+    } else if (line.startsWith('FNDA:')) {
+      // 解析函数调用次数
+      const linematchFNDA_rs = line.match(/FNDA:(\d+),(\w+)/)
+      if (linematchFNDA_rs === null) {
+        return
+      }
+      const [, hits, functionName] = linematchFNDA_rs
+      if (currentFile && coverageData[currentFile].functions[functionName]) {
+        coverageData[currentFile].functions[functionName].covered = hits > 0
+      }
+    } else if (line === 'end_of_record') {
+      // 重置当前文件
+      currentFile = null
     }
-  }
+  })
 
-  return coverageMap
+  return coverageData
 }
 
 // 读取 JavaScript 文件并解析为 AST
@@ -14856,15 +14876,62 @@ function parseFile(filePath) {
   }
 }
 
+// 检查函数是否被导出
+function isFunctionExported(ast, functionName) {
+  let isExported = false
+
+  traverse(ast, {
+    AssignmentExpression(path) {
+      const { left, right } = path.node
+
+      // 检查是否是 module.exports 或 exports 的赋值
+      if (
+        left.type === 'MemberExpression' &&
+        left.object.name === 'module' &&
+        left.property.name === 'exports'
+      ) {
+        // 检查是否导出了当前函数
+        if (right.type === 'Identifier' && right.name === functionName) {
+          isExported = true
+        } else if (right.type === 'ObjectExpression') {
+          // 检查对象中的属性是否包含当前函数
+          right.properties.forEach(property => {
+            if (
+              property.value.type === 'Identifier' &&
+              property.value.name === functionName
+            ) {
+              isExported = true
+            }
+          })
+        }
+      } else if (
+        left.type === 'Identifier' &&
+        left.name === 'exports' &&
+        right.type === 'Identifier' &&
+        right.name === functionName
+      ) {
+        isExported = true
+      }
+    }
+  })
+
+  return isExported
+}
+
 // 提取函数信息
-function extractFunctionInfo(coverageMap, filePath, ast, fileContent) {
+function extractFunctionInfo(coverageData, filePath, ast, fileContent) {
   const functions = []
 
   traverse(ast, {
     FunctionDeclaration(path) {
       const functionNode = path.node
       const functionName = functionNode.id.name
-      // eslint-disable-next-line no-undef
+
+      // 检查函数是否被导出
+      if (!isFunctionExported(ast, functionName)) {
+        return
+      }
+
       const functionContent = fileContent.slice(
         functionNode.start,
         functionNode.end
@@ -14876,11 +14943,11 @@ function extractFunctionInfo(coverageMap, filePath, ast, fileContent) {
         : ''
 
       // 检查函数是否被测试覆盖
-      const isCovered = isFunctionCovered(coverageMap, filePath, functionName)
+      const isCovered = isFunctionCovered(coverageData, filePath, functionName)
 
       functions.push({
         fileName: filePath,
-        functionname: functionName,
+        functionName,
         content: functionContent,
         hasComment,
         commentContent,
@@ -14893,35 +14960,31 @@ function extractFunctionInfo(coverageMap, filePath, ast, fileContent) {
 }
 
 // 检查函数是否被测试覆盖
-function isFunctionCovered(coverageMap, filePath, functionName) {
-  const coverage = coverageMap[filePath]
-  if (!coverage) return false
-
-  const functionCoverage = coverage.functions.find(
-    fn => fn.name === functionName
-  )
-  return functionCoverage && functionCoverage.hits > 0
+function isFunctionCovered(coverageData, filePath, functionName) {
+  const fileObj = coverageData[filePath]
+  if (fileObj && fileObj.functions && fileObj.functions[functionName]) {
+    return fileObj.functions[functionName].covered
+  }
+  return false
 }
 
 // 扫描整个目录
-function scanDirectory(coverageMap, directory) {
+function scanDirectory(coverageData, directory) {
   const results = []
 
-  function scan(coverageMap, dir) {
-    console.log(`start scan dir ${dir}`)
+  function scan(coverageData, dir) {
     const files = fs.readdirSync(dir)
 
     files.forEach(file => {
-      console.log(file)
       const filePath = path.join(dir, file)
       const stat = fs.statSync(filePath)
 
       if (stat.isDirectory()) {
-        scan(coverageMap, filePath)
+        scan(coverageData, filePath)
       } else if (path.extname(file) === '.js') {
         const { ast, fileContent } = parseFile(filePath) // 解析文件并获取 AST 和文件内容
         const functions = extractFunctionInfo(
-          coverageMap,
+          coverageData,
           filePath,
           ast,
           fileContent
@@ -14931,28 +14994,26 @@ function scanDirectory(coverageMap, directory) {
     })
   }
 
-  scan(coverageMap, directory)
+  scan(coverageData, directory)
   return results
 }
 
 module.exports = {
-  readCoverageReport,
-  generateCoverageMap,
+  parseLcovFile,
   scanDirectory
 }
 
 // 主函数
 /*function main() {
   const directory = './src' // 你要扫描的目录
+  const lcovFilePath = path.join('./', 'coverage', 'lcov.info')
+  const coverageData = parseLcovFile(lcovFilePath)
 
-  const coverageReport = readCoverageReport(directory)
-  const coverageMap = generateCoverageMap(coverageReport)
-
-  const results = scanDirectory(coverageMap, directory)
+  const results = scanDirectory(coverageData, directory)
 
   // 输出 JSON 结果
-  fs.writeFileSync('ast_scan_results.json', JSON.stringify(results, null, 2))
-  console.log('AST 扫描结果已保存到 ast_scan_results.json')
+  fs.writeFileSync('ast_scan_results1.json', JSON.stringify(results, null, 2))
+  console.log('AST 扫描结果已保存到 ast_scan_results1.json')
 }
 
 main()
@@ -15005,7 +15066,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
       ProcessGoDoc(GenAIresponses)
     }
     if (control_group.runType === 'jsunittest') {
-      ProcessJsUnittest(GenAIresponses)
+      ProcessJsUnittest(dirPath, GenAIresponses)
     }
     core.info(`debug ${GenAIresponses.length}`)
     return GenAIresponses
@@ -15608,15 +15669,12 @@ function ProcessGoDoc(GenAIResult) {
   }
 }
 
-function ProcessJsUnittest(GenAIResult) {
+function ProcessJsUnittest(path, GenAIResult) {
   const my_regex = js_regex
   const my_replacer = js_replacer
   for (let index = 0; index < GenAIResult.length; index++) {
     const dataFromAIAgent = GenAIResult[index].response
-    const filePath =
-      GenAIResult[index].meta.filename.replace('src', '../__tests__') +
-      GenAIResult[index].meta.functionname +
-      GenAIResult[index].meta.filename.replace('.js', '.test.js')
+    const filePath = `./__tests__/${GenAIResult[index].hashValue}.test.js`
     const matches = dataFromAIAgent.match(my_regex)
     if (matches) {
       const contents = matches.map(match =>
