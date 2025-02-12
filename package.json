@@ -69,7 +69,7 @@
     "@babel/traverse": "^7.26.8",
     "acorn": "^8.14.0",
     "axios": "^1.7.9",
-    "openai": "^4.78.1"
+    "openai": "^4.83.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
