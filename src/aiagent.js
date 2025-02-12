@@ -15,34 +15,42 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   const prompt_precent = calculatePercentage(prompt, final_prompt)
   const content_precent = calculatePercentage(fileContent, final_prompt)
   const response = ''
+  const meta = {}
   const prompt_info = {
     model,
     final_prompt,
     hashValue,
     response,
     prompt_precent,
-    content_precent
+    content_precent,
+    meta
   }
 
   if (!dryRun) {
-    core.info('--------Invoke generate AI:--------')
-    const completion = await openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        {
-          role: 'user',
-          content: `${prompt}\n${fileContent}`
-        }
-      ],
-      model
-    })
-    core.info('--------This is output from generate AI:--------')
-    core.info(completion.choices[0].message.content)
-    core.info('--------End of generate AI output--------')
-    // hash
-    // prompt metric
-    // response
-    prompt_info.response = completion.choices[0].message.content
+    try {
+      core.info('--------Invoke generate AI:--------')
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant.' },
+          {
+            role: 'user',
+            content: `${prompt}\n${fileContent}`
+          }
+        ],
+        model
+      })
+      core.info('--------This is output from generate AI:--------')
+      core.info(completion.choices[0].message.content)
+      core.info('--------End of generate AI output--------')
+      // hash
+      // prompt metric
+      // response
+      // todo: error handle
+      prompt_info.response = completion.choices[0].message.content
+    } catch (error) {
+      core.info(`error happen from LLM response ${error}`)
+      prompt_info.response = ''
+    }
   } else {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash

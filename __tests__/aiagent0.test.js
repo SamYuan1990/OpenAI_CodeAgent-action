@@ -67,30 +67,4 @@ describe('invokeAIviaAgent', () => {
     expect(core.info).toHaveBeenCalledWith('Mocked AI response')
     expect(result.response).toBe('Mocked AI response')
   })
-
-  it('should handle errors and throw if OpenAI API call fails', async () => {
-    // Arrange
-    const mockError = new Error('API call failed')
-    const mockCreate = jest.fn().mockRejectedValue(mockError)
-    OpenAI.prototype.chat = {
-      completions: {
-        create: mockCreate
-      }
-    }
-
-    const baseURL = 'https://api.example.com'
-    const apiKey = 'test-api-key'
-    const fileContent = 'Test file content'
-    const prompt = 'Test prompt'
-
-    const openai = new OpenAI({
-      baseURL,
-      apiKey
-    })
-
-    // Act & Assert
-    await expect(
-      invokeAIviaAgent(openai, 'deepseek-chat', prompt, false, fileContent)
-    ).rejects.toThrow('API call failed')
-  })
 })

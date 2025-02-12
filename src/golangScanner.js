@@ -14,11 +14,17 @@ function scanGoCodeDirectory(dirPath) {
 
   // 递归遍历目录
   function traverseDirectory(currentPath) {
-    const items = fs.readdirSync(currentPath, { withFileTypes: true })
-
+    let items
+    try {
+      items = fs.readdirSync(currentPath, { withFileTypes: true })
+    } catch (error) {
+      return
+    }
     for (const item of items) {
       const itemPath = path.join(currentPath, item.name)
-
+      if (itemPath === undefined) {
+        return
+      }
       if (item.isDirectory()) {
         // 如果是目录，递归遍历
         traverseDirectory(itemPath)

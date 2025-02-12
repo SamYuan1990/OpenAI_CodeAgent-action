@@ -9,7 +9,12 @@ const readline = require('readline')
  */
 function extractGolangFunctions(filePath, isTestFile = false) {
   const functions = []
-  const fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
+  let fileContent
+  try {
+    fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
+  } catch (error) {
+    return functions
+  }
 
   let inFunction = false
   let functionName = ''
