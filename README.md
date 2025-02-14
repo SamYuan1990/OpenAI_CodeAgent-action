@@ -116,3 +116,12 @@ arXiv:2305.10601 [cs.CL] https://arxiv.org/abs/2305.10601v2
 
 [4] Chain-of-Thought Prompting Elicits Reasoning in Large Language Models,
 arXiv:2201.11903 [cs.CL] https://arxiv.org/abs/2201.11903v6
+
+
+## Todo:
+- file level skipper
+- functional level skipper
+- Go AST based scanner
+- General comments insert logic
+- General function replace logic
+- Enhance unit test file logic
