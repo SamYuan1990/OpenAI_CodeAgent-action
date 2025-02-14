@@ -3,3 +3,6 @@ dist/
 node_modules/
 coverage/
 src/cve.js
+goAST/
+pkg/
+example/
