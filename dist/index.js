@@ -14397,91 +14397,59 @@ module.exports = {
 /***/ 8765:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const fs = __nccwpck_require__(9896)
-const path = __nccwpck_require__(6928)
-const {
-  extractGolangFunctions
-} = __nccwpck_require__(9122)
-
+/* eslint-disable prefer-promise-reject-errors */
+const core = __nccwpck_require__(7484)
+const { scanGolangCode } = __nccwpck_require__(294)
+const { exec } = __nccwpck_require__(5317)
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
  * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
  */
-function scanGoCodeDirectory(dirPath) {
-  const resultQueue = [] // 结果队列
-
-  // 递归遍历目录
-  function traverseDirectory(currentPath) {
-    let items
-    try {
-      items = fs.readdirSync(currentPath, { withFileTypes: true })
-    } catch (error) {
-      return
-    }
-    for (const item of items) {
-      const itemPath = path.join(currentPath, item.name)
-      if (itemPath === undefined) {
-        return
-      }
-      if (item.isDirectory()) {
-        // 如果是目录，递归遍历
-        traverseDirectory(itemPath)
-      } else if (
-        item.isFile() &&
-        item.name.endsWith('.go') &&
-        !item.name.endsWith('_test.go')
-      ) {
-        // 如果是 Go 文件，解析文件内容
-        const funcsfound = extractGolangFunctions(itemPath)
-        parseGoFile(resultQueue, itemPath, currentPath, funcsfound)
-      }
-    }
+async function scanGoCodeDirectory(dirPath) {
+  try {
+    console.log('build go AST')
+    await buildGoAST()
+    console.log('scan project', dirPath)
+    const result = scanGolangCode(dirPath)
+    return result
+  } catch (error) {
+    core.error('发生错误:', error)
   }
-  // 开始遍历目录
-  traverseDirectory(dirPath)
-
-  return resultQueue
 }
 
-// 解析 Go 文件
-function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
-  const fileContent = fs.readFileSync(filePath, 'utf8')
-  const fileName = path.basename(filePath)
+/**
+ * 构建 Go 项目并将结果输出到指定目录
+ * @param {string} projectDir - Go 项目的相对目录
+ * @param {string} outputDir - 构建结果的输出目录
+ * @returns {Promise<string>} - 返回构建结果的标准输出
+ */
+function buildGoAST() {
+  return new Promise((resolve, reject) => {
+    // 解析相对路径为绝对路径
+    // 构建 Go 项目的命令
+    const command = `cd goAST && go build -o ../src/goAST && cd ..`
 
-  // 正则表达式匹配函数定义和 Go Doc
-  const functionRegex = /(\/\/[^\n]*\n)?\s*func\s+([A-Za-z_]\w*)\s*\(/g
-
-  let match
-
-  while ((match = functionRegex.exec(fileContent)) !== null) {
-    const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
-    const functionname = match[2] // 提取函数名
-    for (let index = 0; index < funcsfound.length; index++) {
-      if (funcsfound[index].name === functionname) {
-        const content = funcsfound[index].content
-        resultQueue.push({
-          currentPath,
-          fileName,
-          functionname,
-          content,
-          hasGoDoc: !!goDoc // 是否存在 Go Doc
-        })
+    // 执行命令
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`构建 Go 项目失败: ${error.message}`)
+        return
       }
-    }
-  }
+      if (stderr) {
+        reject(`构建 Go 项目输出错误: ${stderr}`)
+        return
+      }
+
+      // 返回标准输出
+      resolve(stdout)
+    })
+  })
 }
 
 module.exports = {
-  scanGoCodeDirectory,
-  parseGoFile
+  scanGoCodeDirectory
 }
-
-// 示例用法
-//const goCodeDir = path.join(__dirname, '../example') // 替换为你的 Go 代码目录路径
-//const result = scanGoCodeDirectory(goCodeDir)
-
-//console.log(result)
 
 
 /***/ }),
@@ -14597,209 +14565,69 @@ module.exports = {
 
 /***/ }),
 
-/***/ 9122:
+/***/ 294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+/* eslint-disable jest/no-commented-out-tests */
+/* eslint-disable prefer-promise-reject-errors */
+const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
-const readline = __nccwpck_require__(3785)
+const path = __nccwpck_require__(6928)
 
 /**
- * 同步提取 Go 文件中的函数或测试用例
- * @param {string} filePath - 文件路径
- * @param {boolean} isTestFile - 是否是测试文件（默认 false）
- * @returns {Array} - 返回提取的函数或测试用例数组
+ * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
+ * @param {string} codeDir - Golang 代码目录路径
+ * @returns {Promise<Object>} - 返回解析后的 JSON 结果
  */
-function extractGolangFunctions(filePath, isTestFile = false) {
-  const functions = []
-  let fileContent
-  try {
-    fileContent = fs.readFileSync(filePath, 'utf8').split('\n') // 同步读取文件并按行分割
-  } catch (error) {
-    return functions
-  }
-
-  let inFunction = false
-  let functionName = ''
-  let functionBody = ''
-  let inDescribe = false
-  let describeName = ''
-  let inIt = false
-  let itName = ''
-
-  for (const line of fileContent) {
-    const trimmedLine = line.trim()
-
-    if (isTestFile) {
-      // 提取 Ginkgo 的 Describe 块
-      if (inDescribe) {
-        console.log(trimmedLine)
-      }
-      if (trimmedLine.startsWith('Describe(')) {
-        inDescribe = true
-        console.log('find Describe')
-        describeName = trimmedLine.split('"')[1] // 获取 Describe 的描述
-        console.log(describeName)
-      } else if (inDescribe && trimmedLine.startsWith('It(')) {
-        inIt = true
-        console.log('find it')
-        itName = trimmedLine.split('"')[1] // 获取 It 的描述
-        console.log(itName)
-      } else if (inIt && trimmedLine === '})') {
-        inIt = false
-        functions.push({
-          type: 'testcase',
-          describe: describeName,
-          it: itName,
-          content: functionBody.trim()
-        })
-        functionBody = ''
-      } else if (inDescribe && trimmedLine === '})') {
-        inDescribe = false
-        describeName = ''
-      }
-
-      if (inIt) {
-        functionBody += `${trimmedLine}\n`
-      }
-    } else {
-      // 提取普通函数
-      if (trimmedLine.startsWith('func ')) {
-        inFunction = true
-        functionName = trimmedLine.split(' ')[1].split('(')[0]
-        functionBody = `${trimmedLine}\n`
-      } else if (inFunction) {
-        functionBody += `${trimmedLine}\n`
-
-        if (trimmedLine === '}') {
-          inFunction = false
-          functions.push({
-            type: 'function',
-            name: functionName,
-            content: functionBody.trim()
-          })
-          functionBody = ''
-        }
-      }
-    }
-  }
-
-  return functions
-}
-
-module.exports = {
-  extractGolangFunctions
-}
-
-// 提取 Go 文件中的函数
-/*async function extractGolangFunctions_bak(filePath, isTestFile = false) {
+function scanGolangCode(codeDir) {
   return new Promise((resolve, reject) => {
-    const functions = []
-    const rl = readline.createInterface({
-      input: fs.createReadStream(filePath),
-      output: process.stdout,
-      terminal: false
-    })
-
-    let inFunction = false
-    let functionName = ''
-    let functionBody = ''
-    let inDescribe = false
-    let describeName = ''
-    let inIt = false
-    let itName = ''
-
-    rl.on('line', line => {
-      line = line.trim()
-
-      if (isTestFile) {
-        // 提取 Ginkgo 的 Describe 块
-        if (inDescribe) {
-          console.log(line)
-        }
-        if (line.startsWith('Describe(')) {
-          inDescribe = true
-          console.log('find Describe')
-          describeName = line.split('"')[1] // 获取 Describe 的描述
-          console.log(describeName)
-        } else if (inDescribe && line.startsWith('It(')) {
-          inIt = true
-          console.log('find it')
-          itName = line.split('"')[1] // 获取 It 的描述
-          console.log(itName)
-        } else if (inIt && line === '})') {
-          inIt = false
-          functions.push({
-            type: 'testcase',
-            describe: describeName,
-            it: itName,
-            content: functionBody.trim()
-          })
-          functionBody = ''
-        } else if (inDescribe && line === '})') {
-          inDescribe = false
-          describeName = ''
-        }
-
-        if (inIt) {
-          functionBody += `${line}\n`
-        }
-      } else {
-        // 提取普通函数
-        if (line.startsWith('func ')) {
-          inFunction = true
-          functionName = line.split(' ')[1].split('(')[0]
-          functionBody = `${line}\n`
-        } else if (inFunction) {
-          functionBody += `${line}\n`
-
-          if (line === '}') {
-            inFunction = false
-            functions.push({
-              type: 'function',
-              name: functionName,
-              content: functionBody.trim()
-            })
-            functionBody = ''
-          }
-        }
+    // 执行 Go 程序
+    const command = `./src/goAST ${codeDir}`
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`执行 Go 程序失败: ${error.message}`)
+        return
       }
-    })
+      if (stderr) {
+        reject(`Go 程序输出错误: ${stderr}`)
+        return
+      }
 
-    rl.on('close', () => {
-      resolve(functions)
-    })
+      // 读取生成的 JSON 文件
+      const jsonFilePath = path.join(codeDir, 'golangAST.json')
+      fs.readFile(jsonFilePath, 'utf-8', (err, data) => {
+        if (err) {
+          reject(`读取 JSON 文件失败: ${err.message}`)
+          return
+        }
 
-    rl.on('error', err => {
-      reject(err)
+        // 解析 JSON 数据
+        try {
+          const jsonResult = JSON.parse(data)
+          resolve(jsonResult)
+        } catch (parseError) {
+          reject(`解析 JSON 数据失败: ${parseError.message}`)
+        }
+      })
     })
   })
 }
-*/
 
-// 主函数
+module.exports = {
+  scanGolangCode
+}
+
+// 示例调用
 /*async function test() {
   try {
-    // 提取 example.go 中的函数
-    const functions = await extractFunctions('./example.go')
-    console.log('Functions in example.go:')
-    for (let i = 0; i < functions.length; i++) {
-      const func = functions[i]
-      console.log(`Type: ${func.type}, Name: ${func.name}`)
-      console.log(`Body:\n${func.body}\n`)
-    }
-
-    // 提取 example_test.go 中的测试用例
-    const testCases = await extractFunctions('./example_test.go', true)
-    console.log('Test cases in example_test.go:')
-    for (let i = 0; i < testCases.length; i++) {
-      const testCase = testCases[i]
-      console.log(`Describe: ${testCase.describe}, It: ${testCase.it}`)
-      console.log(`Body:\n${testCase.body}\n`)
-    }
-  } catch (err) {
-    console.error('Error:', err)
+    const codeDir = '/Users/yuanyi/OpenSource/kubeedge/pkg' // 替换为你的 Golang 代码目录
+    const result = await scanGolangCode(codeDir)
+    console.log('扫描结果:', result)
+  } catch (error) {
+    console.error('发生错误:', error)
   }
-}*/
+}
+test()*/
 
 
 /***/ }),
@@ -15837,14 +15665,6 @@ module.exports = require("path");
 
 "use strict";
 module.exports = require("punycode");
-
-/***/ }),
-
-/***/ 3785:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("readline");
 
 /***/ }),
 

@@ -104,3 +104,5 @@ cve.json
 GenAI_output
 pkg/
 */coverage.out
+bin/
+src/goAST

@@ -1,85 +1,53 @@
-const fs = require('fs')
-const path = require('path')
-const {
-  extractGolangFunctions
-} = require('./languageprocessor/golangprocessor')
-
+/* eslint-disable prefer-promise-reject-errors */
+const core = require('@actions/core')
+const { scanGolangCode } = require('./languageprocessor/golangAst')
+const { exec } = require('child_process')
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
  * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
  */
-function scanGoCodeDirectory(dirPath) {
-  const resultQueue = [] // 结果队列
-
-  // 递归遍历目录
-  function traverseDirectory(currentPath) {
-    let items
-    try {
-      items = fs.readdirSync(currentPath, { withFileTypes: true })
-    } catch (error) {
-      return
-    }
-    for (const item of items) {
-      const itemPath = path.join(currentPath, item.name)
-      if (itemPath === undefined) {
-        return
-      }
-      if (item.isDirectory()) {
-        // 如果是目录，递归遍历
-        traverseDirectory(itemPath)
-      } else if (
-        item.isFile() &&
-        item.name.endsWith('.go') &&
-        !item.name.endsWith('_test.go')
-      ) {
-        // 如果是 Go 文件，解析文件内容
-        const funcsfound = extractGolangFunctions(itemPath)
-        parseGoFile(resultQueue, itemPath, currentPath, funcsfound)
-      }
-    }
+async function scanGoCodeDirectory(dirPath) {
+  try {
+    console.log('build go AST')
+    await buildGoAST()
+    console.log('scan project', dirPath)
+    const result = scanGolangCode(dirPath)
+    return result
+  } catch (error) {
+    core.error('发生错误:', error)
   }
-  // 开始遍历目录
-  traverseDirectory(dirPath)
-
-  return resultQueue
 }
 
-// 解析 Go 文件
-function parseGoFile(resultQueue, filePath, currentPath, funcsfound) {
-  const fileContent = fs.readFileSync(filePath, 'utf8')
-  const fileName = path.basename(filePath)
+/**
+ * 构建 Go 项目并将结果输出到指定目录
+ * @param {string} projectDir - Go 项目的相对目录
+ * @param {string} outputDir - 构建结果的输出目录
+ * @returns {Promise<string>} - 返回构建结果的标准输出
+ */
+function buildGoAST() {
+  return new Promise((resolve, reject) => {
+    // 解析相对路径为绝对路径
+    // 构建 Go 项目的命令
+    const command = `cd goAST && go build -o ../src/goAST && cd ..`
 
-  // 正则表达式匹配函数定义和 Go Doc
-  const functionRegex = /(\/\/[^\n]*\n)?\s*func\s+([A-Za-z_]\w*)\s*\(/g
-
-  let match
-
-  while ((match = functionRegex.exec(fileContent)) !== null) {
-    const goDoc = match[1] ? match[1].trim() : null // 提取 Go Doc
-    const functionname = match[2] // 提取函数名
-    for (let index = 0; index < funcsfound.length; index++) {
-      if (funcsfound[index].name === functionname) {
-        const content = funcsfound[index].content
-        resultQueue.push({
-          currentPath,
-          fileName,
-          functionname,
-          content,
-          hasGoDoc: !!goDoc // 是否存在 Go Doc
-        })
+    // 执行命令
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`构建 Go 项目失败: ${error.message}`)
+        return
       }
-    }
-  }
+      if (stderr) {
+        reject(`构建 Go 项目输出错误: ${stderr}`)
+        return
+      }
+
+      // 返回标准输出
+      resolve(stdout)
+    })
+  })
 }
 
 module.exports = {
-  scanGoCodeDirectory,
-  parseGoFile
+  scanGoCodeDirectory
 }
-
-// 示例用法
-//const goCodeDir = path.join(__dirname, '../example') // 替换为你的 Go 代码目录路径
-//const result = scanGoCodeDirectory(goCodeDir)
-
-//console.log(result)

@@ -119,9 +119,15 @@ arXiv:2201.11903 [cs.CL] https://arxiv.org/abs/2201.11903v6
 
 ## Todo:
 
-- file level skipper
-- functional level skipper
 - Go AST based scanner
+- release flow and basic dev cycle
+- pre defined prompt and logic
+
 - General comments insert logic
 - General function replace logic
+
 - Enhance unit test file logic
+
+- file level skipper
+- functional level skipper
+- Framework define for flexiable
