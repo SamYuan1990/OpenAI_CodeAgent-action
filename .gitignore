@@ -108,3 +108,4 @@ pkg/
 */coverage.out
 bin/
 src/goAST
+localTestStep
