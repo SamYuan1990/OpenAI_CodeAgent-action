@@ -36,7 +36,7 @@ jobs:
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
           dirpath: './'
-          deploymentfile: ./example/deployment/exporter.yaml
+          deploymentfile: ./manifests/k8s/config/exporter/exporter.yaml
           runType: CVE2Deployment
 
       - uses: actions/upload-artifact@v4
