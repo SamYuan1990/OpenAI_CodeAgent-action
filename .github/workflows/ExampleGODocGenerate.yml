@@ -38,6 +38,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.MyPATToken }} # 使用 GitHub 提供的 token
           branch: auto-pr-branch # 新分支名称
           base: main # 目标分支
           title: 'Automated PR: Update generated files'
