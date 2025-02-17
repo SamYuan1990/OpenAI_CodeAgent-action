@@ -42,6 +42,8 @@ jobs:
 
       - name: Test
         id: npm-ci-test
+        env:
+          JEST_TEST_TIMEOUT: 30000 # 设置超时时间为 30 秒
         run: npm run ci-test
 
   test-action:

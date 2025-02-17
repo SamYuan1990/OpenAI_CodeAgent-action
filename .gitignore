@@ -67,6 +67,8 @@ typings/
 
 # dotenv environment variables file
 .env
+.envkepler
+.envkubeedge
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -106,3 +108,6 @@ pkg/
 */coverage.out
 bin/
 src/goAST
+localTestStep
+processlog
+*/golangAST.json

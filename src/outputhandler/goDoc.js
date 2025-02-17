@@ -64,7 +64,7 @@ function extractFunctionComment(code, funcName) {
   // 查找匹配的注释
   const match = regex.exec(code)
   if (!match) {
-    throw new Error(`未找到函数 "${funcName}" 的注释`)
+    return code
   }
 
   // 提取注释部分

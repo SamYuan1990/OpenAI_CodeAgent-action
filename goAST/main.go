@@ -1,16 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/doc"
 	"go/parser"
-	"go/printer"
 	"go/token"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"golang.org/x/tools/cover"
@@ -18,7 +17,7 @@ import (
 
 // FunctionInfo 存储函数的相关信息
 type FunctionInfo struct {
-	Name         string `json:"functionName"`   // 函数名
+	Name         string `json:"functionname"`   // 函数名
 	File         string `json:"fileName"`       // 函数所在文件
 	HasTestCover bool   `json:"isCovered"`      // 是否有单元测试覆盖
 	HasGoDoc     bool   `json:"hasComment"`     // 是否有 Go Doc 文档
@@ -43,7 +42,7 @@ func parseDirRecursive(fset *token.FileSet, dir string) (map[string]*ast.Package
 		// 解析 Go 文件
 		f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 		if err != nil {
-			return fmt.Errorf("failed to parse file %s: %w", path, err)
+			return fmt.Errorf("failed to parse file %s: %v", path, err)
 		}
 
 		// 获取包名
@@ -64,14 +63,13 @@ func parseDirRecursive(fset *token.FileSet, dir string) (map[string]*ast.Package
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to walk directory %s: %w", dir, err)
+		return nil, fmt.Errorf("failed to walk directory %s: %v", dir, err)
 	}
 
 	return pkgs, nil
 }
 
 func main() {
-
 	args := os.Args
 	// 1. 解析覆盖率文件
 	codeDir := args[1] // 替换为你的代码目录
@@ -97,35 +95,64 @@ func main() {
 	var functions []FunctionInfo
 	for _, pkg := range pkgs {
 		fmt.Println(pkg.Files)
-		docPkg := doc.New(pkgs[pkg.Name], codeDir, doc.AllDecls) // 替换 "main" 为你的包名
+		docPkg := doc.New(pkgs[pkg.Name], codeDir, doc.AllDecls)
+
 		for filePath, file := range pkg.Files {
-			ast.Inspect(file, func(n ast.Node) bool {
-				if fn, ok := n.(*ast.FuncDecl); ok {
-					// 获取函数名
+			// 读取文件内容
+			fileContent, err := os.ReadFile(filePath)
+			if err != nil {
+				fmt.Printf("Failed to read file %s: %v\n", filePath, err)
+				continue
+			}
+
+			// 使用改进后的函数体提取逻辑
+			bodyInfos, err := GetFunctionBodies(fileContent)
+			if err != nil {
+				fmt.Printf("Failed to parse functions in %s: %v\n", filePath, err)
+				continue
+			}
+
+			// 创建函数体查找映射（处理潜在的重名情况）
+			bodyMap := make(map[string]string)
+			for _, info := range bodyInfos {
+				// 如果存在重名函数，保留最后一个（根据实际需求调整）
+				bodyMap[info.Name] = info.Body
+			}
+
+			// 遍历文件的所有声明
+			for _, decl := range file.Decls {
+				if fn, ok := decl.(*ast.FuncDecl); ok {
 					funcName := fn.Name.Name
 
-					// 获取函数内容
-					var funcContent bytes.Buffer
-					printer.Fprint(&funcContent, fset, fn)
+					// 从预先生成的bodyMap中获取内容
+					funcContent, exists := bodyMap[funcName]
+					if !exists {
+						fmt.Printf("Function %s body not found in %s\n", funcName, filePath)
+						continue
+					}
+					// 获取函数的起始和结束位置
+					start := fset.Position(fn.Pos()).Offset
+					end := fset.Position(fn.End()).Offset
 
-					// 检查是否有单元测试覆盖
+					// 从文件内容中提取整个函数
+					pre_funcContent := string(fileContent[start:end])
+					funcContent = pre_funcContent + " " + funcContent
+
+					// 检查测试覆盖和文档（保持原有逻辑）
 					hasTestCover := hasTestCoverage(filePath, funcName, profiles)
-
-					// 检查是否有 Go Doc 文档
 					hasGoDoc, goDocContent := hasGoDoc(funcName, docPkg)
 
-					// 添加到函数列表
+					// 添加到结果集
 					functions = append(functions, FunctionInfo{
 						Name:         funcName,
 						File:         filePath,
 						HasTestCover: hasTestCover,
 						HasGoDoc:     hasGoDoc,
-						Content:      funcContent.String(),
+						Content:      funcContent,
 						GoDocContent: goDocContent,
 					})
 				}
-				return true
-			})
+			}
 		}
 	}
 
@@ -175,4 +202,65 @@ func hasGoDoc(funcName string, docPkg *doc.Package) (bool, string) {
 		}
 	}
 	return false, ""
+}
+
+// FunctionBodyInfo 存储函数名及其对应的函数体内容
+type FunctionBodyInfo struct {
+	Name string
+	Body string
+}
+
+// GetFunctionBodies 解析文件内容并返回所有函数的体内容
+func GetFunctionBodies(src []byte) ([]FunctionBodyInfo, error) {
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "", src, parser.ParseComments)
+	if err != nil {
+		return nil, err
+	}
+
+	// 收集所有函数声明
+	var funcDecls []*ast.FuncDecl
+	ast.Inspect(file, func(n ast.Node) bool {
+		if fn, ok := n.(*ast.FuncDecl); ok {
+			funcDecls = append(funcDecls, fn)
+		}
+		return true
+	})
+
+	// 按函数在源代码中的位置排序
+	sort.Slice(funcDecls, func(i, j int) bool {
+		return fset.Position(funcDecls[i].Pos()).Offset < fset.Position(funcDecls[j].Pos()).Offset
+	})
+
+	fileEnd := fset.Position(file.End()).Offset
+	results := make([]FunctionBodyInfo, 0, len(funcDecls))
+
+	for i, fn := range funcDecls {
+		var bodyContent string
+		if fn.Body != nil {
+			// 有Body时直接提取
+			start := fset.Position(fn.Body.Pos()).Offset
+			end := fset.Position(fn.Body.End()).Offset
+			bodyContent = string(src[start:end])
+		} else {
+			// 无Body时根据相邻函数位置或文件末尾提取
+			start := fset.Position(fn.Pos()).Offset
+			var end int
+			if i < len(funcDecls)-1 {
+				end = fset.Position(funcDecls[i+1].Pos()).Offset
+			} else {
+				end = fileEnd
+			}
+			bodyContent = string(src[start:end])
+		}
+
+		// 获取函数名
+		funcName := fn.Name.Name
+		results = append(results, FunctionBodyInfo{
+			Name: funcName,
+			Body: bodyContent,
+		})
+	}
+
+	return results, nil
 }

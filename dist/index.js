@@ -14310,6 +14310,34 @@ module.exports.implForWrapper = function (wrapper) {
 
 /***/ }),
 
+/***/ 9833:
+/***/ ((module) => {
+
+/* eslint-disable filenames/match-regex */
+const cveHelmPrompt = `please give me a pod deployment suggestion, according to CVSS 3.1
+            scrore and deployment.yaml,`
+const godocPrompt = `please help generate go doc for this function, `
+const jsunittestPrompt = `please help generate unit test for my nodejs code, `
+
+function predefinePrompt(control_group) {
+  if (control_group.runType === 'CVE2Deployment') {
+    return cveHelmPrompt
+  }
+  if (control_group.runType === 'godoc') {
+    return godocPrompt
+  }
+  if (control_group.runType === 'jsunittest') {
+    return jsunittestPrompt
+  }
+}
+
+module.exports = {
+  predefinePrompt
+}
+
+
+/***/ }),
+
 /***/ 4082:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -14370,7 +14398,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
     // prompt metric
-    prompt_info.response = ''
+    prompt_info.response = ``
   }
   return prompt_info
 }
@@ -14465,6 +14493,15 @@ const core = __nccwpck_require__(7484)
 const OpenAI = __nccwpck_require__(2583)
 const { cvss_deployment } = __nccwpck_require__(4636)
 const { processOutput } = __nccwpck_require__(7362)
+const { predefinePrompt } = __nccwpck_require__(9833)
+
+function getInputOrDefault(inputName, defaultValue) {
+  const input = core.getInput(inputName)
+  if (input === undefined || input == null || input.length === 0) {
+    return defaultValue
+  }
+  return input
+}
 
 async function run() {
   const baseURL = core.getInput('baseURL', { required: true })
@@ -14476,19 +14513,6 @@ async function run() {
     baseURL,
     apiKey
   })
-  // end of AI Agent creation
-  const model = core.getInput('model', { required: true })
-  core.info(`We are going to talk with Gen AI with Model${model}`)
-  const prompt = core.getInput('prompt', { required: true })
-  core.info(
-    `We are going to talk with Gen AI with prompt and file content ${prompt}`
-  )
-
-  const model_parameters = {
-    model,
-    prompt
-  }
-
   // controler group
   const dryRun = core.getInput('dryRun')
   core.info(`dry run? ${dryRun}`)
@@ -14500,10 +14524,25 @@ async function run() {
     maxIterations,
     runType
   }
+  // end of AI Agent creation
+  const model = core.getInput('model', { required: true })
+  core.info(`We are going to talk with Gen AI with Model${model}`)
+  const defualt_prompt = predefinePrompt(control_group)
+  const prompt = getInputOrDefault('prompt', defualt_prompt)
+
+  core.info(
+    `We are going to talk with Gen AI with prompt and file content ${prompt}`
+  )
+
+  const model_parameters = {
+    model,
+    prompt
+  }
+
   let LLMresponses = []
   // once off tasks
   if (control_group.runType === 'CVE2Deployment') {
-    LLMresponses = cvss_deployment(openai, model_parameters, dryRun)
+    LLMresponses = await cvss_deployment(openai, model_parameters, dryRun)
   } else {
     // AST tasks
     LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
@@ -14873,7 +14912,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {
-      taskQueue.GenerateGoDocTasks()
+      await taskQueue.GenerateGoDocTasks()
     }
     if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
@@ -15160,8 +15199,8 @@ const taskQueue = {
     this.Functions = scanJSCodeDirectory(this.dirPath)
   },
 
-  InitGoRepo() {
-    this.Functions = scanGoCodeDirectory(this.dirPath)
+  async InitGoRepo() {
+    this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
   GenerateJsUnitTestTask() {
@@ -15178,8 +15217,8 @@ const taskQueue = {
     }
   },
 
-  GenerateGoDocTasks() {
-    this.InitGoRepo(this.dirPath)
+  async GenerateGoDocTasks() {
+    await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
       if (!this.Functions[index].hasGoDoc) {
@@ -15396,7 +15435,7 @@ function extractFunctionComment(code, funcName) {
   // 查找匹配的注释
   const match = regex.exec(code)
   if (!match) {
-    throw new Error(`未找到函数 "${funcName}" 的注释`)
+    return code
   }
 
   // 提取注释部分
@@ -15476,7 +15515,7 @@ function ProcessGoDoc(GenAIResult) {
     const dataFromAIAgent = GenAIResult[index].response
     const matches = dataFromAIAgent.match(my_regex)
     const funcName = GenAIResult[index].meta.functionname
-    const filePath = `${GenAIResult[index].meta.currentPath}/${GenAIResult[index].meta.filename}`
+    const filePath = `/${GenAIResult[index].meta.filename}`
     core.info(`going to process function ${funcName}`)
     core.info(`going to process at file ${filePath}`)
     core.info(`going to process genAI content ${dataFromAIAgent}`)
@@ -15485,14 +15524,18 @@ function ProcessGoDoc(GenAIResult) {
       continue
     }
     if (matches) {
+      core.info('match regex fileter, processing')
       const code_contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
+      core.info(`match regex fileter, processing${code_contents}`)
       // step 2, get comments from contents
       const content = extractFunctionComment(code_contents, funcName)
+      core.info(`going to insert comments as ${content}`)
       // step 3, write comments into file
       const comments = ['Comments below is assisted by Gen AI', content]
       insertCommentAboveFunction(filePath, funcName, comments)
+      core.info('complete insert comments')
     }
   }
 }
@@ -15513,8 +15556,7 @@ function ProcessJsUnittest(path, GenAIResult) {
   }
 }
 
-function processOutput(dataFromAIAgent, GenAItask) {
-  const fileOverWrite = core.getInput('fileOverWrite', { required: true })
+/*function processOutput(dataFromAIAgent, GenAItask) {
   let my_regex = js_regex
   let my_replacer = js_replacer
   if (GenAItask.code_language === 'go') {
@@ -15527,20 +15569,15 @@ function processOutput(dataFromAIAgent, GenAItask) {
       const contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
-      if (fileOverWrite === 'true') {
-        writeFileForAarray(GenAItask.outputFilePath, contents)
-      } else {
-        core.info(contents)
-      }
+      writeFileForAarray(GenAItask.outputFilePath, contents)
       core.debug('content:', contents)
     } else {
       core.info('content not found')
     }
   }
-}
+}*/
 
 module.exports = {
-  processOutput,
   ProcessJsUnittest,
   ProcessGoDoc
 }

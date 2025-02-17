@@ -14,8 +14,8 @@ const taskQueue = {
     this.Functions = scanJSCodeDirectory(this.dirPath)
   },
 
-  InitGoRepo() {
-    this.Functions = scanGoCodeDirectory(this.dirPath)
+  async InitGoRepo() {
+    this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
   GenerateJsUnitTestTask() {
@@ -32,8 +32,8 @@ const taskQueue = {
     }
   },
 
-  GenerateGoDocTasks() {
-    this.InitGoRepo(this.dirPath)
+  async GenerateGoDocTasks() {
+    await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
       if (!this.Functions[index].hasGoDoc) {

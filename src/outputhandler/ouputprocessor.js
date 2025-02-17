@@ -19,7 +19,7 @@ function ProcessGoDoc(GenAIResult) {
     const dataFromAIAgent = GenAIResult[index].response
     const matches = dataFromAIAgent.match(my_regex)
     const funcName = GenAIResult[index].meta.functionname
-    const filePath = `${GenAIResult[index].meta.currentPath}/${GenAIResult[index].meta.filename}`
+    const filePath = `/${GenAIResult[index].meta.filename}`
     core.info(`going to process function ${funcName}`)
     core.info(`going to process at file ${filePath}`)
     core.info(`going to process genAI content ${dataFromAIAgent}`)
@@ -28,14 +28,18 @@ function ProcessGoDoc(GenAIResult) {
       continue
     }
     if (matches) {
+      core.info('match regex fileter, processing')
       const code_contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
+      core.info(`match regex fileter, processing${code_contents}`)
       // step 2, get comments from contents
       const content = extractFunctionComment(code_contents, funcName)
+      core.info(`going to insert comments as ${content}`)
       // step 3, write comments into file
       const comments = ['Comments below is assisted by Gen AI', content]
       insertCommentAboveFunction(filePath, funcName, comments)
+      core.info('complete insert comments')
     }
   }
 }
@@ -56,8 +60,7 @@ function ProcessJsUnittest(path, GenAIResult) {
   }
 }
 
-function processOutput(dataFromAIAgent, GenAItask) {
-  const fileOverWrite = core.getInput('fileOverWrite', { required: true })
+/*function processOutput(dataFromAIAgent, GenAItask) {
   let my_regex = js_regex
   let my_replacer = js_replacer
   if (GenAItask.code_language === 'go') {
@@ -70,20 +73,15 @@ function processOutput(dataFromAIAgent, GenAItask) {
       const contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
-      if (fileOverWrite === 'true') {
-        writeFileForAarray(GenAItask.outputFilePath, contents)
-      } else {
-        core.info(contents)
-      }
+      writeFileForAarray(GenAItask.outputFilePath, contents)
       core.debug('content:', contents)
     } else {
       core.info('content not found')
     }
   }
-}
+}*/
 
 module.exports = {
-  processOutput,
   ProcessJsUnittest,
   ProcessGoDoc
 }

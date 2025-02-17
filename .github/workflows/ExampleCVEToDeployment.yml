@@ -14,6 +14,8 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        with:
+          repository: SamYuan1990/kepler
 
       - uses: actions/setup-go@v5
 
@@ -26,21 +28,21 @@ jobs:
           bomber scan ./sbom.json --output=json --debug > cve.json
           cat cve.json
 
-      - name: Test Local Action
-        id: test-action
-        uses: ./
+      - name: use this action to generate suggestion for deployment settings
+        id: Lint with LLM
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
-          fileOverWrite: true
           model: deepseek-chat
-          dirPath: ./example/deployment/exporter.yaml
-          prompt:
-            please give me a pod deployment suggestion, according to CVSS 3.1
-            scrore and deployment.yaml,
-          maxIterations: 10
-          dryRun: true
+          dirpath: './'
+          deploymentfile: ./example/deployment/exporter.yaml
           runType: CVE2Deployment
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LLM_output
+          path: GenAI_output
 
       - name: Create new issue
         uses: imjohnbo/issue-bot@v3
