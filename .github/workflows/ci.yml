@@ -61,10 +61,8 @@ jobs:
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy
-          fileOverWrite: false
           model: deepseek-chat
-          dirPath: ./example
-          prompt: please help me with document for the function below,
+          dirpath: './'          
           maxIterations: 10
           dryRun: true
           runType: jsunittest
