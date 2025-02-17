@@ -21,7 +21,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
-          dirPath: /home/runner/work/OpenAI_CodeAgent-action/OpenAI_CodeAgent-action/src
+          dirPath: ./src
           maxIterations: 3
           runType: jsunittest
 

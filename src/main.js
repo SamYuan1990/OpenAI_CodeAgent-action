@@ -1,54 +1,73 @@
-const core = require('@actions/core')
-const {
-  ProcessJsUnittest,
-  ProcessGoDoc
-} = require('./outputhandler/ouputprocessor')
-const { taskQueue } = require('./orchestration')
 /**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
+ * The entrypoint for the action.
  */
-async function runAst(openai, model_parameters, control_group, dryRun) {
-  try {
-    const dirPath = core.getInput('dirPath', { required: true })
-    // for case loop AST
-    // 1st level file reader
-    // as AST scan result for your repo
-    // define a json structure....
-    taskQueue.setmaxIterations(control_group.maxIterations)
-    taskQueue.setdirPath(dirPath)
-    if (control_group.runType === 'godoc') {
-      await taskQueue.GenerateGoDocTasks()
-    }
-    if (control_group.runType === 'jsunittest') {
-      taskQueue.GenerateJsUnitTestTask()
-    }
-    // loop AST tasks
-    const GenAIresponses = await taskQueue.run(
-      openai,
-      model_parameters.model,
-      model_parameters.prompt,
-      dryRun
-    )
-    // output processor
-    core.info('start processing GenAI result to file')
-    // General output to folder
-    // Set Action output
-    // specific processor action on source code
-    if (control_group.runType === 'godoc') {
-      ProcessGoDoc(GenAIresponses)
-    }
-    if (control_group.runType === 'jsunittest') {
-      ProcessJsUnittest(dirPath, GenAIresponses)
-    }
-    core.info(`debug ${GenAIresponses.length}`)
-    return GenAIresponses
-  } catch (error) {
-    // Fail the workflow run if an error occurs
-    core.setFailed(error.message)
+const { runAst } = require('./runAST')
+const core = require('@actions/core')
+const OpenAI = require('openai')
+const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
+const { processOutput } = require('./outputhandler/generalOutputProcessor')
+const { predefinePrompt } = require('./Prompotlib')
+
+function getInputOrDefault(inputName, defaultValue) {
+  const input = core.getInput(inputName)
+  if (input === undefined || input == null || input.length === 0) {
+    return defaultValue
   }
+  return input
 }
 
+async function run() {
+  const baseURL = core.getInput('baseURL', { required: true })
+  core.info(`We are going to talk with Gen AI with URL ${baseURL}`)
+
+  const apiKey = core.getInput('apiKey', { required: true })
+  // creation of AI agent
+  const openai = new OpenAI({
+    baseURL,
+    apiKey
+  })
+  // controler group
+  const dryRun = core.getInput('dryRun')
+  core.info(`dry run? ${dryRun}`)
+  const runType = core.getInput('runType', { required: true })
+  core.info(`Will execute for ${runType}`)
+
+  const maxIterations = core.getInput('maxIterations')
+  const control_group = {
+    maxIterations,
+    runType
+  }
+  // end of AI Agent creation
+  const model = core.getInput('model', { required: true })
+  core.info(`We are going to talk with Gen AI with Model${model}`)
+  const defualt_prompt = predefinePrompt(control_group)
+  const prompt = getInputOrDefault('prompt', defualt_prompt)
+
+  core.info(
+    `We are going to talk with Gen AI with prompt and file content ${prompt}`
+  )
+
+  const model_parameters = {
+    model,
+    prompt
+  }
+
+  let LLMresponses = []
+  // once off tasks
+  if (control_group.runType === 'CVE2Deployment') {
+    LLMresponses = await cvss_deployment(openai, model_parameters, dryRun)
+  } else {
+    // AST tasks
+    LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
+  }
+  core.info(`debug ${LLMresponses.length}`)
+  processOutput(LLMresponses)
+  // Log the current timestamp, wait, then log the new timestamp
+  core.debug('complete at:', new Date().toTimeString())
+}
+
+//run()
+
 module.exports = {
-  runAst
+  run
 }
