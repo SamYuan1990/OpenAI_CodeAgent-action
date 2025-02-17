@@ -1,11 +1,8 @@
-name: Go Doc Generate
-
+name: Generate JS unittests files
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: write
+permissions: write-all
 
 jobs:
   test-action:
@@ -17,27 +14,23 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
-        id: test-action
+      - name: use this action to generate unit test
+        id: this-action
         uses: ./
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
-          fileOverWrite: true
           model: deepseek-chat
-          dirPath: ./example
-          prompt: please help me with document for the function below,
-          maxIterations: 10
-          dryRun: true
+          dirPath: ./src
+          maxIterations: 3
           runType: jsunittest
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.MyPATToken }} # 使用 GitHub 提供的 token
           branch: auto-pr-branch # 新分支名称
           base: main # 目标分支
-          title: 'Automated PR: Update generated files'
+          title: 'Automated PR: Update unit test files'
           body: 'This is an automated pull request created by GitHub Actions.'
           commit-message: 'Auto-generated changes'
           labels: automated # 可选：为 PR 添加标签

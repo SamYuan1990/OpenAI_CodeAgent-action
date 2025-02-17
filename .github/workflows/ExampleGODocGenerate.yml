@@ -1,0 +1,39 @@
+name: Go Doc Generate
+
+on:
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  test-action:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+
+      - name: use this action to generate go doc
+        id: this-action
+        uses: ./
+        with:
+          baseURL: https://api.deepseek.com
+          apiKey: ${{ secrets.API_KEY }}
+          model: deepseek-chat
+          dirPath: ./pkg
+          maxIterations: 3
+          runType: godoc
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: auto-pr-branch # 新分支名称
+          base: main # 目标分支
+          title: 'Automated PR: Update generated files'
+          body: 'This is an automated pull request created by GitHub Actions.'
+          commit-message: 'Auto-generated changes'
+          labels: automated # 可选：为 PR 添加标签

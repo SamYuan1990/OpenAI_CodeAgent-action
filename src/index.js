@@ -6,6 +6,15 @@ const core = require('@actions/core')
 const OpenAI = require('openai')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
 const { processOutput } = require('./outputhandler/generalOutputProcessor')
+const { predefinePrompt } = require('./Prompotlib')
+
+function getInputOrDefault(inputName, defaultValue) {
+  const input = core.getInput(inputName)
+  if (input === undefined || input == null || input.length === 0) {
+    return defaultValue
+  }
+  return input
+}
 
 async function run() {
   const baseURL = core.getInput('baseURL', { required: true })
@@ -17,19 +26,6 @@ async function run() {
     baseURL,
     apiKey
   })
-  // end of AI Agent creation
-  const model = core.getInput('model', { required: true })
-  core.info(`We are going to talk with Gen AI with Model${model}`)
-  const prompt = core.getInput('prompt', { required: true })
-  core.info(
-    `We are going to talk with Gen AI with prompt and file content ${prompt}`
-  )
-
-  const model_parameters = {
-    model,
-    prompt
-  }
-
   // controler group
   const dryRun = core.getInput('dryRun')
   core.info(`dry run? ${dryRun}`)
@@ -41,6 +37,21 @@ async function run() {
     maxIterations,
     runType
   }
+  // end of AI Agent creation
+  const model = core.getInput('model', { required: true })
+  core.info(`We are going to talk with Gen AI with Model${model}`)
+  const defualt_prompt = predefinePrompt(control_group)
+  const prompt = getInputOrDefault('prompt', defualt_prompt)
+
+  core.info(
+    `We are going to talk with Gen AI with prompt and file content ${prompt}`
+  )
+
+  const model_parameters = {
+    model,
+    prompt
+  }
+
   let LLMresponses = []
   // once off tasks
   if (control_group.runType === 'CVE2Deployment') {

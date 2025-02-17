@@ -32,7 +32,6 @@ jobs:
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
-          fileOverWrite: true
           model: deepseek-chat
           dirPath: ./example/deployment/exporter.yaml
           prompt:

@@ -56,8 +56,7 @@ function ProcessJsUnittest(path, GenAIResult) {
   }
 }
 
-function processOutput(dataFromAIAgent, GenAItask) {
-  const fileOverWrite = core.getInput('fileOverWrite', { required: true })
+/*function processOutput(dataFromAIAgent, GenAItask) {
   let my_regex = js_regex
   let my_replacer = js_replacer
   if (GenAItask.code_language === 'go') {
@@ -70,20 +69,15 @@ function processOutput(dataFromAIAgent, GenAItask) {
       const contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
-      if (fileOverWrite === 'true') {
-        writeFileForAarray(GenAItask.outputFilePath, contents)
-      } else {
-        core.info(contents)
-      }
+      writeFileForAarray(GenAItask.outputFilePath, contents)
       core.debug('content:', contents)
     } else {
       core.info('content not found')
     }
   }
-}
+}*/
 
 module.exports = {
-  processOutput,
   ProcessJsUnittest,
   ProcessGoDoc
 }

@@ -14310,6 +14310,34 @@ module.exports.implForWrapper = function (wrapper) {
 
 /***/ }),
 
+/***/ 9833:
+/***/ ((module) => {
+
+/* eslint-disable filenames/match-regex */
+const cveHelmPrompt = `please give me a pod deployment suggestion, according to CVSS 3.1
+            scrore and deployment.yaml,`
+const godocPrompt = `please help generate go doc for this function, `
+const jsunittestPrompt = `please help generate unit test for my nodejs code, `
+
+function predefinePrompt(control_group) {
+  if (control_group.runType === 'CVE2Deployment') {
+    return cveHelmPrompt
+  }
+  if (control_group.runType === 'godoc') {
+    return godocPrompt
+  }
+  if (control_group.runType === 'jsunittest') {
+    return jsunittestPrompt
+  }
+}
+
+module.exports = {
+  predefinePrompt
+}
+
+
+/***/ }),
+
 /***/ 4082:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -14465,6 +14493,15 @@ const core = __nccwpck_require__(7484)
 const OpenAI = __nccwpck_require__(2583)
 const { cvss_deployment } = __nccwpck_require__(4636)
 const { processOutput } = __nccwpck_require__(7362)
+const { predefinePrompt } = __nccwpck_require__(9833)
+
+function getInputOrDefault(inputName, defaultValue) {
+  const input = core.getInput(inputName)
+  if (input === undefined || input == null || input.length === 0) {
+    return defaultValue
+  }
+  return input
+}
 
 async function run() {
   const baseURL = core.getInput('baseURL', { required: true })
@@ -14476,19 +14513,6 @@ async function run() {
     baseURL,
     apiKey
   })
-  // end of AI Agent creation
-  const model = core.getInput('model', { required: true })
-  core.info(`We are going to talk with Gen AI with Model${model}`)
-  const prompt = core.getInput('prompt', { required: true })
-  core.info(
-    `We are going to talk with Gen AI with prompt and file content ${prompt}`
-  )
-
-  const model_parameters = {
-    model,
-    prompt
-  }
-
   // controler group
   const dryRun = core.getInput('dryRun')
   core.info(`dry run? ${dryRun}`)
@@ -14500,6 +14524,21 @@ async function run() {
     maxIterations,
     runType
   }
+  // end of AI Agent creation
+  const model = core.getInput('model', { required: true })
+  core.info(`We are going to talk with Gen AI with Model${model}`)
+  const defualt_prompt = predefinePrompt(control_group)
+  const prompt = getInputOrDefault('prompt', defualt_prompt)
+
+  core.info(
+    `We are going to talk with Gen AI with prompt and file content ${prompt}`
+  )
+
+  const model_parameters = {
+    model,
+    prompt
+  }
+
   let LLMresponses = []
   // once off tasks
   if (control_group.runType === 'CVE2Deployment') {
@@ -15513,8 +15552,7 @@ function ProcessJsUnittest(path, GenAIResult) {
   }
 }
 
-function processOutput(dataFromAIAgent, GenAItask) {
-  const fileOverWrite = core.getInput('fileOverWrite', { required: true })
+/*function processOutput(dataFromAIAgent, GenAItask) {
   let my_regex = js_regex
   let my_replacer = js_replacer
   if (GenAItask.code_language === 'go') {
@@ -15527,20 +15565,15 @@ function processOutput(dataFromAIAgent, GenAItask) {
       const contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
-      if (fileOverWrite === 'true') {
-        writeFileForAarray(GenAItask.outputFilePath, contents)
-      } else {
-        core.info(contents)
-      }
+      writeFileForAarray(GenAItask.outputFilePath, contents)
       core.debug('content:', contents)
     } else {
       core.info('content not found')
     }
   }
-}
+}*/
 
 module.exports = {
-  processOutput,
   ProcessJsUnittest,
   ProcessGoDoc
 }

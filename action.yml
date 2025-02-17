@@ -4,9 +4,14 @@ author: 'Your name or organization here'
 
 # Define your inputs here.
 inputs:
+  # running control
   dryRun:
     description: dryRun option
-
+  maxIterations:
+    description:
+      'an optional setting for the maximum number of iterations we invokes
+      openAI endpoint'
+  # model option
   baseURL:
     description: 'url for your openAI API endpoint'
   apiKey:
@@ -16,18 +21,14 @@ inputs:
   prompt:
     description:
       'the prompt string your are going to talk with openAI API endpoint'
-  maxIterations:
-    description:
-      'an optional setting for the maximum number of iterations we invokes
-      openAI endpoint'
+  # feature selection
   runType:
     description: 'action type, jsunittest or godoc'
-
   dirPath:
-    description: 'the dir path of your golang code'
-
-  fileOverWrite:
-    description: 'are we going to overwrite existing file'
+    description: 'the dir path of your source code'
+  # feature specific
+  deploymentfile:
+    description: 'the deployment yaml if you use CVE2Deployment'
 
 runs:
   using: node20
