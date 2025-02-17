@@ -26,20 +26,21 @@ jobs:
           bomber scan ./sbom.json --output=json --debug > cve.json
           cat cve.json
 
-      - name: Test Local Action
-        id: test-action
+      - name: use this action to generate suggestion for deployment settings
+        id: this-action
         uses: ./
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
-          dirPath: ./example/deployment/exporter.yaml
-          prompt:
-            please give me a pod deployment suggestion, according to CVSS 3.1
-            scrore and deployment.yaml,
-          maxIterations: 10
-          dryRun: true
+          dirpath: './'
+          deploymentfile: ./example/deployment/exporter.yaml
           runType: CVE2Deployment
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LLM_output
+          path: GenAI_output
 
       - name: Create new issue
         uses: imjohnbo/issue-bot@v3
