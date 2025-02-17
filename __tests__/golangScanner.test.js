@@ -24,7 +24,7 @@ describe('scanGoCodeDirectory', () => {
 
   it('should call buildGoAST and scanGolangCode with the correct directory path', async () => {
     if (process.env.GITHUB_ACTIONS === 'true') {
-      jest.skip()
+      return
     }
     const mockDirPath = './src/mock'
     const mockResult = { files: ['file1.go', 'file2.go'] }
