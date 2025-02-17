@@ -29,7 +29,7 @@ jobs:
           cat cve.json
 
       - name: use this action to generate suggestion for deployment settings
-        id: Lint with LLM
+        id: Lint_with_LLM
         uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
@@ -50,4 +50,4 @@ jobs:
           title: AutoBumpUpVersionReminder
           body: |-
             :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
-            ${{ steps.test-action.outputs.LLMresponse }}
+            ${{ steps.Lint_with_LLM.outputs.LLMresponse }}
