@@ -22,7 +22,7 @@ describe('scanGoCodeDirectory', () => {
   })
 
   it('should call buildGoAST and scanGolangCode with the correct directory path', async () => {
-    const mockDirPath = '/mock/dir/path'
+    const mockDirPath = './src/mock'
     const mockResult = { files: ['file1.go', 'file2.go'] }
 
     // Mock the resolved values
