@@ -55,7 +55,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
     // prompt metric
-    prompt_info.response = ''
+    prompt_info.response = ``
   }
   return prompt_info
 }

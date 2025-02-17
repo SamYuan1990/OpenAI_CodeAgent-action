@@ -14398,7 +14398,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     core.info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
     // prompt metric
-    prompt_info.response = ''
+    prompt_info.response = ``
   }
   return prompt_info
 }
@@ -14912,7 +14912,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {
-      taskQueue.GenerateGoDocTasks()
+      await taskQueue.GenerateGoDocTasks()
     }
     if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
@@ -15199,8 +15199,8 @@ const taskQueue = {
     this.Functions = scanJSCodeDirectory(this.dirPath)
   },
 
-  InitGoRepo() {
-    this.Functions = scanGoCodeDirectory(this.dirPath)
+  async InitGoRepo() {
+    this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
   GenerateJsUnitTestTask() {
@@ -15217,8 +15217,8 @@ const taskQueue = {
     }
   },
 
-  GenerateGoDocTasks() {
-    this.InitGoRepo(this.dirPath)
+  async GenerateGoDocTasks() {
+    await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
       if (!this.Functions[index].hasGoDoc) {
@@ -15435,7 +15435,7 @@ function extractFunctionComment(code, funcName) {
   // 查找匹配的注释
   const match = regex.exec(code)
   if (!match) {
-    throw new Error(`未找到函数 "${funcName}" 的注释`)
+    return code
   }
 
   // 提取注释部分
@@ -15515,7 +15515,7 @@ function ProcessGoDoc(GenAIResult) {
     const dataFromAIAgent = GenAIResult[index].response
     const matches = dataFromAIAgent.match(my_regex)
     const funcName = GenAIResult[index].meta.functionname
-    const filePath = `${GenAIResult[index].meta.currentPath}/${GenAIResult[index].meta.filename}`
+    const filePath = `/${GenAIResult[index].meta.filename}`
     core.info(`going to process function ${funcName}`)
     core.info(`going to process at file ${filePath}`)
     core.info(`going to process genAI content ${dataFromAIAgent}`)
@@ -15524,14 +15524,18 @@ function ProcessGoDoc(GenAIResult) {
       continue
     }
     if (matches) {
+      core.info('match regex fileter, processing')
       const code_contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
+      core.info(`match regex fileter, processing${code_contents}`)
       // step 2, get comments from contents
       const content = extractFunctionComment(code_contents, funcName)
+      core.info(`going to insert comments as ${content}`)
       // step 3, write comments into file
       const comments = ['Comments below is assisted by Gen AI', content]
       insertCommentAboveFunction(filePath, funcName, comments)
+      core.info('complete insert comments')
     }
   }
 }

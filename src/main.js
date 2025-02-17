@@ -18,7 +18,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {
-      taskQueue.GenerateGoDocTasks()
+      await taskQueue.GenerateGoDocTasks()
     }
     if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()

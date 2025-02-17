@@ -109,3 +109,5 @@ pkg/
 bin/
 src/goAST
 localTestStep
+processlog
+*/golangAST.json

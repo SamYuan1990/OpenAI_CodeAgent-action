@@ -18,8 +18,8 @@ jobs:
       - uses: actions/setup-go@v5
 
       - name: use this action to generate go doc
-        id: this-action
-        uses: ./
+        id: Lint with LLM
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}

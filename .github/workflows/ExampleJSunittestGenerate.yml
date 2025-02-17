@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: use this action to generate unit test
-        id: this-action
-        uses: ./
+        id: Lint with LLM
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
