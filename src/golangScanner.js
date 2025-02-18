@@ -10,9 +10,9 @@ const { exec } = require('child_process')
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    console.log('build go AST')
-    const download_log = await buildGoAST()
-    console.log(download_log)
+    console.log('download go AST binary')
+    //const download_log = await buildGoAST()
+    //console.log(download_log)
     console.log('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
     console.log(`scan result as ${result.length}`)
@@ -37,13 +37,11 @@ function buildGoAST() {
     // 执行命令
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        core.error(`fail to download go binary: ${error}`)
-        reject(`构建 Go 项目失败: ${error}`)
+        core.error(`fail to download go binary err: ${error}`)
         return
       }
       if (stderr) {
-        core.error(`fail to download go binary: ${error}`)
-        reject(`构建 Go 项目输出错误: ${stderr}`)
+        core.error(`fail to download go binary std err: ${error}`)
         return
       }
 

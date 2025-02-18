@@ -125,7 +125,7 @@ Please ref files begin with Example at [here](./.github/workflows/)
 
 ```
 npm run all
-npx local-action . src/index.js .env.example
+npx local-action . src/main.js .env.example
 ```
 
 ## Ref
