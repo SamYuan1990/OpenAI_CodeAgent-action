@@ -14464,12 +14464,12 @@ function buildGoAST() {
     // 执行命令
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        core.error(`fail to build Go project: ${error.message}`)
-        reject(`构建 Go 项目失败: ${error.message}`)
+        core.error(`fail to build Go project: ${error}`)
+        reject(`构建 Go 项目失败: ${error}`)
         return
       }
       if (stderr) {
-        core.error(`fail to build Go output: ${error.message}`)
+        core.error(`fail to build Go output: ${error}`)
         reject(`构建 Go 项目输出错误: ${stderr}`)
         return
       }
