@@ -11,7 +11,8 @@ const { exec } = require('child_process')
 async function scanGoCodeDirectory(dirPath) {
   try {
     console.log('build go AST')
-    await buildGoAST()
+    const download_log = await buildGoAST()
+    console.log(download_log)
     console.log('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
     console.log(`scan result as ${result.length}`)

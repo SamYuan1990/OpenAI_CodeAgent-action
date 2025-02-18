@@ -14438,7 +14438,8 @@ const { exec } = __nccwpck_require__(5317)
 async function scanGoCodeDirectory(dirPath) {
   try {
     console.log('build go AST')
-    await buildGoAST()
+    const download_log = await buildGoAST()
+    console.log(download_log)
     console.log('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
     console.log(`scan result as ${result.length}`)
@@ -14564,7 +14565,8 @@ function scanGolangCode(codeDir) {
       const jsonFilePath = path.join(codeDir, 'golangAST.json')
       fs.readFile(jsonFilePath, 'utf-8', (err, data) => {
         if (err) {
-          reject(`读取 JSON 文件失败: ${err.message}`)
+          core.error(`fail to read json file ${err}`)
+          //reject(`读取 JSON 文件失败: ${err.message}`)
           return
         }
 
@@ -14573,7 +14575,9 @@ function scanGolangCode(codeDir) {
           const jsonResult = JSON.parse(data)
           resolve(jsonResult)
         } catch (parseError) {
-          reject(`解析 JSON 数据失败: ${parseError.message}`)
+          core.error(`fail to parse data to JSON, data: ${data}`)
+          core.error(`fail to parse JSON: ${parseError}`)
+          //reject(`解析 JSON 数据失败: ${parseError.message}`)
         }
       })
     })
