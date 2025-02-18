@@ -15,6 +15,7 @@ const taskQueue = {
   },
 
   async InitGoRepo() {
+    core.info('start InitGoRepo')
     this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
@@ -33,6 +34,7 @@ const taskQueue = {
   },
 
   async GenerateGoDocTasks() {
+    core.info('start GenerateGoDocTasks')
     await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {

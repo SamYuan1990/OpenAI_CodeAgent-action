@@ -14439,7 +14439,8 @@ async function scanGoCodeDirectory(dirPath) {
     console.log('build go AST')
     await buildGoAST()
     console.log('scan project', dirPath)
-    const result = scanGolangCode(dirPath)
+    const result = await scanGolangCode(dirPath)
+    console.log(`scan result as ${result.length}`)
     return result
   } catch (error) {
     core.error('发生错误:', error)
@@ -14532,6 +14533,7 @@ module.exports = {
 const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
+const core = __nccwpck_require__(7484)
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
@@ -14539,16 +14541,19 @@ const path = __nccwpck_require__(6928)
  * @returns {Promise<Object>} - 返回解析后的 JSON 结果
  */
 function scanGolangCode(codeDir) {
+  core.info(`start scanGolangCode`)
   return new Promise((resolve, reject) => {
     // 执行 Go 程序
     const command = `./src/goAST ${codeDir}`
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        reject(`执行 Go 程序失败: ${error.message}`)
+        core.error(`${error.message}`)
+        //reject(`执行 Go 程序失败: ${error.message}`)
         return
       }
       if (stderr) {
-        reject(`Go 程序输出错误: ${stderr}`)
+        core.error(`${error.message}`)
+        //reject(`Go 程序输出错误: ${stderr}`)
         return
       }
 
@@ -15139,6 +15144,7 @@ const taskQueue = {
   },
 
   async InitGoRepo() {
+    core.info('start InitGoRepo')
     this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
@@ -15157,6 +15163,7 @@ const taskQueue = {
   },
 
   async GenerateGoDocTasks() {
+    core.info('start GenerateGoDocTasks')
     await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
@@ -15545,6 +15552,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     // 1st level file reader
     // as AST scan result for your repo
     // define a json structure....
+    core.info(`dirPath ${dirPath}`)
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {
@@ -15566,6 +15574,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     // Set Action output
     // specific processor action on source code
     if (control_group.runType === 'godoc') {
+      core.info('start process go doc')
       ProcessGoDoc(GenAIresponses)
     }
     if (control_group.runType === 'jsunittest') {
@@ -15575,7 +15584,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     return GenAIresponses
   } catch (error) {
     // Fail the workflow run if an error occurs
-    core.setFailed(error.message)
+    core.error(error.message)
   }
 }
 

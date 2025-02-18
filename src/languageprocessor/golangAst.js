@@ -3,6 +3,7 @@
 const { exec } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const core = require('@actions/core')
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
@@ -10,16 +11,19 @@ const path = require('path')
  * @returns {Promise<Object>} - 返回解析后的 JSON 结果
  */
 function scanGolangCode(codeDir) {
+  core.info(`start scanGolangCode`)
   return new Promise((resolve, reject) => {
     // 执行 Go 程序
     const command = `./src/goAST ${codeDir}`
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        reject(`执行 Go 程序失败: ${error.message}`)
+        core.error(`${error.message}`)
+        //reject(`执行 Go 程序失败: ${error.message}`)
         return
       }
       if (stderr) {
-        reject(`Go 程序输出错误: ${stderr}`)
+        core.error(`${error.message}`)
+        //reject(`Go 程序输出错误: ${stderr}`)
         return
       }
 

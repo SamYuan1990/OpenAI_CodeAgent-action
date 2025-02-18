@@ -12,7 +12,8 @@ async function scanGoCodeDirectory(dirPath) {
     console.log('build go AST')
     await buildGoAST()
     console.log('scan project', dirPath)
-    const result = scanGolangCode(dirPath)
+    const result = await scanGolangCode(dirPath)
+    console.log(`scan result as ${result.length}`)
     return result
   } catch (error) {
     core.error('发生错误:', error)

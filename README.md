@@ -38,22 +38,21 @@ LLM, or dry run.
 ### According to AST:
 
 - [x] Checking if the function as any kind of exception handle or robust enough
-- [ ] Checking if we need to add comments at begin of a specific function for
+- [x] Checking if we need to add comments at begin of a specific function for
       people to understand the code.
 - [ ] Checking if function as owasp top 10 issues as new pointer or others.
-- [ ] Checking if function need fuzz testing or not.
 - [ ] etc... welcome for contribute your idea by new issue.
 
 ### According to additional metadata:
 
-- [ ] Comparing with SBOM and CVE list, checking security option in your
+- [x] Comparing with SBOM and CVE list, checking security option in your
       deloyment.
 - [ ] According to project setting as package.json/makefile to check if your
       project config is correct.
 - [ ] Accroding to test result, for example escape detection result, locate code
       and provide fix suggestion.
 - Checking if function leak
-- [ ] unit test
+- [x] unit test
 - [ ] benchmark test
 - [ ] fuzz
 - [ ] etc... welcome for contribute your idea by new issue.

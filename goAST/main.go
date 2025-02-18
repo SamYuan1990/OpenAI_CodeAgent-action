@@ -39,6 +39,10 @@ func parseDirRecursive(fset *token.FileSet, dir string) (map[string]*ast.Package
 			return nil
 		}
 
+		if strings.Contains(path, "vendor") {
+			return nil
+		}
+
 		// 解析 Go 文件
 		f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 		if err != nil {
@@ -94,7 +98,7 @@ func main() {
 	// 4. 遍历 AST，构建函数信息
 	var functions []FunctionInfo
 	for _, pkg := range pkgs {
-		fmt.Println(pkg.Files)
+		//fmt.Println(pkg.Files)
 		docPkg := doc.New(pkgs[pkg.Name], codeDir, doc.AllDecls)
 
 		for filePath, file := range pkg.Files {
