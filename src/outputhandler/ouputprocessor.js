@@ -19,7 +19,7 @@ function ProcessGoDoc(GenAIResult) {
     const dataFromAIAgent = GenAIResult[index].response
     const matches = dataFromAIAgent.match(my_regex)
     const funcName = GenAIResult[index].meta.functionname
-    const filePath = `/${GenAIResult[index].meta.filename}`
+    const filePath = `./${GenAIResult[index].meta.filename}`
     core.info(`going to process function ${funcName}`)
     core.info(`going to process at file ${filePath}`)
     core.info(`going to process genAI content ${dataFromAIAgent}`)
