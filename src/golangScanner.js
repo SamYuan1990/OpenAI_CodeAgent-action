@@ -16,7 +16,7 @@ async function scanGoCodeDirectory(dirPath) {
     console.log(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    core.error('发生错误:', error)
+    core.error('Error happen during build go AST', error)
   }
 }
 
@@ -35,10 +35,12 @@ function buildGoAST() {
     // 执行命令
     exec(command, (error, stdout, stderr) => {
       if (error) {
+        core.error(`fail to build Go project: ${error.message}`)
         reject(`构建 Go 项目失败: ${error.message}`)
         return
       }
       if (stderr) {
+        core.error(`fail to build Go output: ${error.message}`)
         reject(`构建 Go 项目输出错误: ${stderr}`)
         return
       }
