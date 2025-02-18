@@ -14429,6 +14429,7 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const { scanGolangCode } = __nccwpck_require__(294)
 const { exec } = __nccwpck_require__(5317)
+
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
@@ -14457,7 +14458,7 @@ function buildGoAST() {
   return new Promise((resolve, reject) => {
     // 解析相对路径为绝对路径
     // 构建 Go 项目的命令
-    const command = `cd goAST && go build -o ../src/goAST && cd ..`
+    const command = `wget https://github.com/SamYuan1990/OpenAI_CodeAgent-action/blob/main/goASTBin && chmod a+x goASTBin`
 
     // 执行命令
     exec(command, (error, stdout, stderr) => {
@@ -14546,7 +14547,7 @@ function scanGolangCode(codeDir) {
   core.info(`start scanGolangCode`)
   return new Promise((resolve, reject) => {
     // 执行 Go 程序
-    const command = `./src/goAST ${codeDir}`
+    const command = `./goASTBin ${codeDir}`
     exec(command, (error, stdout, stderr) => {
       if (error) {
         core.error(`${error.message}`)

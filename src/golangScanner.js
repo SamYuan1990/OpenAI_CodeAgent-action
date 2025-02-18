@@ -2,6 +2,7 @@
 const core = require('@actions/core')
 const { scanGolangCode } = require('./languageprocessor/golangAst')
 const { exec } = require('child_process')
+
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
@@ -30,7 +31,7 @@ function buildGoAST() {
   return new Promise((resolve, reject) => {
     // 解析相对路径为绝对路径
     // 构建 Go 项目的命令
-    const command = `cd goAST && go build -o ../src/goAST && cd ..`
+    const command = `wget https://github.com/SamYuan1990/OpenAI_CodeAgent-action/blob/main/goASTBin && chmod a+x goASTBin`
 
     // 执行命令
     exec(command, (error, stdout, stderr) => {

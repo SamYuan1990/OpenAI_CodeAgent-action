@@ -14,7 +14,7 @@ function scanGolangCode(codeDir) {
   core.info(`start scanGolangCode`)
   return new Promise((resolve, reject) => {
     // 执行 Go 程序
-    const command = `./src/goAST ${codeDir}`
+    const command = `./goASTBin ${codeDir}`
     exec(command, (error, stdout, stderr) => {
       if (error) {
         core.error(`${error.message}`)
