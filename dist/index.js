@@ -14458,7 +14458,7 @@ function buildGoAST() {
   return new Promise((resolve, reject) => {
     // 解析相对路径为绝对路径
     // 构建 Go 项目的命令
-    const command = `wget https://github.com/SamYuan1990/OpenAI_CodeAgent-action/blob/main/goASTBin && chmod a+x goASTBin`
+    const command = `wget https://github.com/SamYuan1990/OpenAI_CodeAgent-action/blob/main/goASTBin -O ./goASTBin && chmod a+x goASTBin`
 
     // 执行命令
     exec(command, (error, stdout, stderr) => {
