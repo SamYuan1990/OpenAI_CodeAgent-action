@@ -44,7 +44,7 @@ function ProcessGoDoc(GenAIResult) {
   }
 }
 
-function ProcessJsUnittest(path, GenAIResult) {
+function ProcessJsUnittest(GenAIResult) {
   const my_regex = js_regex
   const my_replacer = js_replacer
   for (let index = 0; index < GenAIResult.length; index++) {

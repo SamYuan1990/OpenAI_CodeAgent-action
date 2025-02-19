@@ -27,7 +27,7 @@ async function scanGoCodeDirectory(dirPath) {
  * @param {string} projectDir - Go 项目的相对目录
  * @param {string} outputDir - 构建结果的输出目录
  * @returns {Promise<string>} - 返回构建结果的标准输出
- */
+
 function buildGoAST() {
   return new Promise((resolve, reject) => {
     // 解析相对路径为绝对路径
@@ -50,7 +50,7 @@ function buildGoAST() {
     })
   })
 }
-
+ */
 module.exports = {
   scanGoCodeDirectory
 }
