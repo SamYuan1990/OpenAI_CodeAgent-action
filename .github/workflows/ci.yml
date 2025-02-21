@@ -46,6 +46,30 @@ jobs:
           JEST_TEST_TIMEOUT: 30000 # 设置超时时间为 30 秒
         run: npm run ci-test
 
+  test-dev:
+    name: test-dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-install
+        run: npm install
+
+      - name: run local dev script
+        id: local-dev
+        run: npx local-action . src/main.js .env.example
+
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest

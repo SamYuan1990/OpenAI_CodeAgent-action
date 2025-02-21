@@ -25,6 +25,9 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     if (control_group.runType === 'jsunittest') {
       taskQueue.GenerateJsUnitTestTask()
     }
+    if (control_group.runType === 'ccodescan') {
+      taskQueue.InitCCodeRepo()
+    }
     // loop AST tasks
     const GenAIresponses = await taskQueue.run(
       openai,
@@ -34,17 +37,17 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     )
     // output processor
     core.info('start processing GenAI result to file')
+    core.info(`debug response from run AST as ${GenAIresponses.length}`)
     // General output to folder
     // Set Action output
     // specific processor action on source code
-    if (control_group.runType === 'godoc') {
+    if (control_group.runType === 'godoc' && !dryRun) {
       core.info('start process go doc')
       ProcessGoDoc(GenAIresponses)
     }
-    if (control_group.runType === 'jsunittest') {
+    if (control_group.runType === 'jsunittest' && !dryRun) {
       ProcessJsUnittest(dirPath, GenAIresponses)
     }
-    core.info(`debug ${GenAIresponses.length}`)
     return GenAIresponses
   } catch (error) {
     // Fail the workflow run if an error occurs

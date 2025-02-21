@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
 const { invokeAIviaAgent } = require('./aiagent')
+const { scanDirectory } = require('./languageprocessor/cAst')
 
 const taskQueue = {
   Functions: [],
@@ -9,6 +10,18 @@ const taskQueue = {
   counter: 0, // 计数器
   maxIterations: 10, // 最大循环次数
   dirPath: '',
+
+  InitCCodeRepo() {
+    this.Functions = scanDirectory(this.dirPath)
+    let counter = 0
+    for (let index = 0; index < this.Functions.length; index++) {
+      this.tasks.push(this.Functions[index])
+      counter++
+      if (counter > this.maxIterations) {
+        break
+      }
+    }
+  },
 
   InitJsRepo() {
     this.Functions = scanJSCodeDirectory(this.dirPath)
@@ -80,6 +93,7 @@ const taskQueue = {
       // 执行任务
       result.push(GenAIContent)
       this.counter++ // 增加计数器
+      core.info('complete for one task with llm.')
     }
     if (this.counter >= this.maxIterations) {
       core.info('Reach out maxIterations exit')
