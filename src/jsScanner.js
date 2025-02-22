@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-const core = require('@actions/core')
 const { execSync } = require('child_process')
 const { parseLcovFile, scanDirectory } = require('./languageprocessor/nodeAst')
 const path = require('path')
+const { logger } = require('./logger/logger')
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
@@ -22,10 +22,10 @@ function runUnitTest() {
     execSync('npm install', { encoding: 'utf-8' })
     // 同步执行 npm run test 命令
     execSync('npx jest --coverage', { encoding: 'utf-8' })
-    core.info(`run npm test success: ${outputFilePath}`)
+    logger.Info(`run npm test success: ${outputFilePath}`)
   } catch (error) {
     // 捕获并处理错误
-    core.error(`fails in run npm test: ${error.message}`)
+    logger.Info(`fails in run npm test: ${error.message}`)
   }
 }
 

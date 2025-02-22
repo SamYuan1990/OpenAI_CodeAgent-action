@@ -39108,13 +39108,13 @@ module.exports = {
 /***/ 4082:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(7484)
 const crypto = __nccwpck_require__(6982)
+const { logger } = __nccwpck_require__(7424)
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
-  core.info(' We are going to talk with Gen AI with Model', model)
-  core.info(' We are going to talk with Gen AI with prompt and file content')
-  core.info(`${prompt}\n${fileContent}`)
+  logger.Info(' We are going to talk with Gen AI with Model', model)
+  logger.Info(' We are going to talk with Gen AI with prompt and file content')
+  logger.Info(`${prompt}\n${fileContent}`)
   const final_prompt = `${prompt}\n${fileContent}`
   const hash = crypto.createHash('sha256')
   hash.update(final_prompt)
@@ -39138,7 +39138,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
 
   if (!dryRun) {
     try {
-      core.info('--------Invoke generate AI:--------')
+      logger.Info('--------Invoke generate AI:--------')
       const completion = await openai.chat.completions.create({
         messages: [
           { role: 'system', content: 'You are a helpful assistant.' },
@@ -39149,20 +39149,20 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
         ],
         model
       })
-      core.info('--------This is output from generate AI:--------')
-      core.info(completion.choices[0].message.content)
-      core.info('--------End of generate AI output--------')
+      logger.Info('--------This is output from generate AI:--------')
+      logger.Info(completion.choices[0].message.content)
+      logger.Info('--------End of generate AI output--------')
       // hash
       // prompt metric
       // response
       // todo: error handle
       prompt_info.response = completion.choices[0].message.content
     } catch (error) {
-      core.info(`error happen from LLM response ${error}`)
+      logger.Info(`error happen from LLM response ${error}`)
       prompt_info.response = ''
     }
   } else {
-    core.info(`just dry run for, ${prompt}\n${fileContent}`)
+    logger.Info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
     // prompt metric
     prompt_info.response = ``
@@ -39193,9 +39193,8 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /* eslint-disable prefer-promise-reject-errors */
-const core = __nccwpck_require__(7484)
 const { scanGolangCode } = __nccwpck_require__(294)
-const { exec } = __nccwpck_require__(5317)
+const { logger } = __nccwpck_require__(7424)
 
 /**
  * 扫描 Go 代码目录并构建数据结构队列
@@ -39204,15 +39203,15 @@ const { exec } = __nccwpck_require__(5317)
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    console.log('download go AST binary')
+    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    console.log('scan project', dirPath)
+    logger.Info('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
-    console.log(`scan result as ${result.length}`)
+    logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    core.error('Error happen during build go AST', error)
+    logger.Info('Error happen during build go AST', error)
   }
 }
 
@@ -39256,10 +39255,10 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /* eslint-disable prettier/prettier */
-const core = __nccwpck_require__(7484)
 const { execSync } = __nccwpck_require__(5317)
 const { parseLcovFile, scanDirectory } = __nccwpck_require__(7476)
 const path = __nccwpck_require__(6928)
+const { logger } = __nccwpck_require__(7424)
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
@@ -39279,10 +39278,10 @@ function runUnitTest() {
     execSync('npm install', { encoding: 'utf-8' })
     // 同步执行 npm run test 命令
     execSync('npx jest --coverage', { encoding: 'utf-8' })
-    core.info(`run npm test success: ${outputFilePath}`)
+    logger.Info(`run npm test success: ${outputFilePath}`)
   } catch (error) {
     // 捕获并处理错误
-    core.error(`fails in run npm test: ${error.message}`)
+    logger.Info(`fails in run npm test: ${error.message}`)
   }
 }
 
@@ -39384,7 +39383,7 @@ main()
 const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
-const core = __nccwpck_require__(7484)
+const logger = __nccwpck_require__(7424)
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
@@ -39392,18 +39391,18 @@ const core = __nccwpck_require__(7484)
  * @returns {Promise<Object>} - 返回解析后的 JSON 结果
  */
 function scanGolangCode(codeDir) {
-  core.info(`start scanGolangCode`)
+  logger.Info(`start scanGolangCode`)
   return new Promise((resolve, reject) => {
     // 执行 Go 程序
     const command = `./goASTBin ${codeDir}`
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        core.error(`${error.message}`)
+        logger.Info(`${error.message}`)
         //reject(`执行 Go 程序失败: ${error.message}`)
         return
       }
       if (stderr) {
-        core.error(`${error.message}`)
+        logger.Info(`${error.message}`)
         //reject(`Go 程序输出错误: ${stderr}`)
         return
       }
@@ -39412,7 +39411,7 @@ function scanGolangCode(codeDir) {
       const jsonFilePath = path.join(codeDir, 'golangAST.json')
       fs.readFile(jsonFilePath, 'utf-8', (err, data) => {
         if (err) {
-          core.error(`fail to read json file ${err}`)
+          logger.Info(`fail to read json file ${err}`)
           //reject(`读取 JSON 文件失败: ${err.message}`)
           return
         }
@@ -39422,8 +39421,8 @@ function scanGolangCode(codeDir) {
           const jsonResult = JSON.parse(data)
           resolve(jsonResult)
         } catch (parseError) {
-          core.error(`fail to parse data to JSON, data: ${data}`)
-          core.error(`fail to parse JSON: ${parseError}`)
+          logger.Info(`fail to parse data to JSON, data: ${data}`)
+          logger.Info(`fail to parse JSON: ${parseError}`)
           //reject(`解析 JSON 数据失败: ${parseError.message}`)
         }
       })
@@ -39668,6 +39667,22 @@ main()
 
 /***/ }),
 
+/***/ 7424:
+/***/ ((module) => {
+
+const logger = {
+  Info(str) {
+    console.log(str)
+  }
+}
+
+module.exports = {
+  logger
+}
+
+
+/***/ }),
+
 /***/ 7936:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -39680,6 +39695,7 @@ const OpenAI = __nccwpck_require__(2583)
 const { cvss_deployment } = __nccwpck_require__(4636)
 const { processOutput } = __nccwpck_require__(7362)
 const { predefinePrompt } = __nccwpck_require__(9833)
+const { logger } = __nccwpck_require__(7424)
 
 function getInputOrDefault(inputName, defaultValue) {
   const input = core.getInput(inputName)
@@ -39691,7 +39707,7 @@ function getInputOrDefault(inputName, defaultValue) {
 
 async function run() {
   const baseURL = core.getInput('baseURL', { required: true })
-  core.info(`We are going to talk with Gen AI with URL ${baseURL}`)
+  logger.Info(`We are going to talk with Gen AI with URL ${baseURL}`)
 
   const apiKey = core.getInput('apiKey', { required: true })
   // creation of AI agent
@@ -39701,9 +39717,9 @@ async function run() {
   })
   // controler group
   const dryRun = core.getInput('dryRun')
-  core.info(`dry run? ${dryRun}`)
+  logger.Info(`dry run? ${dryRun}`)
   const runType = core.getInput('runType', { required: true })
-  core.info(`Will execute for ${runType}`)
+  logger.Info(`Will execute for ${runType}`)
 
   const maxIterations = core.getInput('maxIterations')
   const control_group = {
@@ -39712,11 +39728,11 @@ async function run() {
   }
   // end of AI Agent creation
   const model = core.getInput('model', { required: true })
-  core.info(`We are going to talk with Gen AI with Model${model}`)
+  logger.Info(`We are going to talk with Gen AI with Model${model}`)
   const defualt_prompt = predefinePrompt(control_group)
   const prompt = getInputOrDefault('prompt', defualt_prompt)
 
-  core.info(
+  logger.Info(
     `We are going to talk with Gen AI with prompt and file content ${prompt}`
   )
 
@@ -39733,10 +39749,10 @@ async function run() {
     // AST tasks
     LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
   }
-  core.info(`debug ${LLMresponses.length}`)
+  logger.Info(`debug ${LLMresponses.length}`)
   processOutput(LLMresponses)
   // Log the current timestamp, wait, then log the new timestamp
-  core.debug('complete at:', new Date().toTimeString())
+  logger.Info('complete at:', new Date().toTimeString())
 }
 
 //run()
@@ -39981,11 +39997,11 @@ module.exports = {
 /***/ 4824:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(7484)
 const { scanGoCodeDirectory } = __nccwpck_require__(8765)
 const { scanJSCodeDirectory } = __nccwpck_require__(3418)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const { scanDirectory } = __nccwpck_require__(9813)
+const { logger } = __nccwpck_require__(7424)
 
 const taskQueue = {
   Functions: [],
@@ -40011,7 +40027,7 @@ const taskQueue = {
   },
 
   async InitGoRepo() {
-    core.info('start InitGoRepo')
+    logger.Info('start InitGoRepo')
     this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
@@ -40030,7 +40046,7 @@ const taskQueue = {
   },
 
   async GenerateGoDocTasks() {
-    core.info('start GenerateGoDocTasks')
+    logger.Info('start GenerateGoDocTasks')
     await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
@@ -40076,14 +40092,14 @@ const taskQueue = {
       // 执行任务
       result.push(GenAIContent)
       this.counter++ // 增加计数器
-      core.info('complete for one task with llm.')
+      logger.Info('complete for one task with llm.')
     }
     if (this.counter >= this.maxIterations) {
-      core.info('Reach out maxIterations exit')
+      logger.Info('Reach out maxIterations exit')
     } else {
-      core.info('All tasks done')
+      logger.Info('All tasks done')
     }
-    core.info(`complete ${result.length} jobs`)
+    logger.Info(`complete ${result.length} jobs`)
     return result
   }
 }
@@ -40098,17 +40114,17 @@ module.exports = {
 /***/ 616:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
+const { logger } = __nccwpck_require__(7424)
 
 function writeFileForAarray(filePath, content) {
   const WriteContent = content.join()
-  core.debug(WriteContent)
+  logger.Info(WriteContent)
   try {
     fs.writeFileSync(filePath, WriteContent, 'utf8')
-    core.info('file writed')
+    logger.Info('file writed')
   } catch (err) {
-    core.info(`file write error: ${err.message}`)
+    logger.Info(`file write error: ${err.message}`)
   }
 }
 
@@ -40184,7 +40200,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(9896)
-const core = __nccwpck_require__(7484)
+const logger = __nccwpck_require__(7424)
 
 /**
  * 在 Go 文件中为特定函数插入注释
@@ -40201,7 +40217,7 @@ function insertCommentAboveFunction(filePath, funcName, comments) {
 
   // 检查是否找到函数定义
   if (!funcRegex.test(fileContent)) {
-    core.error(`未找到函数 "${funcName}" 的定义`)
+    logger.Info(`未找到函数 "${funcName}" 的定义`)
     return
   }
 
@@ -40217,7 +40233,7 @@ function insertCommentAboveFunction(filePath, funcName, comments) {
   // 将修改后的内容写回文件
   fs.writeFileSync(filePath, newFileContent, 'utf-8')
 
-  core.info(`已成功在函数 "${funcName}" 的上一行插入注释`)
+  logger.Info(`已成功在函数 "${funcName}" 的上一行插入注释`)
 }
 
 /*
@@ -40308,12 +40324,12 @@ module.exports = {
 /***/ 2170:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(7484)
 const { writeFileForAarray } = __nccwpck_require__(616)
 const {
   extractFunctionComment,
   insertCommentAboveFunction
 } = __nccwpck_require__(1501)
+const { logger } = __nccwpck_require__(7424)
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g
@@ -40330,26 +40346,26 @@ function ProcessGoDoc(GenAIResult) {
     const matches = dataFromAIAgent.match(my_regex)
     const funcName = GenAIResult[index].meta.functionname
     const filePath = `./${GenAIResult[index].meta.filename}`
-    core.info(`going to process function ${funcName}`)
-    core.info(`going to process at file ${filePath}`)
-    core.info(`going to process genAI content ${dataFromAIAgent}`)
+    logger.Info(`going to process function ${funcName}`)
+    logger.Info(`going to process at file ${filePath}`)
+    logger.Info(`going to process genAI content ${dataFromAIAgent}`)
     if (funcName === 'undefined') {
-      core.info('skip anonymous function')
+      logger.Info('skip anonymous function')
       continue
     }
     if (matches) {
-      core.info('match regex fileter, processing')
+      logger.Info('match regex fileter, processing')
       const code_contents = matches.map(match =>
         match.replace(my_replacer, '').trim()
       )
-      core.info(`match regex fileter, processing${code_contents}`)
+      logger.Info(`match regex fileter, processing${code_contents}`)
       // step 2, get comments from contents
       const content = extractFunctionComment(code_contents, funcName)
-      core.info(`going to insert comments as ${content}`)
+      logger.Info(`going to insert comments as ${content}`)
       // step 3, write comments into file
       const comments = ['Comments below is assisted by Gen AI', content]
       insertCommentAboveFunction(filePath, funcName, comments)
-      core.info('complete insert comments')
+      logger.Info('complete insert comments')
     }
   }
 }
@@ -40409,6 +40425,7 @@ const {
   ProcessGoDoc
 } = __nccwpck_require__(2170)
 const { taskQueue } = __nccwpck_require__(4824)
+const { logger } = __nccwpck_require__(7424)
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -40420,7 +40437,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     // 1st level file reader
     // as AST scan result for your repo
     // define a json structure....
-    core.info(`dirPath ${dirPath}`)
+    logger.Info(`dirPath ${dirPath}`)
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {
@@ -40440,13 +40457,13 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
       dryRun
     )
     // output processor
-    core.info('start processing GenAI result to file')
-    core.info(`debug response from run AST as ${GenAIresponses.length}`)
+    logger.Info('start processing GenAI result to file')
+    logger.Info(`debug response from run AST as ${GenAIresponses.length}`)
     // General output to folder
     // Set Action output
     // specific processor action on source code
     if (control_group.runType === 'godoc' && !dryRun) {
-      core.info('start process go doc')
+      logger.Info('start process go doc')
       ProcessGoDoc(GenAIresponses)
     }
     if (control_group.runType === 'jsunittest' && !dryRun) {
@@ -40455,7 +40472,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     return GenAIresponses
   } catch (error) {
     // Fail the workflow run if an error occurs
-    core.error(error.message)
+    logger.Info(error.message)
   }
 }
 

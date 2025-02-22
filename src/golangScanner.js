@@ -1,7 +1,6 @@
 /* eslint-disable prefer-promise-reject-errors */
-const core = require('@actions/core')
 const { scanGolangCode } = require('./languageprocessor/golangAst')
-const { exec } = require('child_process')
+const { logger } = require('./logger/logger')
 
 /**
  * 扫描 Go 代码目录并构建数据结构队列
@@ -10,15 +9,15 @@ const { exec } = require('child_process')
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    console.log('download go AST binary')
+    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    console.log('scan project', dirPath)
+    logger.Info('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
-    console.log(`scan result as ${result.length}`)
+    logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    core.error('Error happen during build go AST', error)
+    logger.Info('Error happen during build go AST', error)
   }
 }
 
