@@ -49,4 +49,6 @@ RUN npm install
 # 复制应用代码
 COPY . .
 
-CMD [echo, hello]
+RUN mkdir -p /workdir
+
+CMD ["node","./src/index.js"]
