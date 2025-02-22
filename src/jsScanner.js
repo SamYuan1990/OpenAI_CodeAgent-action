@@ -2,7 +2,7 @@
 const { execSync } = require('child_process')
 const { parseLcovFile, scanDirectory } = require('./languageprocessor/nodeAst')
 const path = require('path')
-const { logger } = require('./logger/logger')
+const { logger } = require('./utils/logger')
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径

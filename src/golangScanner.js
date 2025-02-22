@@ -1,6 +1,6 @@
 /* eslint-disable prefer-promise-reject-errors */
 const { scanGolangCode } = require('./languageprocessor/golangAst')
-const { logger } = require('./logger/logger')
+const { logger } = require('./utils/logger')
 
 /**
  * 扫描 Go 代码目录并构建数据结构队列

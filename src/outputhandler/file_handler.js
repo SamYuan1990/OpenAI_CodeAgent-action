@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { logger } = require('../logger/logger')
+const { logger } = require('../utils/logger')
 
 function writeFileForAarray(filePath, content) {
   const WriteContent = content.join()

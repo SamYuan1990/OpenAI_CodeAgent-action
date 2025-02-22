@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const { logger } = require('./logger/logger')
+const { logger } = require('./utils/logger')
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   logger.Info(' We are going to talk with Gen AI with Model', model)

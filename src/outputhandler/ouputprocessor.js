@@ -3,7 +3,7 @@ const {
   extractFunctionComment,
   insertCommentAboveFunction
 } = require('./goDoc')
-const { logger } = require('../logger/logger')
+const { logger } = require('../utils/logger')
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g

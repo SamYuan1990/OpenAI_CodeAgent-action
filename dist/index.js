@@ -39109,7 +39109,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const crypto = __nccwpck_require__(6982)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   logger.Info(' We are going to talk with Gen AI with Model', model)
@@ -39194,7 +39194,7 @@ module.exports = {
 
 /* eslint-disable prefer-promise-reject-errors */
 const { scanGolangCode } = __nccwpck_require__(294)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 
 /**
  * 扫描 Go 代码目录并构建数据结构队列
@@ -39258,7 +39258,7 @@ module.exports = {
 const { execSync } = __nccwpck_require__(5317)
 const { parseLcovFile, scanDirectory } = __nccwpck_require__(7476)
 const path = __nccwpck_require__(6928)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 /**
  * 扫描 Go 代码目录并构建数据结构队列
  * @param {string} dirPath - 要扫描的 Go 代码目录路径
@@ -39383,7 +39383,7 @@ main()
 const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
-const logger = __nccwpck_require__(7424)
+const logger = __nccwpck_require__(8467)
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
@@ -39667,22 +39667,6 @@ main()
 
 /***/ }),
 
-/***/ 7424:
-/***/ ((module) => {
-
-const logger = {
-  Info(str) {
-    console.log(str)
-  }
-}
-
-module.exports = {
-  logger
-}
-
-
-/***/ }),
-
 /***/ 7936:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -39690,48 +39674,40 @@ module.exports = {
  * The entrypoint for the action.
  */
 const { runAst } = __nccwpck_require__(4258)
-const core = __nccwpck_require__(7484)
 const OpenAI = __nccwpck_require__(2583)
 const { cvss_deployment } = __nccwpck_require__(4636)
 const { processOutput } = __nccwpck_require__(7362)
 const { predefinePrompt } = __nccwpck_require__(9833)
-const { logger } = __nccwpck_require__(7424)
-
-function getInputOrDefault(inputName, defaultValue) {
-  const input = core.getInput(inputName)
-  if (input === undefined || input == null || input.length === 0) {
-    return defaultValue
-  }
-  return input
-}
+const { logger } = __nccwpck_require__(8467)
+const { getInputOrDefault } = __nccwpck_require__(3313)
 
 async function run() {
-  const baseURL = core.getInput('baseURL', { required: true })
+  const baseURL = getInputOrDefault('baseURL', '')
   logger.Info(`We are going to talk with Gen AI with URL ${baseURL}`)
 
-  const apiKey = core.getInput('apiKey', { required: true })
+  const apiKey = getInputOrDefault('apiKey', '')
   // creation of AI agent
   const openai = new OpenAI({
     baseURL,
     apiKey
   })
   // controler group
-  const dryRun = core.getInput('dryRun')
+  const dryRun = getInputOrDefault('dryRun', '')
   logger.Info(`dry run? ${dryRun}`)
-  const runType = core.getInput('runType', { required: true })
+  const runType = getInputOrDefault('runType', '')
   logger.Info(`Will execute for ${runType}`)
 
-  const maxIterations = core.getInput('maxIterations')
+  const maxIterations = getInputOrDefault('maxIterations', '')
   const control_group = {
     maxIterations,
     runType
   }
   // end of AI Agent creation
-  const model = core.getInput('model', { required: true })
-  logger.Info(`We are going to talk with Gen AI with Model${model}`)
+  const model = getInputOrDefault('model', '')
+  logger.Info(`We are going to talk with Gen AI with Model ${model}`)
   const defualt_prompt = predefinePrompt(control_group)
+  logger.Info(`default prompt ${defualt_prompt}`)
   const prompt = getInputOrDefault('prompt', defualt_prompt)
-
   logger.Info(
     `We are going to talk with Gen AI with prompt and file content ${prompt}`
   )
@@ -39968,11 +39944,12 @@ const core = __nccwpck_require__(7484)
 const { fromCVEToPodDeployment } = __nccwpck_require__(6817)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const fs = __nccwpck_require__(9896)
+const { getInputOrDefault } = __nccwpck_require__(3313)
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
   const result = []
   core.info('running type CVE2Deployment')
-  const deploymentfile = core.getInput('deploymentfile', { required: true })
+  const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment()
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`
@@ -40001,7 +39978,7 @@ const { scanGoCodeDirectory } = __nccwpck_require__(8765)
 const { scanJSCodeDirectory } = __nccwpck_require__(3418)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const { scanDirectory } = __nccwpck_require__(9813)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 
 const taskQueue = {
   Functions: [],
@@ -40115,7 +40092,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(9896)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 
 function writeFileForAarray(filePath, content) {
   const WriteContent = content.join()
@@ -40200,7 +40177,7 @@ module.exports = {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const fs = __nccwpck_require__(9896)
-const logger = __nccwpck_require__(7424)
+const logger = __nccwpck_require__(8467)
 
 /**
  * 在 Go 文件中为特定函数插入注释
@@ -40329,7 +40306,7 @@ const {
   extractFunctionComment,
   insertCommentAboveFunction
 } = __nccwpck_require__(1501)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
 
 const js_regex = /```javascript([\s\S]*?)```([\r|\n]*?)###/g
 const js_replacer = /```javascript|```([\r|\n]*?)###/g
@@ -40425,14 +40402,16 @@ const {
   ProcessGoDoc
 } = __nccwpck_require__(2170)
 const { taskQueue } = __nccwpck_require__(4824)
-const { logger } = __nccwpck_require__(7424)
+const { logger } = __nccwpck_require__(8467)
+const { getInputOrDefault } = __nccwpck_require__(3313)
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function runAst(openai, model_parameters, control_group, dryRun) {
   try {
-    const dirPath = core.getInput('dirPath', { required: true })
+    const dirPath = getInputOrDefault('dirPath', '')
     // for case loop AST
     // 1st level file reader
     // as AST scan result for your repo
@@ -40478,6 +40457,51 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
 
 module.exports = {
   runAst
+}
+
+
+/***/ }),
+
+/***/ 3313:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(7484)
+
+function getInputOrDefault(inputName, defaultValue) {
+  // 优先从GitHub Actions输入获取
+  const coreValue = core.getInput(inputName)
+  if (coreValue !== undefined && coreValue !== null && coreValue !== '') {
+    return coreValue
+  }
+
+  // 其次尝试从操作系统环境变量获取（同名变量）
+  const envValue = process.env[inputName]
+  if (envValue !== undefined && envValue !== null && envValue !== '') {
+    return envValue
+  }
+
+  // 最终返回默认值
+  return defaultValue
+}
+
+module.exports = {
+  getInputOrDefault
+}
+
+
+/***/ }),
+
+/***/ 8467:
+/***/ ((module) => {
+
+const logger = {
+  Info(str) {
+    console.log(str)
+  }
+}
+
+module.exports = {
+  logger
 }
 
 

@@ -5,14 +5,16 @@ const {
   ProcessGoDoc
 } = require('./outputhandler/ouputprocessor')
 const { taskQueue } = require('./orchestration')
-const { logger } = require('./logger/logger')
+const { logger } = require('./utils/logger')
+const { getInputOrDefault } = require('./utils/inputFilter')
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function runAst(openai, model_parameters, control_group, dryRun) {
   try {
-    const dirPath = core.getInput('dirPath', { required: true })
+    const dirPath = getInputOrDefault('dirPath', '')
     // for case loop AST
     // 1st level file reader
     // as AST scan result for your repo
