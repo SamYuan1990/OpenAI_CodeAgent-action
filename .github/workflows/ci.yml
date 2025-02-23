@@ -1,6 +1,8 @@
 name: Continuous Integration
 
 on:
+  schedule:
+    - cron: 12 9 * * *
   pull_request:
     branches:
       - main
