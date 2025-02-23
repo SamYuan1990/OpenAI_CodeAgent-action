@@ -68,11 +68,11 @@ runs:
     - id: LLMresponse
       shell: bash
       run: |
-        VALUE=$(jq -r --fail-with-exit LLMresponse <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+        VALUE=$(jq -r -e .LLMresponse <<< "$(cat $(pwd)/GenAI_output/summary.json)")
         echo "LLMresponse=$(VALUE)" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r --fail-with-exit final_prompt <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+        VALUE=$(jq -r -e .final_prompt <<< "$(cat $(pwd)/GenAI_output/summary.json)")
         echo "final_prompt=$(VALUE)" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r --fail-with-exit avg_prompt_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+        VALUE=$(jq -r -e .avg_prompt_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
         echo "avg_prompt_precent=$(VALUE)" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r --fail-with-exit avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+        VALUE=$(jq -r -e .avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
         echo "avg_content_precent=$(VALUE)" >> $GITHUB_OUTPUT

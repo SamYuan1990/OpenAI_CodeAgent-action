@@ -117,7 +117,7 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: './src'
-          maxIterations: 10
+          maxIterations: 1
           dryRun: true
           runType: jsunittest
       - name: output check

@@ -96,6 +96,18 @@ AST task output (directory: `./GenAI_output`):
   npm install
   npx local-action . src/main.js .env.example
   ```
+  or container
+  ```bash
+  docker run -e baseURL="https://api.deepseek.com" \
+           -e apiKey="dummy" \
+           -e model="deep-seek" \
+           -e dirPath="/workdir/src" \
+           -e dryRun="true" \
+           -e runType="jsunittest" \
+           -e maxIterations=1 \
+           -v "$(pwd)":/workdir \
+           ghcr.io/samyuan1990/openai_codeagent-action:latest
+  ```
 
 ---
 
