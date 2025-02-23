@@ -120,3 +120,7 @@ jobs:
           maxIterations: 10
           dryRun: true
           runType: jsunittest
+      - name: output check
+        shell: bash
+        run: |
+          echo ${{ steps.test-action.outputs.LLMresponse }}
