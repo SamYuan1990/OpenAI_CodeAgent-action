@@ -59,7 +59,7 @@ function processOutput(LLMresponses) {
   if (LLMresponses.length === 1) {
     logger.Info(LLMresponses[0])
     Output.LLMresponse = LLMresponses[0].response
-    Output.final_prompt = LLMresponses[0].final_prompts
+    Output.final_prompt = LLMresponses[0].final_prompt
   }
   const filePath = path.join(folderName, `summary.json`)
   const summary_jsonString = JSON.stringify(Output, null, 2)
