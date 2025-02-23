@@ -1,6 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
-const core = require('@actions/core')
+const { logger } = require('../utils/logger')
 
 // CVSS 3.1 评分指标
 const cvss_3_1_metrics = {
@@ -60,7 +60,7 @@ const cvss_3_1_metrics = {
 async function fetchSeverityScoreBreakdown(url) {
   try {
     // 发送HTTP GET请求
-    core.info(`start to fetch CVE details ${url}`)
+    logger.Info(`start to fetch CVE details ${url}`)
     const response = await axios.get(url)
     const cvssMetrics = response.data.containers.adp[0].metrics.find(
       metric => metric.cvssV3_1
@@ -82,7 +82,7 @@ async function fetchSeverityScoreBreakdown(url) {
       return null
     }
   } catch (error) {
-    console.error(`Error fetching ${url}:`, error)
+    logger.Info(`Error fetching ${url}:`, error)
     return null
   }
 }
@@ -108,7 +108,7 @@ const myMetrics = {
 }
 
 async function fromCVEToPodDeployment() {
-  core.info(`start process CVE to pod deployment`)
+  logger.Info(`start process CVE to pod deployment`)
   // 读取 JSON 文件
   const data = JSON.parse(fs.readFileSync('./cve.json', 'utf8'))
 
@@ -116,7 +116,7 @@ async function fromCVEToPodDeployment() {
   const vulnerabilityIds = new Set() // 使用 Set 去重
   // eslint-disable-next-line github/array-foreach
   data.packages.forEach(content => {
-    core.info(`scan package ${content}`)
+    logger.Info(`scan package ${content}`)
     // eslint-disable-next-line github/array-foreach
     content.vulnerabilities.forEach(vulnerability => {
       vulnerabilityIds.add(vulnerability.id)

@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const Parser = require('tree-sitter')
 const CTree = require('tree-sitter-c')
-const core = require('@actions/core')
+const { logger } = require('../utils/logger')
 
 // 递归扫描目录中的所有C文件
 function scanDirectory(dir) {
@@ -24,7 +24,7 @@ function scanDirectory(dir) {
     extractFunctions(ast.rootNode, filePath, result)
   }
 
-  core.info(`scanned C function as ${result.length}`)
+  logger.Info(`scanned C function as ${result.length}`)
   return result
 }
 

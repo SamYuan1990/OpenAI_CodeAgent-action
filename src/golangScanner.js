@@ -21,35 +21,6 @@ async function scanGoCodeDirectory(dirPath) {
   }
 }
 
-/**
- * 构建 Go 项目并将结果输出到指定目录
- * @param {string} projectDir - Go 项目的相对目录
- * @param {string} outputDir - 构建结果的输出目录
- * @returns {Promise<string>} - 返回构建结果的标准输出
-
-function buildGoAST() {
-  return new Promise((resolve, reject) => {
-    // 解析相对路径为绝对路径
-    // 构建 Go 项目的命令
-    const command = `wget https://raw.githubusercontent.com/SamYuan1990/OpenAI_CodeAgent-action/refs/heads/main/goASTBin -O ./goASTBin && chmod a+x goASTBin`
-
-    // 执行命令
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        core.error(`fail to download go binary err: ${error}`)
-        return
-      }
-      if (stderr) {
-        core.error(`fail to download go binary std err: ${error}`)
-        return
-      }
-
-      // 返回标准输出
-      resolve(stdout)
-    })
-  })
-}
- */
 module.exports = {
   scanGoCodeDirectory
 }

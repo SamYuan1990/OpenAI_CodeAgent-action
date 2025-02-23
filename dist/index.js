@@ -39215,35 +39215,6 @@ async function scanGoCodeDirectory(dirPath) {
   }
 }
 
-/**
- * 构建 Go 项目并将结果输出到指定目录
- * @param {string} projectDir - Go 项目的相对目录
- * @param {string} outputDir - 构建结果的输出目录
- * @returns {Promise<string>} - 返回构建结果的标准输出
-
-function buildGoAST() {
-  return new Promise((resolve, reject) => {
-    // 解析相对路径为绝对路径
-    // 构建 Go 项目的命令
-    const command = `wget https://raw.githubusercontent.com/SamYuan1990/OpenAI_CodeAgent-action/refs/heads/main/goASTBin -O ./goASTBin && chmod a+x goASTBin`
-
-    // 执行命令
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        core.error(`fail to download go binary err: ${error}`)
-        return
-      }
-      if (stderr) {
-        core.error(`fail to download go binary std err: ${error}`)
-        return
-      }
-
-      // 返回标准输出
-      resolve(stdout)
-    })
-  })
-}
- */
 module.exports = {
   scanGoCodeDirectory
 }
@@ -39300,7 +39271,7 @@ const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
 const Parser = __nccwpck_require__(8072)
 const CTree = __nccwpck_require__(1404)
-const core = __nccwpck_require__(7484)
+const { logger } = __nccwpck_require__(8467)
 
 // 递归扫描目录中的所有C文件
 function scanDirectory(dir) {
@@ -39322,7 +39293,7 @@ function scanDirectory(dir) {
     extractFunctions(ast.rootNode, filePath, result)
   }
 
-  core.info(`scanned C function as ${result.length}`)
+  logger.Info(`scanned C function as ${result.length}`)
   return result
 }
 
@@ -39745,7 +39716,7 @@ module.exports = {
 
 const axios = __nccwpck_require__(7269)
 const fs = __nccwpck_require__(9896)
-const core = __nccwpck_require__(7484)
+const { logger } = __nccwpck_require__(8467)
 
 // CVSS 3.1 评分指标
 const cvss_3_1_metrics = {
@@ -39805,7 +39776,7 @@ const cvss_3_1_metrics = {
 async function fetchSeverityScoreBreakdown(url) {
   try {
     // 发送HTTP GET请求
-    core.info(`start to fetch CVE details ${url}`)
+    logger.Info(`start to fetch CVE details ${url}`)
     const response = await axios.get(url)
     const cvssMetrics = response.data.containers.adp[0].metrics.find(
       metric => metric.cvssV3_1
@@ -39827,7 +39798,7 @@ async function fetchSeverityScoreBreakdown(url) {
       return null
     }
   } catch (error) {
-    console.error(`Error fetching ${url}:`, error)
+    logger.Info(`Error fetching ${url}:`, error)
     return null
   }
 }
@@ -39853,7 +39824,7 @@ const myMetrics = {
 }
 
 async function fromCVEToPodDeployment() {
-  core.info(`start process CVE to pod deployment`)
+  logger.Info(`start process CVE to pod deployment`)
   // 读取 JSON 文件
   const data = JSON.parse(fs.readFileSync('./cve.json', 'utf8'))
 
@@ -39861,7 +39832,7 @@ async function fromCVEToPodDeployment() {
   const vulnerabilityIds = new Set() // 使用 Set 去重
   // eslint-disable-next-line github/array-foreach
   data.packages.forEach(content => {
-    core.info(`scan package ${content}`)
+    logger.Info(`scan package ${content}`)
     // eslint-disable-next-line github/array-foreach
     content.vulnerabilities.forEach(vulnerability => {
       vulnerabilityIds.add(vulnerability.id)
@@ -39940,15 +39911,15 @@ module.exports = {
 /***/ 4636:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const core = __nccwpck_require__(7484)
 const { fromCVEToPodDeployment } = __nccwpck_require__(6817)
 const { invokeAIviaAgent } = __nccwpck_require__(4082)
 const fs = __nccwpck_require__(9896)
 const { getInputOrDefault } = __nccwpck_require__(3313)
+const { logger } = __nccwpck_require__(8467)
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
   const result = []
-  core.info('running type CVE2Deployment')
+  logger.Info('running type CVE2Deployment')
   const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment()
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
@@ -40119,6 +40090,7 @@ module.exports = {
 const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
+const { logger } = __nccwpck_require__(8467)
 
 function processOutput(LLMresponses) {
   // output processor
@@ -40132,14 +40104,14 @@ function processOutput(LLMresponses) {
   // content_precent > file content, avg output
   // }
   const folderName = './GenAI_output'
-  core.info('make output dir')
+  logger.Info('make output dir')
   fs.mkdirSync(folderName, { recursive: true })
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
-  core.info(`going to process ${LLMresponses.length} results`)
+  logger.Info(`going to process ${LLMresponses.length} results`)
   for (let i = 0; i < LLMresponses.length; i++) {
-    core.info('process general output for ', LLMresponses[i].hashValue)
+    logger.Info('process general output for ', LLMresponses[i].hashValue)
     prompt_precent_sum += LLMresponses[i].prompt_precent
     content_precent_sum += LLMresponses[i].content_precent
     const jsonString = JSON.stringify(LLMresponses[i], null, 2)
@@ -40148,19 +40120,19 @@ function processOutput(LLMresponses) {
       `file_${LLMresponses[i].hashValue}.out`
     )
     fs.writeFileSync(filePath, jsonString)
-    core.info(`Record data to file ${filePath} success`)
-    core.info('process complete for ', LLMresponses[i].hashValue)
+    logger.Info(`Record data to file ${filePath} success`)
+    logger.Info('process complete for ', LLMresponses[i].hashValue)
   }
 
   const avg_prompt_precent = prompt_precent_sum / LLMresponses.length
   const avg_content_precent = content_precent_sum / LLMresponses.length
   // Set Action output
   core.setOutput('avg_prompt_precent', avg_prompt_precent)
-  core.info('avg_prompt_precent', avg_prompt_precent)
+  logger.Info('avg_prompt_precent', avg_prompt_precent)
   core.setOutput('avg_content_precent', avg_content_precent)
-  core.info('avg_content_precent', avg_content_precent)
+  logger.Info('avg_content_precent', avg_content_precent)
   if (LLMresponses.length === 1) {
-    core.info(LLMresponses[0])
+    logger.Info(LLMresponses[0])
     core.setOutput('LLMresponse', LLMresponses[0].response)
     core.setOutput('final_prompt', LLMresponses[0].final_prompt)
   }
@@ -40362,27 +40334,6 @@ function ProcessJsUnittest(GenAIResult) {
     }
   }
 }
-
-/*function processOutput(dataFromAIAgent, GenAItask) {
-  let my_regex = js_regex
-  let my_replacer = js_replacer
-  if (GenAItask.code_language === 'go') {
-    my_regex = golang_regex
-    my_replacer = golang_replacer
-  }
-  if (GenAItask.outputProcessMethod === 'regex_match') {
-    const matches = dataFromAIAgent.match(my_regex)
-    if (matches) {
-      const contents = matches.map(match =>
-        match.replace(my_replacer, '').trim()
-      )
-      writeFileForAarray(GenAItask.outputFilePath, contents)
-      core.debug('content:', contents)
-    } else {
-      core.info('content not found')
-    }
-  }
-}*/
 
 module.exports = {
   ProcessJsUnittest,

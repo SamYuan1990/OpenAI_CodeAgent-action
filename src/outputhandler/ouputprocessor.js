@@ -60,27 +60,6 @@ function ProcessJsUnittest(GenAIResult) {
   }
 }
 
-/*function processOutput(dataFromAIAgent, GenAItask) {
-  let my_regex = js_regex
-  let my_replacer = js_replacer
-  if (GenAItask.code_language === 'go') {
-    my_regex = golang_regex
-    my_replacer = golang_replacer
-  }
-  if (GenAItask.outputProcessMethod === 'regex_match') {
-    const matches = dataFromAIAgent.match(my_regex)
-    if (matches) {
-      const contents = matches.map(match =>
-        match.replace(my_replacer, '').trim()
-      )
-      writeFileForAarray(GenAItask.outputFilePath, contents)
-      core.debug('content:', contents)
-    } else {
-      core.info('content not found')
-    }
-  }
-}*/
-
 module.exports = {
   ProcessJsUnittest,
   ProcessGoDoc
