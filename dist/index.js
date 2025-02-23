@@ -40091,6 +40091,7 @@ const core = __nccwpck_require__(7484)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
 const { logger } = __nccwpck_require__(8467)
+const { getInputOrDefault } = __nccwpck_require__(3313)
 
 function processOutput(LLMresponses) {
   // output processor
@@ -40109,9 +40110,15 @@ function processOutput(LLMresponses) {
     LLMresponse: '',
     final_prompt: ''
   }
-  const folderName = './GenAI_output'
-  logger.Info('make output dir')
-  fs.mkdirSync(folderName, { recursive: true })
+  const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
+  const outputpath = fs.mkdirSync(folderName, {
+    recursive: true,
+    permission: 0o755
+  })
+  if (outputpath != null) {
+    const absolutePath = path.resolve(outputpath)
+    logger.Info(`make output dir, ${absolutePath}`)
+  }
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
@@ -40140,7 +40147,7 @@ function processOutput(LLMresponses) {
   if (LLMresponses.length === 1) {
     logger.Info(LLMresponses[0])
     Output.LLMresponse = LLMresponses[0].response
-    Output.final_prompt = LLMresponses[0].final_prompts
+    Output.final_prompt = LLMresponses[0].final_prompt
   }
   const filePath = path.join(folderName, `summary.json`)
   const summary_jsonString = JSON.stringify(Output, null, 2)

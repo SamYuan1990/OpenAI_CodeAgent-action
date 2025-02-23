@@ -97,8 +97,11 @@ jobs:
            -e dryRun="true" \
            -e runType="jsunittest" \
            -e maxIterations=1 \
-           -v "$(pwd)":/workdir \
+           -v "$(pwd):/workdir:rw" \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
+           ls $(pwd)
+           ls $(pwd)/GenAI_output
+           cat $(pwd)/GenAI_output/summary.json
 
   test-action:
     name: GitHub Actions Test
@@ -117,6 +120,10 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: './src'
-          maxIterations: 10
+          maxIterations: 1
           dryRun: true
           runType: jsunittest
+      - name: output check
+        shell: bash
+        run: |
+          echo ${{ steps.test-action.outputs.LLMresponse }}
