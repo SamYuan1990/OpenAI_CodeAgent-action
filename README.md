@@ -21,11 +21,12 @@ pipelines.
 
 ### Supported Scenarios
 
-| Category      | Tools        | Language/Target | Scenario                                                 | Example                                                   |
-| ------------- | ------------ | --------------- | -------------------------------------------------------- | --------------------------------------------------------- |
-| **Unit Test** | Jest         | JavaScript      | Auto-generate unit tests to improve coverage             | [Link](./.github/workflows/ExampleJSunittestGenerate.yml) |
-| **Doc Gen**   |              | Go              | Generate GoDoc comments via AST analysis                 | [Link](./.github/workflows/ExampleGODocGenerate.yml)      |
-| **CVE Scan**  | Syft, Bomber | deployment.yaml | Detect CVEs and suggest Pod Security Policy improvements | [Link](./.github/workflows/ExampleCVEToDeployment.yml)    |
+| Category                      | Tools        | Language/Target | Scenario                                                 | Example                                                     |
+| ----------------------------- | ------------ | --------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
+| **Unit Test**                 | Jest         | JavaScript      | Auto-generate unit tests to improve coverage             | [Link](./.github/workflows/ExampleJSunittestGenerate.yml)   |
+| **Doc Gen**                   |              | Go              | Generate GoDoc comments via AST analysis                 | [Link](./.github/workflows/ExampleGODocGenerate.yml)        |
+| **CVE Scan**                  | Syft, Bomber | deployment.yaml | Detect CVEs and suggest Pod Security Policy improvements | [Link](./.github/workflows/ExampleCVEToDeployment.yml)      |
+| **Code Vulnerabilities Scan** |              | C               | Detect common CVE reasons as null pointer for code       | [Link](./.github/workflows/ExampleCVulnerabilitiesscan.yml) |
 
 ## Collaboration
 

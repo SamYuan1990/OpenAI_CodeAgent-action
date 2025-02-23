@@ -126,4 +126,7 @@ jobs:
       - name: output check
         shell: bash
         run: |
-          echo ${{ steps.test-action.outputs.LLMresponse }}
+          echo '${{ steps.test-action.outputs.LLMresponse }}'
+          echo '${{ steps.test-action.outputs.final_prompt }}'
+          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
+          echo '${{ steps.test-action.outputs.avg_content_precent }}'
