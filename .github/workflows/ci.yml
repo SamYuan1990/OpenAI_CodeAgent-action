@@ -1,6 +1,8 @@
 name: Continuous Integration
 
 on:
+  schedule:
+    - cron: 12 9 * * *
   pull_request:
     branches:
       - main
@@ -45,6 +47,58 @@ jobs:
         env:
           JEST_TEST_TIMEOUT: 30000 # 设置超时时间为 30 秒
         run: npm run ci-test
+
+  test-dev:
+    name: test-dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-install
+        run: npm install
+
+      - name: run local dev script
+        id: local-dev
+        run: npx local-action . src/main.js .env.example
+
+  test-container:
+    name: test-container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: run local dev script
+        id: local-dev
+        run: |
+          docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
+          docker run -v "$(pwd)":/workdir \
+           ghcr.io/samyuan1990/openai_codeagent-action:latest ls /workdir 
+          docker run -e baseURL="https://api.deepseek.com" \
+           -e apiKey="dummy" \
+           -e model="deep-seek" \
+           -e dirPath="/workdir/src" \
+           -e dryRun="true" \
+           -e runType="jsunittest" \
+           -e maxIterations=1 \
+           -v "$(pwd)":/workdir \
+           ghcr.io/samyuan1990/openai_codeagent-action:latest
 
   test-action:
     name: GitHub Actions Test

@@ -1,12 +1,13 @@
-const core = require('@actions/core')
 const { fromCVEToPodDeployment } = require('./cve')
 const { invokeAIviaAgent } = require('../aiagent')
 const fs = require('fs')
+const { getInputOrDefault } = require('../utils/inputFilter')
+const { logger } = require('../utils/logger')
 
 async function cvss_deployment(openai, model_parameters, dryRun) {
   const result = []
-  core.info('running type CVE2Deployment')
-  const deploymentfile = core.getInput('deploymentfile', { required: true })
+  logger.Info('running type CVE2Deployment')
+  const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment()
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`

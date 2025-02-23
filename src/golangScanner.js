@@ -1,7 +1,6 @@
 /* eslint-disable prefer-promise-reject-errors */
-const core = require('@actions/core')
 const { scanGolangCode } = require('./languageprocessor/golangAst')
-const { exec } = require('child_process')
+const { logger } = require('./utils/logger')
 
 /**
  * 扫描 Go 代码目录并构建数据结构队列
@@ -10,47 +9,18 @@ const { exec } = require('child_process')
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    console.log('download go AST binary')
+    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    console.log('scan project', dirPath)
+    logger.Info('scan project', dirPath)
     const result = await scanGolangCode(dirPath)
-    console.log(`scan result as ${result.length}`)
+    logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    core.error('Error happen during build go AST', error)
+    logger.Info('Error happen during build go AST', error)
   }
 }
 
-/**
- * 构建 Go 项目并将结果输出到指定目录
- * @param {string} projectDir - Go 项目的相对目录
- * @param {string} outputDir - 构建结果的输出目录
- * @returns {Promise<string>} - 返回构建结果的标准输出
-
-function buildGoAST() {
-  return new Promise((resolve, reject) => {
-    // 解析相对路径为绝对路径
-    // 构建 Go 项目的命令
-    const command = `wget https://raw.githubusercontent.com/SamYuan1990/OpenAI_CodeAgent-action/refs/heads/main/goASTBin -O ./goASTBin && chmod a+x goASTBin`
-
-    // 执行命令
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        core.error(`fail to download go binary err: ${error}`)
-        return
-      }
-      if (stderr) {
-        core.error(`fail to download go binary std err: ${error}`)
-        return
-      }
-
-      // 返回标准输出
-      resolve(stdout)
-    })
-  })
-}
- */
 module.exports = {
   scanGoCodeDirectory
 }

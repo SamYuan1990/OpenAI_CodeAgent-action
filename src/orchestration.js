@@ -1,7 +1,8 @@
-const core = require('@actions/core')
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
 const { invokeAIviaAgent } = require('./aiagent')
+const { scanDirectory } = require('./languageprocessor/cAst')
+const { logger } = require('./utils/logger')
 
 const taskQueue = {
   Functions: [],
@@ -10,12 +11,24 @@ const taskQueue = {
   maxIterations: 10, // 最大循环次数
   dirPath: '',
 
+  InitCCodeRepo() {
+    this.Functions = scanDirectory(this.dirPath)
+    let counter = 0
+    for (let index = 0; index < this.Functions.length; index++) {
+      this.tasks.push(this.Functions[index])
+      counter++
+      if (counter > this.maxIterations) {
+        break
+      }
+    }
+  },
+
   InitJsRepo() {
     this.Functions = scanJSCodeDirectory(this.dirPath)
   },
 
   async InitGoRepo() {
-    core.info('start InitGoRepo')
+    logger.Info('start InitGoRepo')
     this.Functions = await scanGoCodeDirectory(this.dirPath)
   },
 
@@ -34,7 +47,7 @@ const taskQueue = {
   },
 
   async GenerateGoDocTasks() {
-    core.info('start GenerateGoDocTasks')
+    logger.Info('start GenerateGoDocTasks')
     await this.InitGoRepo(this.dirPath)
     let counter = 0
     for (let index = 0; index < this.Functions.length; index++) {
@@ -80,13 +93,14 @@ const taskQueue = {
       // 执行任务
       result.push(GenAIContent)
       this.counter++ // 增加计数器
+      logger.Info('complete for one task with llm.')
     }
     if (this.counter >= this.maxIterations) {
-      core.info('Reach out maxIterations exit')
+      logger.Info('Reach out maxIterations exit')
     } else {
-      core.info('All tasks done')
+      logger.Info('All tasks done')
     }
-    core.info(`complete ${result.length} jobs`)
+    logger.Info(`complete ${result.length} jobs`)
     return result
   }
 }

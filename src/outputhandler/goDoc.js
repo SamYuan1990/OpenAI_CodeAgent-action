@@ -1,5 +1,5 @@
 const fs = require('fs')
-const core = require('@actions/core')
+const logger = require('../utils/logger')
 
 /**
  * 在 Go 文件中为特定函数插入注释
@@ -16,7 +16,7 @@ function insertCommentAboveFunction(filePath, funcName, comments) {
 
   // 检查是否找到函数定义
   if (!funcRegex.test(fileContent)) {
-    core.error(`未找到函数 "${funcName}" 的定义`)
+    logger.Info(`未找到函数 "${funcName}" 的定义`)
     return
   }
 
@@ -32,7 +32,7 @@ function insertCommentAboveFunction(filePath, funcName, comments) {
   // 将修改后的内容写回文件
   fs.writeFileSync(filePath, newFileContent, 'utf-8')
 
-  core.info(`已成功在函数 "${funcName}" 的上一行插入注释`)
+  logger.Info(`已成功在函数 "${funcName}" 的上一行插入注释`)
 }
 
 /*

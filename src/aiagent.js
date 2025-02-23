@@ -1,10 +1,10 @@
-const core = require('@actions/core')
 const crypto = require('crypto')
+const { logger } = require('./utils/logger')
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
-  core.info(' We are going to talk with Gen AI with Model', model)
-  core.info(' We are going to talk with Gen AI with prompt and file content')
-  core.info(`${prompt}\n${fileContent}`)
+  logger.Info(' We are going to talk with Gen AI with Model', model)
+  logger.Info(' We are going to talk with Gen AI with prompt and file content')
+  logger.Info(`${prompt}\n${fileContent}`)
   const final_prompt = `${prompt}\n${fileContent}`
   const hash = crypto.createHash('sha256')
   hash.update(final_prompt)
@@ -28,7 +28,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
 
   if (!dryRun) {
     try {
-      core.info('--------Invoke generate AI:--------')
+      logger.Info('--------Invoke generate AI:--------')
       const completion = await openai.chat.completions.create({
         messages: [
           { role: 'system', content: 'You are a helpful assistant.' },
@@ -39,20 +39,20 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
         ],
         model
       })
-      core.info('--------This is output from generate AI:--------')
-      core.info(completion.choices[0].message.content)
-      core.info('--------End of generate AI output--------')
+      logger.Info('--------This is output from generate AI:--------')
+      logger.Info(completion.choices[0].message.content)
+      logger.Info('--------End of generate AI output--------')
       // hash
       // prompt metric
       // response
       // todo: error handle
       prompt_info.response = completion.choices[0].message.content
     } catch (error) {
-      core.info(`error happen from LLM response ${error}`)
+      logger.Info(`error happen from LLM response ${error}`)
       prompt_info.response = ''
     }
   } else {
-    core.info(`just dry run for, ${prompt}\n${fileContent}`)
+    logger.Info(`just dry run for, ${prompt}\n${fileContent}`)
     // hash
     // prompt metric
     prompt_info.response = ``

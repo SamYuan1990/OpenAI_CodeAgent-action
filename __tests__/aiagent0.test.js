@@ -64,7 +64,7 @@ describe('invokeAIviaAgent', () => {
       model: 'deepseek-chat'
     })
 
-    expect(core.info).toHaveBeenCalledWith('Mocked AI response')
+    //expect(core.info).toHaveBeenCalledWith('Mocked AI response')
     expect(result.response).toBe('Mocked AI response')
   })
 })
