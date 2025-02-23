@@ -63,7 +63,7 @@ runs:
          -e maxIterations=${{ inputs.maxIterations }} \
          -e deploymentfile=${{ inputs.deploymentfile }} \
          -e prompt=${{ inputs.prompt }} \
-         -v "$(pwd)":/workdir \
+         -v "$(pwd):/workdir:rw" \
          ghcr.io/samyuan1990/openai_codeagent-action:latest
     - id: LLMresponse
       shell: bash
