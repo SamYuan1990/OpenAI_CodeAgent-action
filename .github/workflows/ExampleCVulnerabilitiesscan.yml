@@ -24,7 +24,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
-          dirpath: './'
+          dirpath: '/workdir'
           runType: ccodescan
 
       - uses: actions/upload-artifact@v4
