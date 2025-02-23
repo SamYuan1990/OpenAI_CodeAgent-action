@@ -31,23 +31,23 @@ inputs:
     description: 'the deployment yaml if you use CVE2Deployment'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-      - name: Set up Docker as container env
-        uses: docker/setup-buildx-action@v3
+    - name: Set up Docker as container env
+      uses: docker/setup-buildx-action@v3
 
-      - name: run local dev script
-        shell: bash
-        id: local-dev
-        run: |
-          docker run -e baseURL=${{ inputs.baseURL }} \
-           -e apiKey=${{ inputs.apiKey }} \
-           -e model=${{ inputs.model }} \
-           -e dirPath=${{ inputs.dirPath }} \
-           -e dryRun=${{ inputs.dryRun }} \
-           -e runType=${{ inputs.runType }} \
-           -e maxIterations=${{ inputs.maxIterations }} \
-           -e deploymentfile=${{ inputs.deploymentfile }} \
-           -e prompt=${{ inputs.prompt }} \
-           -v "$(pwd)":/workdir \
-           ghcr.io/samyuan1990/openai_codeagent-action:latest
+    - name: run local dev script
+      shell: bash
+      id: local-dev
+      run: |
+        docker run -e baseURL=${{ inputs.baseURL }} \
+         -e apiKey=${{ inputs.apiKey }} \
+         -e model=${{ inputs.model }} \
+         -e dirPath=${{ inputs.dirPath }} \
+         -e dryRun=${{ inputs.dryRun }} \
+         -e runType=${{ inputs.runType }} \
+         -e maxIterations=${{ inputs.maxIterations }} \
+         -e deploymentfile=${{ inputs.deploymentfile }} \
+         -e prompt=${{ inputs.prompt }} \
+         -v "$(pwd)":/workdir \
+         ghcr.io/samyuan1990/openai_codeagent-action:latest
