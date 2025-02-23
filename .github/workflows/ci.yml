@@ -97,7 +97,7 @@ jobs:
            -e dryRun="true" \
            -e runType="jsunittest" \
            -e maxIterations=1 \
-           -v "$(pwd)":/workdir \
+           -v "$(pwd):/workdir:rw" \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
            ls $(pwd)
            ls $(pwd)/GenAI_output

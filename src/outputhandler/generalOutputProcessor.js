@@ -22,8 +22,12 @@ function processOutput(LLMresponses) {
     final_prompt: ''
   }
   const folderName = './GenAI_output'
-  const outputpath = fs.mkdirSync(folderName, { recursive: true })
-  logger.Info(`make output dir, ${outputpath}`)
+  const outputpath = fs.mkdirSync(folderName, {
+    recursive: true,
+    permission: 0o755
+  })
+  const absolutePath = path.resolve(outputpath)
+  logger.Info(`make output dir, ${absolutePath}`)
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
