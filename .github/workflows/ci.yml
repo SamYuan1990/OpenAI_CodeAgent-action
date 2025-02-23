@@ -99,6 +99,9 @@ jobs:
            -e maxIterations=1 \
            -v "$(pwd)":/workdir \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
+           ls $(pwd)
+           ls $(pwd)/GenAI_output
+           cat $(pwd)/GenAI_output/summary.json
 
   test-action:
     name: GitHub Actions Test
