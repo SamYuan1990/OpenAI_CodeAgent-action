@@ -21,7 +21,7 @@ function processOutput(LLMresponses) {
     LLMresponse: '',
     final_prompt: ''
   }
-  const folderName = '/workdir/GenAI_output'
+  const folderName = './GenAI_output'
   logger.Info('make output dir')
   fs.mkdirSync(folderName, { recursive: true })
   // General output to folder
