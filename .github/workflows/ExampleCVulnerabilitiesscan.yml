@@ -26,6 +26,7 @@ jobs:
           model: deepseek-chat
           dirpath: '/workdir'
           runType: ccodescan
+          maxIterations: 1
 
       - uses: actions/upload-artifact@v4
         with:
