@@ -1,0 +1,247 @@
+<h1 id="hello-world-openai-code-agent">Hello, World! OpenAI Code Agent</h1>
+<p>
+  <a
+    href="https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml"
+    ><img
+      src="https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml/badge.svg"
+      alt="Lint Codebase"
+  /></a>
+  <a
+    href="https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml"
+    ><img
+      src="https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml/badge.svg"
+      alt="Continuous Integration"
+  /></a>
+</p>
+<p><a href="./README_zh.md">中文文档</a></p>
+<h2 id="scenarios-features">Scenarios &amp; Features</h2>
+<p>
+  This project integrates source code and tool-generated reports (e.g., test
+  results, security scans) into Large Language Models (LLMs) to enable
+  intelligent analysis without RAG or fine-tuning. The capability is embedded
+  into CI/CD pipelines.
+</p>
+<table>
+  <colgroup>
+    <col style="width: 10%" />
+    <col style="width: 14%" />
+    <col style="width: 12%" />
+    <col style="width: 20%" />
+    <col style="width: 24%" />
+    <col style="width: 17%" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th><strong>Category</strong></th>
+      <th><strong>Tools</strong></th>
+      <th><strong>Purpose</strong></th>
+      <th><strong>Report Content</strong></th>
+      <th><strong>Relation to Source Code</strong></th>
+      <th><strong>Actions on Issues</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Unit Testing</strong></td>
+      <td>JUnit, pytest, Mocha</td>
+      <td>Validate module logic</td>
+      <td>Pass rate, failed cases, code coverage</td>
+      <td>Directly linked to test classes and modules</td>
+      <td>Fix failed tests, improve coverage</td>
+    </tr>
+    <tr>
+      <td><strong>Static Analysis</strong></td>
+      <td>ESLint, Pylint, SonarQube</td>
+      <td>Check style &amp; defects</td>
+      <td>Code smells, complexity, duplication</td>
+      <td>Directly linked to code files and line numbers</td>
+      <td>Refactor code, enforce standards</td>
+    </tr>
+    <tr>
+      <td><strong>Dependency Scan</strong></td>
+      <td>Snyk, OWASP Dependency-Check</td>
+      <td>Detect third-party risks</td>
+      <td>CVEs, severity, affected versions</td>
+      <td>Linked to config files (e.g., <code>pom.xml</code>)</td>
+      <td>Upgrade dependencies, apply fixes</td>
+    </tr>
+    <tr>
+      <td><strong>Security Scan</strong></td>
+      <td>OWASP ZAP, SonarQube</td>
+      <td>Find vulnerabilities</td>
+      <td>Vulnerability types, locations</td>
+      <td>Directly linked to code files and line numbers</td>
+      <td>Patch code, rescan</td>
+    </tr>
+  </tbody>
+</table>
+<h3 id="supported-scenarios">Supported Scenarios</h3>
+<table>
+  <colgroup>
+    <col style="width: 8%" />
+    <col style="width: 7%" />
+    <col style="width: 9%" />
+    <col style="width: 36%" />
+    <col style="width: 37%" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Tools</th>
+      <th>Language/Target</th>
+      <th>Scenario</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Unit Test</strong></td>
+      <td>Jest</td>
+      <td>JavaScript</td>
+      <td>Auto-generate unit tests to improve coverage</td>
+      <td>
+        <a href="./.github/workflows/ExampleJSunittestGenerate.yml">Link</a>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Doc Gen</strong></td>
+      <td></td>
+      <td>Go</td>
+      <td>Generate GoDoc comments via AST analysis</td>
+      <td><a href="./.github/workflows/ExampleGODocGenerate.yml">Link</a></td>
+    </tr>
+    <tr>
+      <td><strong>CVE Scan</strong></td>
+      <td>Syft, Bomber</td>
+      <td>deployment.yaml</td>
+      <td>Detect CVEs and suggest Pod Security Policy improvements</td>
+      <td><a href="./.github/workflows/ExampleCVEToDeployment.yml">Link</a></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id="collaboration">Collaboration</h2>
+<p>
+  Workflow Design:<br />
+  <img src="./Design.png" alt="OverAllDesign" />
+</p>
+<p>
+  <strong>Contribution Guidelines</strong>:<br />
+  To add language support, provide:
+</p>
+<ul class="task-list">
+  <li>
+    <label><input type="checkbox" />AST scanning tool adaptation</label>
+  </li>
+  <li>
+    <label><input type="checkbox" />LLM output filtering rules</label>
+  </li>
+</ul>
+<hr />
+<h2 id="non-functional-metrics">Non-Functional Metrics</h2>
+<h3 id="loop-control">Loop Control</h3>
+<p>
+  Set <code>maxIterations</code> for AST tasks or enable
+  <code>dry run</code> mode.
+</p>
+<h3 id="logging-archiving">Logging &amp; Archiving</h3>
+<ul>
+  <li>Hash-based tracing (SHA256 of final prompt).</li>
+</ul>
+<h3 id="metrics">Metrics</h3>
+<ul class="task-list">
+  <li>
+    <label><input type="checkbox" checked="" />Per-task tracing</label>
+  </li>
+  <li>
+    <label><input type="checkbox" />Token cost analysis</label>
+  </li>
+  <li>
+    <label
+      ><input type="checkbox" checked="" />Prompt component analysis (e.g.,
+      one-shot vs. ReAct)</label
+    >
+  </li>
+  <li>
+    <label
+      ><input type="checkbox" />Output effectiveness (filtered invalid
+      responses)</label
+    >
+  </li>
+</ul>
+<hr />
+<h2 id="output-examples">Output Examples</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>avg_prompt_precent</td>
+      <td>Average percentage of user intent in prompts</td>
+    </tr>
+    <tr>
+      <td>avg_content_precent</td>
+      <td>Average percentage of task context in prompts</td>
+    </tr>
+    <tr>
+      <td>LLMresponse</td>
+      <td>Raw LLM response (single call)</td>
+    </tr>
+    <tr>
+      <td>final_prompt</td>
+      <td>Full prompt sent to LLM</td>
+    </tr>
+  </tbody>
+</table>
+<p>AST task output (directory: <code>./GenAI_output</code>):</p>
+<div class="sourceCode" id="cb1">
+  <pre
+    class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;model&quot;</span><span class="fu">:</span> <span class="st">&quot;deepseek-chat&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;final_prompt&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;hashValue&quot;</span><span class="fu">:</span> <span class="st">&quot;600e13336953ff55998a56a86644a01abfabe33513abcf01b8d945c61664e0c2&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;response&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompt_precent&quot;</span><span class="fu">:</span> <span class="fl">12.71</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;content_precent&quot;</span><span class="fu">:</span> <span class="fl">87.03</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;meta&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;filename&quot;</span><span class="fu">:</span> <span class="st">&quot;src/aiagent.js&quot;</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;functionname&quot;</span><span class="fu">:</span> <span class="st">&quot;calculatePercentage&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre>
+</div>
+<hr />
+<h2 id="usage-tips">Usage Tips</h2>
+<ul>
+  <li>
+    <p>
+      <strong>Ethical AI</strong>: Submit LLM-generated changes via GitHub
+      Issues or branches for review.
+    </p>
+  </li>
+  <li>
+    <p><strong>Local Run</strong>:</p>
+    <div class="sourceCode" id="cb2">
+      <pre
+        class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> local-action . src/main.js .env.example</span></code></pre>
+    </div>
+  </li>
+</ul>
+<hr />
+<h2 id="pre-release-checks">Pre-Release Checks</h2>
+<ol type="1">
+  <li>Scan this repo for unit test generation</li>
+  <li>Scan KubeEdge for doc generation</li>
+  <li>Scan Kepler for CVE detection</li>
+</ol>
+<hr />
+<h2 id="roadmap">Roadmap</h2>
+<ul>
+  <li>Scan libxml2 for CVE fixes</li>
+  <li>Enhance unit test generation</li>
+  <li>Add function/file-level skip rules</li>
+  <li>Framework flexibility improvements</li>
+</ul>
