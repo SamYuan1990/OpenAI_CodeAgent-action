@@ -52,6 +52,12 @@ runs:
 
     - name: run local dev script
       shell: bash
+      id: check input folder
+      run: |
+        ls -al
+
+    - name: run local dev script
+      shell: bash
       id: local-dev
       run: |
         docker run -e baseURL=${{ inputs.baseURL }} \
