@@ -40,7 +40,9 @@ jobs:
           cache: npm
       - name: Install Dependencies
         id: npm-ci
-        run: npm install && npx jest --coverage && cp -r coverage src
+        run:
+          npm install --legacy-peer-deps && npx jest --coverage && cp -r
+          coverage src
       - name: Test Local Action
         id: Lint_with_LLM
         uses: ./
