@@ -39203,15 +39203,14 @@ const { logger } = __nccwpck_require__(8467)
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    logger.Info('scan project', dirPath)
+    logger.Info(`scan project ${dirPath}`)
     const result = await scanGolangCode(dirPath)
     logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    logger.Info('Error happen during build go AST', error)
+    logger.Info(`Error happen during build go AST ${error}`)
   }
 }
 
@@ -39354,7 +39353,7 @@ main()
 const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
-const logger = __nccwpck_require__(8467)
+const { logger } = __nccwpck_require__(8467)
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果

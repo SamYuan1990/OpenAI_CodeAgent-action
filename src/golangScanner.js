@@ -9,15 +9,14 @@ const { logger } = require('./utils/logger')
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    logger.Info('scan project', dirPath)
+    logger.Info(`scan project ${dirPath}`)
     const result = await scanGolangCode(dirPath)
     logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    logger.Info('Error happen during build go AST', error)
+    logger.Info(`Error happen during build go AST ${error}`)
   }
 }
 
