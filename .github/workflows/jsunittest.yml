@@ -43,7 +43,7 @@ jobs:
         run: npm install && npx jest --coverage && cp -r coverage src
       - name: Test Local Action
         id: test-action
-        uses: ./
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy

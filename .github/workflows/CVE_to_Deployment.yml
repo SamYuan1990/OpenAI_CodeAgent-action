@@ -45,7 +45,7 @@ jobs:
           cat cve.json
       - name: use this action to generate suggestion for deployment settings
         id: Lint_with_LLM
-        uses: ./
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy

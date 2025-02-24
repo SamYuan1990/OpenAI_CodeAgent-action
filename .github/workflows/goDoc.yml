@@ -47,7 +47,7 @@ jobs:
           make test PROFILE=y
       - name: use this action to generate unit test
         id: Lint_with_LLM
-        uses: ./
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy
