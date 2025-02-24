@@ -9,27 +9,27 @@ const { logger } = require('./utils/logger')
  * @returns {Array} - 返回一个包含文件名、函数名和是否存在 Go Doc 的数据结构队列
  */
 function scanJSCodeDirectory(dirPath) {
-  runUnitTest()
-  const lcovFilePath = path.join('./', 'coverage', 'lcov.info')
+  logger.Info(`going to genreate js scan at ${dirPath}`)
+  //runUnitTest(dirPath)
+  const lcovFilePath = path.join(dirPath, 'coverage', 'lcov.info')
   const coverageData = parseLcovFile(lcovFilePath)
   const results = scanDirectory(coverageData, dirPath)
   return results
 }
-function runUnitTest() {
+/*function runUnitTest(dirPath) {
   // 定义输出文件路径
-  const outputFilePath = './testresult.out'
   try {
-    execSync('npm install', { encoding: 'utf-8' })
+    execSync(`cd ${dirPath} && npm install`, { encoding: 'utf-8' })
     // 同步执行 npm run test 命令
-    execSync('npx jest --coverage', { encoding: 'utf-8' })
-    logger.Info(`run npm test success: ${outputFilePath}`)
+    execSync(`cd ${dirPath} && npx jest --coverage`, { encoding: 'utf-8' })
+    logger.Info(`run npm test success`)
   } catch (error) {
     // 捕获并处理错误
     logger.Info(`fails in run npm test: ${error.message}`)
   }
 }
-
+*/
 module.exports = {
-  scanJSCodeDirectory,
-  runUnitTest
+  scanJSCodeDirectory
+  //runUnitTest
 }

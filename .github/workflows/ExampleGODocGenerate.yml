@@ -5,54 +5,10 @@ on:
 
 permissions: write-all
 
-jobs:
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.22.x
-
-      - name: Install dependencies
-        run: |
-          command -v ginkgo || go install github.com/onsi/ginkgo/v2/ginkgo@${{ env.GINKGO_VERSION }}
-
-      - name: unittest
-        id: unittest
-        run: |
-          make test PROFILE=y
-          wget https://raw.githubusercontent.com/SamYuan1990/OpenAI_CodeAgent-action/refs/heads/main/goASTBin -O ./goASTBin && chmod a+x ./goASTBin
-
-      - name: use this action to generate unit test
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: ${{ secrets.API_KEY }}
-          model: deepseek-chat
-          dirPath: ./
-          maxIterations: 3
-          runType: godoc
-
-      - name: cleanup
-        id: cleanup
-        run: |
-          rm -rf ./goASTBin
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.MyPATToken }} # 使用 GitHub 提供的 token
-          branch: auto-pr-branch # 新分支名称
-          base: main # 目标分支
-          title: 'Automated PR: Update generated files'
-          body: 'This is an automated pull request created by GitHub Actions.'
-          commit-message: 'Auto-generated changes'
-          labels: automated # 可选：为 PR 添加标签
+test-godocgeneration:
+  name: test-godocgeneration
+  runs-on: ubuntu-latest
+  uses: ./.github/workflows/goDoc.yml
+  with:
+    dryrun: false
+    build_image: false

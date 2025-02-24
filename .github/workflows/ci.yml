@@ -10,8 +10,7 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
+permissions: write-all
 
 jobs:
   test-javascript:
@@ -68,6 +67,10 @@ jobs:
         id: npm-install
         run: npm install
 
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm install && npx jest --coverage && cp -r coverage src
+
       - name: run local dev script
         id: local-dev
         run: npx local-action . src/main.js .env.example
@@ -83,6 +86,10 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm install && npx jest --coverage && cp -r coverage src
 
       - name: run local dev script
         id: local-dev
@@ -102,31 +109,48 @@ jobs:
            ls $(pwd)
            ls $(pwd)/GenAI_output
            cat $(pwd)/GenAI_output/summary.json
-
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Test Local Action
-        id: test-action
-        uses: ./
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: dummy
-          model: deepseek-chat
-          dirpath: './src'
-          maxIterations: 1
-          dryRun: true
-          runType: jsunittest
-      - name: output check
+      - name: dummy run for action scripts
         shell: bash
         run: |
-          echo '${{ steps.test-action.outputs.LLMresponse }}'
-          echo '${{ steps.test-action.outputs.final_prompt }}'
-          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
-          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+          ls $(pwd)
+          ls $(pwd)/GenAI_output
+          VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          echo "LLMresponse=${VALUE}"
+          VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          echo "final_prompt=${VALUE}"
+          VALUE=$(jq -r -e .avg_prompt_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+          echo "avg_prompt_precent=${VALUE}"
+          VALUE=$(jq -r -e .avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+          echo "avg_content_precent=${VALUE}"
+
+  test-godoc:
+    name: test-godoc
+    needs: test-container
+    uses: ./.github/workflows/goDoc.yml
+    with:
+      dryrun: true
+      build_image: true
+
+  test-jsunittest:
+    name: test-jsunittest
+    needs: test-container
+    uses: ./.github/workflows/jsunittest.yml
+    with:
+      dryrun: true
+      build_image: true
+
+  test-ccodescan:
+    name: test-ccodescan
+    needs: test-container
+    uses: ./.github/workflows/cScan.yml
+    with:
+      dryrun: true
+      build_image: true
+
+  test-cvetodeployment:
+    name: test-cvetodeployment
+    needs: test-container
+    uses: ./.github/workflows/CVE_to_Deployment.yml
+    with:
+      dryrun: true
+      build_image: true
