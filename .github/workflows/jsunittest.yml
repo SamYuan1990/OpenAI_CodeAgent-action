@@ -48,7 +48,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           model: deepseek-chat
-          dirpath: '/workdir'
+          dirpath: '/workdir/src'
           maxIterations: 1
           dryRun: true
           runType: jsunittest
