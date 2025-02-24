@@ -5,38 +5,9 @@ on:
 
 permissions: write-all
 
-jobs:
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          repository: SamYuan1990/cJSON
-
-      - name: use this action to generate suggestion for deployment settings
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: ${{ secrets.API_KEY }}
-          model: deepseek-chat
-          dirpath: '/workdir'
-          runType: ccodescan
-          maxIterations: 1
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: LLM_output
-          path: GenAI_output
-
-      - name: Create new issue
-        uses: imjohnbo/issue-bot@v3
-        with:
-          title: AutoBumpUpVersionReminder
-          body: |-
-            :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
-            ${{ steps.Lint_with_LLM.outputs.LLMresponse }}
+test-ccodescan:
+  name: test-ccodescan
+  uses: ./.github/workflows/cScan.yml
+  with:
+    dryrun: true
+    build_image: true

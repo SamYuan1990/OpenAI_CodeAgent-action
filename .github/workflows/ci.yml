@@ -10,8 +10,7 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
+permissions: write-all
 
 jobs:
   test-javascript:
@@ -110,117 +109,48 @@ jobs:
            ls $(pwd)
            ls $(pwd)/GenAI_output
            cat $(pwd)/GenAI_output/summary.json
+      - name: dummy run for action scripts
+        shell: bash
+        run: |
+          ls $(pwd)
+          ls $(pwd)/GenAI_output
+          VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          echo "LLMresponse=${VALUE}"
+          VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          echo "final_prompt=${VALUE}"
+          VALUE=$(jq -r -e .avg_prompt_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+          echo "avg_prompt_precent=${VALUE}"
+          VALUE=$(jq -r -e .avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
+          echo "avg_content_precent=${VALUE}"
 
   test-godoc:
     name: test-godoc
     needs: test-container
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          repository: SamYuan1990/kubeedge
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.22.x
-      - name: Install dependencies
-        run: |
-          command -v ginkgo || go install github.com/onsi/ginkgo/v2/ginkgo@v2.9.5
-      - name: unittest
-        id: unittest
-        run: |
-          make test PROFILE=y
-      - name: use this action to generate unit test
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: dummy
-          model: deepseek-chat
-          dirPath: '/workdir'
-          maxIterations: 1
-          runType: godoc
-          dryRun: true
-      - name: output check
-        shell: bash
-        run: |
-          echo '${{ steps.test-action.outputs.LLMresponse }}'
-          echo '${{ steps.test-action.outputs.final_prompt }}'
-          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
-          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+    uses: ./.github/workflows/goDoc.yml
+    with:
+      dryrun: true
+      build_image: true
 
   test-jsunittest:
     name: test-jsunittest
     needs: test-container
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
-      - name: Install Dependencies
-        id: npm-ci
-        run: npm install && npx jest --coverage && cp -r coverage src
-      - name: Test Local Action
-        id: test-action
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: dummy
-          model: deepseek-chat
-          dirpath: '/workdir'
-          maxIterations: 1
-          dryRun: true
-          runType: jsunittest
-      - name: output check
-        shell: bash
-        run: |
-          echo '${{ steps.test-action.outputs.LLMresponse }}'
-          echo '${{ steps.test-action.outputs.final_prompt }}'
-          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
-          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+    uses: ./.github/workflows/jsunittest.yml
+    with:
+      dryrun: true
+      build_image: true
 
   test-ccodescan:
     name: test-ccodescan
     needs: test-container
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          repository: SamYuan1990/cJSON
-      - name: use this action to generate suggestion for deployment settings
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: dummy
-          model: deepseek-chat
-          dirpath: '/workdir'
-          runType: ccodescan
-          maxIterations: 1
-          dryRun: true
-      - name: output check
-        shell: bash
-        run: |
-          echo '${{ steps.test-action.outputs.LLMresponse }}'
-          echo '${{ steps.test-action.outputs.final_prompt }}'
-          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
-          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+    uses: ./.github/workflows/cScan.yml
+    with:
+      dryrun: true
+      build_image: true
 
   test-cvetodeployment:
     name: test-cvetodeployment
     needs: test-container
-    runs-on: ubuntu-latest
-    uses: .github/workflows/CVE_to_Deployment.yml
-    with: 
+    uses: ./.github/workflows/CVE_to_Deployment.yml
+    with:
       dryrun: true
       build_image: true

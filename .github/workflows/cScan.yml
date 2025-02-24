@@ -1,4 +1,4 @@
-name: CVE to Deployment
+name: scan C code
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
@@ -14,7 +14,7 @@ on: # yamllint disable-line rule:truthy
         type: boolean
 
 jobs:
-  test-cvetodeployment:
+  test-scan-c-code:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout action repo for latest image
@@ -29,20 +29,11 @@ jobs:
         id: local-image-build
         run: |
           docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
-      - name: Checkout Target repo
+      - name: Checkout
         id: checkout_target
         uses: actions/checkout@v4
         with:
-          repository: SamYuan1990/kepler
-      - uses: actions/setup-go@v5
-      - name: generate CVE.json
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-          go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
-          cat sbom.json
-          bomber scan ./sbom.json --output=json --debug > cve.json
-          cat cve.json
+          repository: SamYuan1990/cJSON
       - name: use this action to generate suggestion for deployment settings
         id: Lint_with_LLM
         uses: SamYuan1990/OpenAI_CodeAgent-action@main
@@ -51,9 +42,9 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: '/workdir'
-          deploymentfile: /workdir/manifests/k8s/config/exporter/exporter.yaml
-          runType: CVE2Deployment
-          dryRun: ${{ inputs.dryrun }}
+          runType: ccodescan
+          maxIterations: 1
+          dryRun: true
       - name: output check
         shell: bash
         run: |

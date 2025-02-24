@@ -5,49 +5,10 @@ on:
 
 permissions: write-all
 
-jobs:
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          repository: SamYuan1990/kepler
-
-      - uses: actions/setup-go@v5
-
-      - name: generate CVE.json
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-          go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
-          cat sbom.json
-          bomber scan ./sbom.json --output=json --debug > cve.json
-          cat cve.json
-
-      - name: use this action to generate suggestion for deployment settings
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: ${{ secrets.API_KEY }}
-          model: deepseek-chat
-          dirpath: './'
-          deploymentfile: ./manifests/k8s/config/exporter/exporter.yaml
-          runType: CVE2Deployment
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: LLM_output
-          path: GenAI_output
-
-      - name: Create new issue
-        uses: imjohnbo/issue-bot@v3
-        with:
-          title: AutoBumpUpVersionReminder
-          body: |-
-            :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
-            ${{ steps.Lint_with_LLM.outputs.LLMresponse }}
+test-cvetodeployment:
+  name: test-cvetodeployment
+  runs-on: ubuntu-latest
+  uses: ./.github/workflows/CVE_to_Deployment.yml
+  with:
+    dryrun: false
+    build_image: false

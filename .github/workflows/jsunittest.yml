@@ -1,4 +1,4 @@
-name: CVE to Deployment
+name: js unit test gen
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
@@ -14,7 +14,7 @@ on: # yamllint disable-line rule:truthy
         type: boolean
 
 jobs:
-  test-cvetodeployment:
+  test-js-unittest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout action repo for latest image
@@ -29,31 +29,29 @@ jobs:
         id: local-image-build
         run: |
           docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
-      - name: Checkout Target repo
+      - name: Checkout
         id: checkout_target
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
         with:
-          repository: SamYuan1990/kepler
-      - uses: actions/setup-go@v5
-      - name: generate CVE.json
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-          go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
-          cat sbom.json
-          bomber scan ./sbom.json --output=json --debug > cve.json
-          cat cve.json
-      - name: use this action to generate suggestion for deployment settings
-        id: Lint_with_LLM
+          node-version-file: .node-version
+          cache: npm
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm install && npx jest --coverage && cp -r coverage src
+      - name: Test Local Action
+        id: test-action
         uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           model: deepseek-chat
           dirpath: '/workdir'
-          deploymentfile: /workdir/manifests/k8s/config/exporter/exporter.yaml
-          runType: CVE2Deployment
-          dryRun: ${{ inputs.dryrun }}
+          maxIterations: 1
+          dryRun: true
+          runType: jsunittest
       - name: output check
         shell: bash
         run: |
@@ -61,7 +59,6 @@ jobs:
           echo '${{ steps.test-action.outputs.final_prompt }}'
           echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
           echo '${{ steps.test-action.outputs.avg_content_precent }}'
-
       - name: Create new issue
         uses: imjohnbo/issue-bot@v3
         if: ${{ inputs.dryrun == false }}
