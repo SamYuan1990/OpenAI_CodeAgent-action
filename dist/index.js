@@ -9707,6 +9707,7 @@ var INTRINSICS = {
 	'%Error%': $Error,
 	'%eval%': eval, // eslint-disable-line no-eval
 	'%EvalError%': $EvalError,
+	'%Float16Array%': typeof Float16Array === 'undefined' ? undefined : Float16Array,
 	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
 	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
 	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined : FinalizationRegistry,
@@ -39203,15 +39204,14 @@ const { logger } = __nccwpck_require__(8467)
  */
 async function scanGoCodeDirectory(dirPath) {
   try {
-    logger.Info('download go AST binary')
     //const download_log = await buildGoAST()
     //console.log(download_log)
-    logger.Info('scan project', dirPath)
+    logger.Info(`scan project ${dirPath}`)
     const result = await scanGolangCode(dirPath)
     logger.Info(`scan result as ${result.length}`)
     return result
   } catch (error) {
-    logger.Info('Error happen during build go AST', error)
+    logger.Info(`Error happen during build go AST ${error}`)
   }
 }
 
@@ -39354,7 +39354,7 @@ main()
 const { exec } = __nccwpck_require__(5317)
 const fs = __nccwpck_require__(9896)
 const path = __nccwpck_require__(6928)
-const logger = __nccwpck_require__(8467)
+const { logger } = __nccwpck_require__(8467)
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
@@ -92856,7 +92856,7 @@ const addFormValue = async (form, key, value) => {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VERSION = void 0;
-exports.VERSION = '4.85.3'; // x-release-please-version
+exports.VERSION = '4.85.4'; // x-release-please-version
 //# sourceMappingURL=version.js.map
 
 /***/ }),

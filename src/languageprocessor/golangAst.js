@@ -3,7 +3,7 @@
 const { exec } = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const logger = require('../utils/logger')
+const { logger } = require('../utils/logger')
 
 /**
  * 调用 Go 程序扫描 Golang 代码目录并生成 JSON 结果
