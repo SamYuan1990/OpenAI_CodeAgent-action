@@ -36,7 +36,7 @@ jobs:
           repository: SamYuan1990/cJSON
       - name: use this action to generate suggestion for deployment settings
         id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
+        uses: ./
         with:
           baseURL: https://api.deepseek.com
           apiKey: dummy
