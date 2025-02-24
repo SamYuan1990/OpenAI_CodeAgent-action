@@ -52,7 +52,7 @@ runs:
 
     - name: run local dev script
       shell: bash
-      id: check input folder
+      id: check_input_folder
       run: |
         ls -al
 
@@ -76,6 +76,7 @@ runs:
       run: |
         ls $(pwd)
         ls $(pwd)/GenAI_output
+        cat $(pwd)/GenAI_output/summary.json
         VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' ./GenAI_output/summary.json)
         echo "LLMresponse=${VALUE}" >> $GITHUB_OUTPUT
         VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' ./GenAI_output/summary.json)
