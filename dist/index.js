@@ -9707,6 +9707,7 @@ var INTRINSICS = {
 	'%Error%': $Error,
 	'%eval%': eval, // eslint-disable-line no-eval
 	'%EvalError%': $EvalError,
+	'%Float16Array%': typeof Float16Array === 'undefined' ? undefined : Float16Array,
 	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
 	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
 	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined : FinalizationRegistry,
@@ -39452,7 +39453,7 @@ module.exports = {
 }
 
 // 示例调用
-async function test() {
+/*async function test() {
   try {
     const codeDir = '/Users/yuanyi/OpenSource/kubeedge/pkg'
     const result = await scanGolangCode(codeDir)
@@ -39462,6 +39463,7 @@ async function test() {
   }
 }
 test()
+*/
 
 
 /***/ }),
@@ -92902,7 +92904,7 @@ const addFormValue = async (form, key, value) => {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VERSION = void 0;
-exports.VERSION = '4.85.3'; // x-release-please-version
+exports.VERSION = '4.85.4'; // x-release-please-version
 //# sourceMappingURL=version.js.map
 
 /***/ }),

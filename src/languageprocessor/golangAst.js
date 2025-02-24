@@ -83,7 +83,7 @@ module.exports = {
 }
 
 // 示例调用
-async function test() {
+/*async function test() {
   try {
     const codeDir = '/Users/yuanyi/OpenSource/kubeedge/pkg'
     const result = await scanGolangCode(codeDir)
@@ -93,3 +93,4 @@ async function test() {
   }
 }
 test()
+*/
