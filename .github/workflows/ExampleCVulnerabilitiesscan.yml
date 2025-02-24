@@ -5,9 +5,10 @@ on:
 
 permissions: write-all
 
-test-ccodescan:
-  name: test-ccodescan
-  uses: ./.github/workflows/cScan.yml
-  with:
-    dryrun: true
-    build_image: true
+jobs:
+  test-ccodescan:
+    name: test-ccodescan
+    uses: ./.github/workflows/cScan.yml
+    with:
+      dryrun: true
+      build_image: true
