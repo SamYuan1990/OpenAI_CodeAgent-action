@@ -5,10 +5,11 @@ on:
 
 permissions: write-all
 
-test-godocgeneration:
-  name: test-godocgeneration
-  runs-on: ubuntu-latest
-  uses: ./.github/workflows/goDoc.yml
-  with:
-    dryrun: false
-    build_image: false
+jobs:
+  test-godocgeneration:
+    name: test-godocgeneration
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/goDoc.yml
+    with:
+      dryrun: false
+      build_image: false

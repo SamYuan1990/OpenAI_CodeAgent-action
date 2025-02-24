@@ -5,10 +5,11 @@ on:
 
 permissions: write-all
 
-test-cvetodeployment:
-  name: test-cvetodeployment
-  runs-on: ubuntu-latest
-  uses: ./.github/workflows/CVE_to_Deployment.yml
-  with:
-    dryrun: false
-    build_image: false
+jobs:
+  test-cvetodeployment:
+    name: test-cvetodeployment
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/CVE_to_Deployment.yml
+    with:
+      dryrun: false
+      build_image: false
