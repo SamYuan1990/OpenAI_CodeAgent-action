@@ -1,0 +1,74 @@
+name: CVE to Deployment
+inputs:
+  dryrun:
+    description: 'running mode'
+    required: true
+    default: 'true'
+    type: boolean
+  build_image:
+    description: 'build image or not'
+    required: true
+    default: 'false'
+    type: boolean
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout action repo for latest image
+      if: ${{ inputs.build_image == 'true' }}
+      id: checkout
+      uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      if: ${{ inputs.build_image == 'true' }}
+      uses: docker/setup-buildx-action@v3
+    - name: run local dev script
+      if: ${{ inputs.build_image == 'true' }}
+      id: local-image-build
+      run: |
+          docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
+    - name: Checkout Target repo
+      id: checkout_target_repo
+      uses: actions/checkout@v4
+      with:
+          repository: SamYuan1990/kepler
+    - uses: actions/setup-go@v5
+    - name: generate CVE.json
+      run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
+          go install github.com/devops-kung-fu/bomber@latest 
+          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
+          cat sbom.json
+          bomber scan ./sbom.json --output=json --debug > cve.json
+          cat cve.json
+    - name: use this action to generate suggestion for deployment settings
+      id: Lint_with_LLM
+      uses: SamYuan1990/OpenAI_CodeAgent-action@main
+      with:
+          baseURL: https://api.deepseek.com
+          apiKey: dummy
+          model: deepseek-chat
+          dirpath: '/workdir'
+          deploymentfile: /workdir/manifests/k8s/config/exporter/exporter.yaml
+          runType: CVE2Deployment
+          dryRun: ${{ inputs.dryrun }}
+    - name: output check
+      shell: bash
+      run: |
+          echo '${{ steps.test-action.outputs.LLMresponse }}'
+          echo '${{ steps.test-action.outputs.final_prompt }}'
+          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
+          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+
+
+    - name: 参数验证
+      shell: bash
+      run: |
+        echo "DryRun模式: ${{ inputs.dryrun }}"
+        echo "镜像构建: ${{ inputs.build_image }}"
+        echo "当前分支: ${{ github.ref }}"
+        
+    - name: 核心逻辑执行
+      shell: bash
+      run: ./entrypoint.sh ${{ inputs.dryrun }} ${{ inputs.build_image }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

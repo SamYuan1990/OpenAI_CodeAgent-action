@@ -220,36 +220,7 @@ jobs:
     name: test-cvetodeployment
     needs: test-container
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          repository: SamYuan1990/kepler
-      - uses: actions/setup-go@v5
-      - name: generate CVE.json
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-          go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan . -o cyclonedx-json -vv  > sbom.json 
-          cat sbom.json
-          bomber scan ./sbom.json --output=json --debug > cve.json
-          cat cve.json
-      - name: use this action to generate suggestion for deployment settings
-        id: Lint_with_LLM
-        uses: SamYuan1990/OpenAI_CodeAgent-action@main
-        with:
-          baseURL: https://api.deepseek.com
-          apiKey: dummy
-          model: deepseek-chat
-          dirpath: '/workdir'
-          deploymentfile: /workdir/manifests/k8s/config/exporter/exporter.yaml
-          runType: CVE2Deployment
-          dryRun: true
-      - name: output check
-        shell: bash
-        run: |
-          echo '${{ steps.test-action.outputs.LLMresponse }}'
-          echo '${{ steps.test-action.outputs.final_prompt }}'
-          echo '${{ steps.test-action.outputs.avg_prompt_precent }}'
-          echo '${{ steps.test-action.outputs.avg_content_precent }}'
+    uses: .github/workflows/CVE_to_Deployment.yml
+    with: 
+      dryrun: true
+      build_image: true
