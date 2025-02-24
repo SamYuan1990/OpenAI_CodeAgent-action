@@ -37,14 +37,9 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
-          dirPath: ./
-          maxIterations: 3
+          dirPath: '/workdir'
+          maxIterations: 1
           runType: godoc
-
-      - name: cleanup
-        id: cleanup
-        run: |
-          rm -rf ./goASTBin
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7

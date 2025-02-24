@@ -21,8 +21,8 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
-          dirPath: ./src
-          maxIterations: 3
+          dirPath: '/workdir'
+          maxIterations: 1
           runType: jsunittest
 
       - uses: actions/upload-artifact@v4
