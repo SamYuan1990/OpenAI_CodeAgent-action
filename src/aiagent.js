@@ -20,8 +20,8 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   const time_usage = 0
   const startTime = process.hrtime()
   let endTime = ''
-  let inputToken = 0
-  let outputToken = 0
+  const inputToken = calculateTokenCount(`${prompt}\n${fileContent}`)
+  const outputToken = 0
   const prompt_info = {
     model,
     final_prompt,
@@ -34,7 +34,6 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     outputToken,
     meta
   }
-  inputToken = calculateTokenCount(`${prompt}\n${fileContent}`)
 
   if (!dryRun) {
     try {
@@ -56,8 +55,10 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
       // prompt metric
       // response
       // todo: error handle
-      outputToken = calculateTokenCount(completion.choices[0].message.content)
       prompt_info.response = completion.choices[0].message.content
+      prompt_info.outputToken = calculateTokenCount(
+        completion.choices[0].message.content
+      )
     } catch (error) {
       logger.Info(`error happen from LLM response ${error}`)
       prompt_info.response = ''
