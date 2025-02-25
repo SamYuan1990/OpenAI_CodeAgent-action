@@ -114,14 +114,14 @@ jobs:
         run: |
           ls $(pwd)
           ls $(pwd)/GenAI_output
-          VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' $(pwd)/GenAI_output/summary.json)
           echo "LLMresponse=${VALUE}"
-          VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' ./GenAI_output/summary.json)
+          VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' $(pwd)/GenAI_output/summary.json)
           echo "final_prompt=${VALUE}"
-          VALUE=$(jq -r -e .avg_prompt_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
-          echo "avg_prompt_precent=${VALUE}"
-          VALUE=$(jq -r -e .avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
-          echo "avg_content_precent=${VALUE}"
+          VALUE=$(jq -r -e .avg_prompt_precent $(pwd)/GenAI_output/summary.json)
+          echo "avg_prompt_precent=${VALUE}" >> $GITHUB_OUTPUT
+          VALUE=$(jq -r -e .avg_content_precent $(pwd)/GenAI_output/summary.json)
+          echo "avg_content_precent=${VALUE}" >> $GITHUB_OUTPUT
           VALUE=$(jq -r -e .avg_time_usage $(pwd)/GenAI_output/summary.json)
           echo "avg_time_usage=${VALUE}" >> $GITHUB_OUTPUT
 
