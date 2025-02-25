@@ -20,7 +20,8 @@ function processOutput(LLMresponses) {
     avg_prompt_precent: 0,
     avg_content_precent: 0,
     LLMresponse: '',
-    final_prompt: ''
+    final_prompt: '',
+    avg_time_usage: 0
   }
   const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
   const outputpath = fs.mkdirSync(folderName, {
@@ -34,11 +35,13 @@ function processOutput(LLMresponses) {
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
+  let total_time = 0
   logger.Info(`going to process ${LLMresponses.length} results`)
   for (let i = 0; i < LLMresponses.length; i++) {
     logger.Info('process general output for ', LLMresponses[i].hashValue)
     prompt_precent_sum += LLMresponses[i].prompt_precent
     content_precent_sum += LLMresponses[i].content_precent
+    total_time += LLMresponses[i].time_usage
     const jsonString = JSON.stringify(LLMresponses[i], null, 2)
     const filePath = path.join(
       folderName,
@@ -51,11 +54,14 @@ function processOutput(LLMresponses) {
 
   const avg_prompt_precent = prompt_precent_sum / LLMresponses.length
   const avg_content_precent = content_precent_sum / LLMresponses.length
+  const avg_time_usage = total_time / LLMresponses.length
   // Set Action output
-  logger.Info('avg_prompt_precent', avg_prompt_precent)
+  logger.Info(`avg_prompt_precent ${avg_prompt_precent}`)
   Output.avg_prompt_precent = avg_prompt_precent
-  logger.Info('avg_content_precent', avg_content_precent)
+  logger.Info(`avg_content_precent ${avg_content_precent}`)
   Output.avg_content_precent = avg_content_precent
+  logger.Info(`avg_time_usage ${avg_time_usage}`)
+  Output.avg_time_usage = avg_time_usage
   if (LLMresponses.length === 1) {
     logger.Info(LLMresponses[0])
     Output.LLMresponse = LLMresponses[0].response

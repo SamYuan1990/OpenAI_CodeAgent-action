@@ -16,6 +16,9 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   const content_precent = calculatePercentage(fileContent, final_prompt)
   const response = ''
   const meta = {}
+  const time_usage = 0
+  const startTime = process.hrtime()
+  let endTime = ''
   const prompt_info = {
     model,
     final_prompt,
@@ -23,6 +26,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     response,
     prompt_precent,
     content_precent,
+    time_usage,
     meta
   }
 
@@ -57,6 +61,9 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     // prompt metric
     prompt_info.response = ``
   }
+  endTime = process.hrtime(startTime)
+  const executionTime = endTime[0] * 1000 + endTime[1] / 1000000
+  prompt_info.time_usage = executionTime
   return prompt_info
 }
 

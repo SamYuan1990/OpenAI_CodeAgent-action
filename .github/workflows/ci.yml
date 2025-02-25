@@ -122,6 +122,8 @@ jobs:
           echo "avg_prompt_precent=${VALUE}"
           VALUE=$(jq -r -e .avg_content_precent <<< "$(cat $(pwd)/GenAI_output/summary.json)")
           echo "avg_content_precent=${VALUE}"
+          VALUE=$(jq -r -e .avg_time_usage $(pwd)/GenAI_output/summary.json)
+          echo "avg_time_usage=${VALUE}" >> $GITHUB_OUTPUT
 
   test-godoc:
     name: test-godoc

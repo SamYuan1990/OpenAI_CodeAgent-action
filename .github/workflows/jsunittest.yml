@@ -59,6 +59,7 @@ jobs:
           echo '${{ steps.Lint_with_LLM.outputs.final_prompt }}'
           echo '${{ steps.Lint_with_LLM.outputs.avg_prompt_precent }}'
           echo '${{ steps.Lint_with_LLM.outputs.avg_content_precent }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_time_usage }}'
       - name: Create new issue
         uses: imjohnbo/issue-bot@v3
         if: ${{ inputs.dryrun == false }}
