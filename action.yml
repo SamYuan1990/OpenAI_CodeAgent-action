@@ -46,6 +46,12 @@ outputs:
   avg_time_usage:
     description: 'avg_time_usage'
     value: ${{ steps.LLMresponse.outputs.avg_time_usage }}
+  avg_inputToken:
+    description: 'avg_inputToken'
+    value: ${{ steps.LLMresponse.outputs.avg_inputToken }}
+  avg_outputToken:
+    description: 'avg_outputToken'
+    value: ${{ steps.LLMresponse.outputs.avg_outputToken }}
 
 runs:
   using: 'composite'
@@ -90,3 +96,7 @@ runs:
         echo "avg_content_precent=${VALUE}" >> $GITHUB_OUTPUT
         VALUE=$(jq -r -e .avg_time_usage $(pwd)/GenAI_output/summary.json)
         echo "avg_time_usage=${VALUE}" >> $GITHUB_OUTPUT
+        VALUE=$(jq -r -e .avg_inputToken $(pwd)/GenAI_output/summary.json)
+        echo "avg_inputToken=${VALUE}" >> $GITHUB_OUTPUT
+        VALUE=$(jq -r -e .avg_outputToken $(pwd)/GenAI_output/summary.json)
+        echo "avg_outputToken=${VALUE}" >> $GITHUB_OUTPUT
