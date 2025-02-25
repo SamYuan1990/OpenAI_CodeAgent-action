@@ -124,6 +124,10 @@ jobs:
           echo "avg_content_precent=${VALUE}"
           VALUE=$(jq -r -e .avg_time_usage $(pwd)/GenAI_output/summary.json)
           echo "avg_time_usage=${VALUE}"
+          VALUE=$(jq -r -e .avg_inputToken $(pwd)/GenAI_output/summary.json)
+          echo "avg_inputToken=${VALUE}"
+          VALUE=$(jq -r -e .avg_outputToken $(pwd)/GenAI_output/summary.json)
+          echo "avg_outputToken=${VALUE}"
 
   test-godoc:
     name: test-godoc

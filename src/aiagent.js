@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const { logger } = require('./utils/logger')
+const { encode } = require('gpt-tokenizer')
 
 async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   logger.Info(' We are going to talk with Gen AI with Model', model)
@@ -19,6 +20,8 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
   const time_usage = 0
   const startTime = process.hrtime()
   let endTime = ''
+  let inputToken = 0
+  let outputToken = 0
   const prompt_info = {
     model,
     final_prompt,
@@ -27,8 +30,11 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     prompt_precent,
     content_precent,
     time_usage,
+    inputToken,
+    outputToken,
     meta
   }
+  inputToken = calculateTokenCount(`${prompt}\n${fileContent}`)
 
   if (!dryRun) {
     try {
@@ -50,6 +56,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
       // prompt metric
       // response
       // todo: error handle
+      outputToken = calculateTokenCount(completion.choices[0].message.content)
       prompt_info.response = completion.choices[0].message.content
     } catch (error) {
       logger.Info(`error happen from LLM response ${error}`)
@@ -77,6 +84,11 @@ function calculatePercentage(substring, totalString) {
   // 计算百分比
   const percentage = (substringLength / totalStringLength) * 100
   return percentage
+}
+
+function calculateTokenCount(Text) {
+  const Tokens = encode(Text).length
+  return Tokens
 }
 
 module.exports = {

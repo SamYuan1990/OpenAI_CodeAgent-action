@@ -21,6 +21,8 @@ function processOutput(LLMresponses) {
     avg_content_precent: 0,
     LLMresponse: '',
     final_prompt: '',
+    input_token: 0,
+    output_token: 0,
     avg_time_usage: 0
   }
   const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
@@ -36,12 +38,16 @@ function processOutput(LLMresponses) {
   let prompt_precent_sum = 0
   let content_precent_sum = 0
   let total_time = 0
+  let total_input_token = 0
+  let total_output_token = 0
   logger.Info(`going to process ${LLMresponses.length} results`)
   for (let i = 0; i < LLMresponses.length; i++) {
-    logger.Info('process general output for ', LLMresponses[i].hashValue)
+    logger.Info(`process general output for ${LLMresponses[i].hashValue}`)
     prompt_precent_sum += LLMresponses[i].prompt_precent
     content_precent_sum += LLMresponses[i].content_precent
     total_time += LLMresponses[i].time_usage
+    total_input_token += LLMresponses[i].inputToken
+    total_output_token += LLMresponses[i].outputToken
     const jsonString = JSON.stringify(LLMresponses[i], null, 2)
     const filePath = path.join(
       folderName,
@@ -49,12 +55,14 @@ function processOutput(LLMresponses) {
     )
     fs.writeFileSync(filePath, jsonString)
     logger.Info(`Record data to file ${filePath} success`)
-    logger.Info('process complete for ', LLMresponses[i].hashValue)
+    logger.Info(`process complete for ${LLMresponses[i].hashValue}`)
   }
 
   const avg_prompt_precent = prompt_precent_sum / LLMresponses.length
   const avg_content_precent = content_precent_sum / LLMresponses.length
   const avg_time_usage = total_time / LLMresponses.length
+  const avg_inputToken = total_input_token / LLMresponses.length
+  const avg_outputToken = total_output_token / LLMresponses.length
   // Set Action output
   logger.Info(`avg_prompt_precent ${avg_prompt_precent}`)
   Output.avg_prompt_precent = avg_prompt_precent
@@ -62,6 +70,10 @@ function processOutput(LLMresponses) {
   Output.avg_content_precent = avg_content_precent
   logger.Info(`avg_time_usage ${avg_time_usage}`)
   Output.avg_time_usage = avg_time_usage
+  logger.Info(`avg_inputToken ${avg_inputToken}`)
+  Output.avg_inputToken = avg_inputToken
+  logger.Info(`avg_outputToken ${avg_outputToken}`)
+  Output.avg_outputToken = avg_outputToken
   if (LLMresponses.length === 1) {
     logger.Info(LLMresponses[0])
     Output.LLMresponse = LLMresponses[0].response
