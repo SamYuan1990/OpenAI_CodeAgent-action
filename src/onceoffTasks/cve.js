@@ -185,6 +185,10 @@ async function fromCVEToPodDeployment() {
     }
   }
   const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
+  fs.mkdirSync(folderName, {
+    recursive: true,
+    permission: 0o755
+  })
   const filePath = path.join(folderName, './cve_result.json')
   fs.writeFileSync(filePath, JSON.stringify(myMetrics, null, 2))
   let cvssStr = ''
