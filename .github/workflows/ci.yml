@@ -161,7 +161,7 @@ jobs:
       dryrun: true
       build_image: true
 
-  test-kubeedgecvetodeployment:
+  test-kubeedgecvetodeployment-0:
     name: test-kubeedgecvetodeployment
     needs: test-cvetodeployment
     uses: ./.github/workflows/CVE_to_Deployment_demo.yml
@@ -170,3 +170,13 @@ jobs:
       build_image: true
       image: kubeedge/admission:latest
       deployment_path: /build/admission/deployment.yaml
+
+  test-kubeedgecvetodeployment-1:
+    name: test-kubeedgecvetodeployment
+    needs: test-cvetodeployment
+    uses: ./.github/workflows/CVE_to_Deployment_demo.yml
+    with:
+      dryrun: true
+      build_image: true
+      image: kubeedge/cloudcore:v1.20.0
+      deployment_path: /build/cloud/07-deployment.yaml
