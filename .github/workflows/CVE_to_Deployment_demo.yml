@@ -12,20 +12,28 @@ on: # yamllint disable-line rule:truthy
         required: true
         default: false
         type: boolean
-      image:
-        description: 'image to scan'
-        required: true
-        default: true
-        type: string
-      deployment_path:
-        description: 'path to deployment file'
-        required: true
-        default: true
-        type: string
 
 jobs:
   test-cvetodeployment:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - IMAGE: "cloudcore"
+            PATH: "/build/cloud/07-deployment.yaml"
+          - IMAGE: "admission"
+            PATH: "/build/admission/deployment.yaml"
+          - IMAGE: "edgesite-agent"
+            PATH: "/build/edgesite/edgesite-agent.yaml"
+          - IMAGE: "edgesite-server"
+            PATH: "/build/edgesite/edgesite-server.yaml"
+          - IMAGE: "iptables-manager "
+            PATH: "/build/iptablesmanager/iptablesmanager-ds.yaml"
+          - IMAGE: "controller-manager"
+            PATH: "/build/controllermanager/controllermanager-deploy.yaml"
+          - IMAGE: "conformance"
+            PATH: "/build/conformance/kubernetes/job-conformance.yaml"
     steps:
       - name: Checkout action repo for latest image
         if: ${{ inputs.build_image == true }}
@@ -49,7 +57,7 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
           go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan ${{ inputs.image }} -o cyclonedx-json -vv  > sbom.json 
+          ./syft scan kubeedge/${{matrix.IMAGE}}:v1.20.0 -o cyclonedx-json -vv  > sbom.json 
           cat sbom.json
           bomber scan ./sbom.json --output=json --debug > cve.json
           cat cve.json
@@ -61,7 +69,7 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: '/workdir'
-          deploymentfile: /workdir/${{ inputs.deployment_path }}
+          deploymentfile: /workdir/${{ matrix.PATH }}
           runType: CVE2Deployment
           dryRun: ${{ inputs.dryrun }}
       - name: output check
