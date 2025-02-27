@@ -1,0 +1,93 @@
+name: CVE to Deployment
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      dryrun:
+        description: 'running mode'
+        required: true
+        default: true
+        type: boolean
+      build_image:
+        description: 'build image or not'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  test-cvetodeployment:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - IMAGE: 'cloudcore'
+            PATH: '/build/cloud/07-deployment.yaml'
+          - IMAGE: 'admission'
+            PATH: '/build/admission/deployment.yaml'
+          - IMAGE: 'edgesite-agent'
+            PATH: '/build/edgesite/edgesite-agent.yaml'
+          - IMAGE: 'edgesite-server'
+            PATH: '/build/edgesite/edgesite-server.yaml'
+          - IMAGE: 'iptables-manager'
+            PATH: '/build/iptablesmanager/iptablesmanager-ds.yaml'
+          - IMAGE: 'controller-manager'
+            PATH: '/build/controllermanager/controllermanager-deploy.yaml'
+          - IMAGE: 'conformance'
+            PATH: '/build/conformance/kubernetes/job-conformance.yaml'
+    steps:
+      - name: Checkout action repo for latest image
+        if: ${{ inputs.build_image == true }}
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        if: ${{ inputs.build_image == true }}
+        uses: docker/setup-buildx-action@v3
+      - name: run local dev script
+        if: ${{ inputs.build_image == true }}
+        id: local-image-build
+        run: |
+          docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
+      - name: Checkout Target repo
+        id: checkout_target
+        uses: actions/checkout@v4
+        with:
+          repository: SamYuan1990/kubeedge
+      - uses: actions/setup-go@v5
+      - name: generate CVE.json
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
+          go install github.com/devops-kung-fu/bomber@latest 
+          ./syft scan kubeedge/${{matrix.IMAGE}}:v1.20.0 -o cyclonedx-json -vv  > sbom.json 
+          cat sbom.json
+          bomber scan ./sbom.json --output=json --debug > cve.json
+          cat cve.json
+      - name: use this action to generate suggestion for deployment settings
+        id: Lint_with_LLM
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
+        with:
+          baseURL: https://api.deepseek.com
+          apiKey: dummy
+          model: deepseek-chat
+          dirpath: '/workdir'
+          deploymentfile: /workdir/${{ matrix.PATH }}
+          runType: CVE2Deployment
+          dryRun: ${{ inputs.dryrun }}
+      - name: output check
+        shell: bash
+        run: |
+          echo '${{ steps.Lint_with_LLM.outputs.LLMresponse }}'
+          echo '${{ steps.Lint_with_LLM.outputs.final_prompt }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_prompt_precent }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_content_precent }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_time_usage }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_inputToken }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_outputToken }}'
+
+      - name: Create new issue
+        uses: imjohnbo/issue-bot@v3
+        if: ${{ inputs.dryrun == false }}
+        with:
+          title: CVE cross check with deployment
+          body: |-
+            :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
+            ${{ steps.Lint_with_LLM.outputs.LLMresponse }}
