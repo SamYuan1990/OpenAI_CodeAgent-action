@@ -56,7 +56,7 @@ async function run() {
   logger.Info(`debug ${LLMresponses.length}`)
   processOutput(LLMresponses)
   // Log the current timestamp, wait, then log the new timestamp
-  logger.Info('complete at:', new Date().toTimeString())
+  logger.Info(`complete at: ${new Date().toTimeString()}`)
 }
 
 //run()

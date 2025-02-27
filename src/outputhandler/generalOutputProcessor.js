@@ -1,5 +1,4 @@
 /* eslint-disable filenames/match-regex */
-const core = require('@actions/core')
 const fs = require('fs')
 const path = require('path')
 const { logger } = require('../utils/logger')

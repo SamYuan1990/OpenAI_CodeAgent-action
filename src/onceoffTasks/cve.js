@@ -1,6 +1,8 @@
-const axios = require('axios')
+/* eslint-disable no-useless-catch */
 const fs = require('fs')
+const path = require('path')
 const { logger } = require('../utils/logger')
+const { getInputOrDefault } = require('../utils/inputFilter')
 
 // CVSS 3.1 评分指标
 const cvss_3_1_metrics = {
@@ -61,10 +63,21 @@ async function fetchSeverityScoreBreakdown(url) {
   try {
     // 发送HTTP GET请求
     logger.Info(`start to fetch CVE details ${url}`)
-    const response = await axios.get(url)
-    const cvssMetrics = response.data.containers.adp[0].metrics.find(
-      metric => metric.cvssV3_1
-    )
+    const cveawg_data = await fetchCveData(url)
+    const cveawg_json = JSON.parse(cveawg_data)
+    let cvssMetrics = null
+    for (let i = 0; i < cveawg_json.containers.adp.length; i++) {
+      if (
+        cveawg_json.containers.adp[i]['metrics'] !== null &&
+        cveawg_json.containers.adp[i]['metrics'] !== undefined
+      ) {
+        cvssMetrics = cveawg_json.containers.adp[i].metrics[0]
+        logger.Info(
+          `cvss info from web ${cveawg_json.containers.adp[i].metrics[0].cvssV3_1.vectorString}`
+        )
+        break
+      }
+    }
     if (cvssMetrics && cvssMetrics.cvssV3_1) {
       const cvssV3_1 = cvssMetrics.cvssV3_1
       return {
@@ -89,21 +102,21 @@ async function fetchSeverityScoreBreakdown(url) {
 
 let init = false
 const myMetrics = {
-  'Attack vector': [],
+  'Attack vector': [''],
   'Attack vector from': '',
-  'Attack complexity': [],
+  'Attack complexity': [''],
   'Attack complexity from': '',
-  'Privileges required': [],
+  'Privileges required': [''],
   'Privileges required from': '',
-  'User interaction': [],
+  'User interaction': [''],
   'User interaction from': '',
   Scope: [],
   'Scope from': '',
-  Confidentiality: [],
+  Confidentiality: [''],
   'Confidentiality from': '',
-  'Integrity impact': [],
+  'Integrity impact': [''],
   'Integrity impact from': '',
-  'Availability impact': [],
+  'Availability impact': [''],
   'Availability from': ''
 }
 
@@ -171,8 +184,9 @@ async function fromCVEToPodDeployment() {
       logger.Info('Severity score breakdown section not found.')
     }
   }
-
-  fs.writeFileSync('./cve_result.json', JSON.stringify(myMetrics, null, 2))
+  const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
+  const filePath = path.join(folderName, './cve_result.json')
+  fs.writeFileSync(filePath, JSON.stringify(myMetrics, null, 2))
   let cvssStr = ''
   for (const [metric, values] of Object.entries(myMetrics)) {
     if (!metric.includes('from')) {
@@ -180,6 +194,40 @@ async function fromCVEToPodDeployment() {
     }
   }
   return cvssStr
+}
+
+const https = require('https')
+
+function httpsGetPromise(options) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, res => {
+      let data = ''
+      res.on('data', chunk => {
+        data += chunk
+      })
+      res.on('end', () => {
+        resolve(data)
+      })
+    })
+    req.on('error', e => {
+      reject(e)
+    })
+    req.end()
+  })
+}
+
+async function fetchCveData(url) {
+  try {
+    const options = {
+      hostname: new URL(url).hostname,
+      path: new URL(url).pathname + new URL(url).search,
+      method: 'GET'
+    }
+    const data = await httpsGetPromise(options)
+    return data
+  } catch (error) {
+    throw error
+  }
 }
 
 module.exports = {
