@@ -28,7 +28,7 @@ jobs:
             PATH: '/build/edgesite/edgesite-agent.yaml'
           - IMAGE: 'edgesite-server'
             PATH: '/build/edgesite/edgesite-server.yaml'
-          - IMAGE: 'iptables-manager '
+          - IMAGE: 'iptables-manager'
             PATH: '/build/iptablesmanager/iptablesmanager-ds.yaml'
           - IMAGE: 'controller-manager'
             PATH: '/build/controllermanager/controllermanager-deploy.yaml'
