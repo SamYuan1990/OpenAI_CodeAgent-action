@@ -160,3 +160,13 @@ jobs:
     with:
       dryrun: true
       build_image: true
+
+  test-kubeedgecvetodeployment:
+    name: test-kubeedgecvetodeployment
+    needs: test-cvetodeployment
+    uses: ./.github/workflows/CVE_to_Deployment_demo.yml
+    with:
+      dryrun: true
+      build_image: true
+      image: kubeedge/admission:latest
+      deployment_path: /build/admission/deployment.yaml
