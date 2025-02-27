@@ -152,7 +152,6 @@ async function fromCVEToPodDeployment() {
       } else {
         for (const [key, value] of Object.entries(severityScoreBreakdown)) {
           const cValue = myMetrics[key]
-          console.log(key)
           if (
             cvss_3_1_metrics[key].indexOf(cValue) >
             cvss_3_1_metrics[key].indexOf(value)
@@ -169,20 +168,18 @@ async function fromCVEToPodDeployment() {
         }
       }
     } else {
-      console.log('Severity score breakdown section not found.')
+      logger.Info('Severity score breakdown section not found.')
     }
   }
 
+  fs.writeFileSync('./cve_result.json', JSON.stringify(myMetrics, null, 2))
   let cvssStr = ''
   for (const [metric, values] of Object.entries(myMetrics)) {
     if (!metric.includes('from')) {
       cvssStr += ` ${metric}:${values},`
     }
   }
-
-  const prompt = `${cvssStr}`
-  console.log(prompt)
-  return prompt
+  return cvssStr
 }
 
 module.exports = {
