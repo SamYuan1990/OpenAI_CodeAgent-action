@@ -20,20 +20,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - IMAGE: "cloudcore"
-            PATH: "/build/cloud/07-deployment.yaml"
-          - IMAGE: "admission"
-            PATH: "/build/admission/deployment.yaml"
-          - IMAGE: "edgesite-agent"
-            PATH: "/build/edgesite/edgesite-agent.yaml"
-          - IMAGE: "edgesite-server"
-            PATH: "/build/edgesite/edgesite-server.yaml"
-          - IMAGE: "iptables-manager "
-            PATH: "/build/iptablesmanager/iptablesmanager-ds.yaml"
-          - IMAGE: "controller-manager"
-            PATH: "/build/controllermanager/controllermanager-deploy.yaml"
-          - IMAGE: "conformance"
-            PATH: "/build/conformance/kubernetes/job-conformance.yaml"
+          - IMAGE: 'cloudcore'
+            PATH: '/build/cloud/07-deployment.yaml'
+          - IMAGE: 'admission'
+            PATH: '/build/admission/deployment.yaml'
+          - IMAGE: 'edgesite-agent'
+            PATH: '/build/edgesite/edgesite-agent.yaml'
+          - IMAGE: 'edgesite-server'
+            PATH: '/build/edgesite/edgesite-server.yaml'
+          - IMAGE: 'iptables-manager '
+            PATH: '/build/iptablesmanager/iptablesmanager-ds.yaml'
+          - IMAGE: 'controller-manager'
+            PATH: '/build/controllermanager/controllermanager-deploy.yaml'
+          - IMAGE: 'conformance'
+            PATH: '/build/conformance/kubernetes/job-conformance.yaml'
     steps:
       - name: Checkout action repo for latest image
         if: ${{ inputs.build_image == true }}

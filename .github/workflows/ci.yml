@@ -162,9 +162,9 @@ jobs:
       build_image: true
 
   test-kubeedgecvetodeployment-image:
-      name: test-kubeedgecvetodeployment
-      needs: test-cvetodeployment
-      uses: ./.github/workflows/CVE_to_Deployment_demo.yml
-      with:
-          dryrun: true
-          build_image: true
+    name: test-kubeedgecvetodeployment
+    needs: test-cvetodeployment
+    uses: ./.github/workflows/CVE_to_Deployment_demo.yml
+    with:
+      dryrun: true
+      build_image: true
