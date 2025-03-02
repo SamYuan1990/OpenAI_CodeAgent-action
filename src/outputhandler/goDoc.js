@@ -1,5 +1,5 @@
 const fs = require('fs')
-const logger = require('../utils/logger')
+const { logger } = require('../utils/logger')
 
 /**
  * 在 Go 文件中为特定函数插入注释
