@@ -11,7 +11,7 @@ function scanDirectory(dir) {
   parser.setLanguage(CTree)
   const files = fs.readdirSync(dir)
   const cFiles = files.filter(
-    file => file.endsWith('.c') //|| file.endsWith('.h')
+    file => file.endsWith('.c') || file.endsWith('.cpp')
   )
   const result = []
 
@@ -59,7 +59,7 @@ module.exports = {
   scanDirectory
 }
 
-/* 主函数
+// 主函数
 function main() {
   const projectDir = process.argv[2] // 从命令行参数获取项目目录
   if (!projectDir) {
@@ -72,4 +72,3 @@ function main() {
 }
 
 main()
-*/
