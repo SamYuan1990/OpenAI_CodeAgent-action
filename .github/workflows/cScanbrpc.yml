@@ -41,7 +41,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           model: deepseek-chat
-          dirpath: '/workdir/src'
+          dirpath: '/workdir/src/brpc'
           runType: ccodescan
           maxIterations: 1
           dryRun: true
