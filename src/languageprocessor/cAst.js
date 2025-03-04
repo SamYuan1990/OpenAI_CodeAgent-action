@@ -11,7 +11,7 @@ function scanDirectory(dir) {
   parser.setLanguage(CTree)
   const files = fs.readdirSync(dir)
   const cFiles = files.filter(
-    file => file.endsWith('.c') || file.endsWith('.h')
+    file => file.endsWith('.c') //|| file.endsWith('.h')
   )
   const result = []
 
