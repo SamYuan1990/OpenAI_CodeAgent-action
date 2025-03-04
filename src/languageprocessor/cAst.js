@@ -59,7 +59,7 @@ module.exports = {
   scanDirectory
 }
 
-// 主函数
+/* 主函数
 function main() {
   const projectDir = process.argv[2] // 从命令行参数获取项目目录
   if (!projectDir) {
@@ -72,3 +72,4 @@ function main() {
 }
 
 main()
+*/
