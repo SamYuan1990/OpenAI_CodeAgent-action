@@ -45,6 +45,7 @@ jobs:
           runType: ccodescan
           maxIterations: 1
           dryRun: true
+          githubIssueReport: true
       - name: output check
         shell: bash
         run: |

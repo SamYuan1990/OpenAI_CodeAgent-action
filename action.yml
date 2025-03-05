@@ -11,6 +11,13 @@ inputs:
     description:
       'an optional setting for the maximum number of iterations we invokes
       openAI endpoint'
+  githubIssueReport:
+    description: 'report LLM response via new github issue'
+  output_path:
+    description: 'an optional setting for archive LLM response'
+  token:
+    description: 'token for github'
+    default: ${{ github.token }}
   # model option
   baseURL:
     description: 'url for your openAI API endpoint'
@@ -78,6 +85,9 @@ runs:
          -e maxIterations=${{ inputs.maxIterations }} \
          -e deploymentfile=${{ inputs.deploymentfile }} \
          -e prompt=${{ inputs.prompt }} \
+         -e output_path=${{ inputs.output_path }} \
+         -e githubIssueReport=${{ inputs.githubIssueReport }} \
+         -e token=${{ inputs.token }} \
          -v "$(pwd):/workdir:rw" \
          ghcr.io/samyuan1990/openai_codeagent-action:latest
     - id: LLMresponse

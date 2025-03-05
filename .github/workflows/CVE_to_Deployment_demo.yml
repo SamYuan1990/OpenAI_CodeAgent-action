@@ -72,6 +72,7 @@ jobs:
           deploymentfile: /workdir/${{ matrix.PATH }}
           runType: CVE2Deployment
           dryRun: ${{ inputs.dryrun }}
+          githubIssueReport: true
       - name: output check
         shell: bash
         run: |

@@ -8,7 +8,6 @@ permissions: write-all
 jobs:
   test-cvetodeployment:
     name: test-cvetodeployment
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/CVE_to_Deployment.yml
     with:
       dryrun: false

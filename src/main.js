@@ -20,15 +20,21 @@ async function run() {
     apiKey
   })
   // controler group
-  const dryRun = getInputOrDefault('dryRun', '')
+  const dryRun = getInputOrDefault('dryRun', true)
   logger.Info(`dry run? ${dryRun}`)
   const runType = getInputOrDefault('runType', '')
   logger.Info(`Will execute for ${runType}`)
+  const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
+  logger.Info(`Will save running result at ${folderName}`)
+  const githubIssueReport = getInputOrDefault('githubIssueReport', false)
+  logger.Info(`enable report via github Issue ${githubIssueReport}`)
 
   const maxIterations = getInputOrDefault('maxIterations', '')
   const control_group = {
     maxIterations,
-    runType
+    runType,
+    folderName,
+    githubIssueReport
   }
   // end of AI Agent creation
   const model = getInputOrDefault('model', '')
@@ -54,7 +60,7 @@ async function run() {
     LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
   }
   logger.Info(`debug ${LLMresponses.length}`)
-  processOutput(LLMresponses)
+  await processOutput(LLMresponses, control_group)
   // Log the current timestamp, wait, then log the new timestamp
   logger.Info(`complete at: ${new Date().toTimeString()}`)
 }
