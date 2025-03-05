@@ -13,6 +13,7 @@ function getInputOrDefault(inputName, defaultValue) {
     return envValue
   }
 
+  console.log(`use default value for ${inputName}`)
   // 最终返回默认值
   return defaultValue
 }
