@@ -34,7 +34,7 @@ async function processOutput(LLMresponses, control_group) {
     const absolutePath = path.resolve(outputpath)
     logger.Info(`make output dir, ${absolutePath}`)
   }
-  const isoDate = new Date().toISOString()
+  const isoDate = new Date().toISOString().substring(0, 10)
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
