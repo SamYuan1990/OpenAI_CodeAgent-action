@@ -18,9 +18,9 @@ inputs:
   token:
     description: 'token for github'
     default: ${{ github.token }}
-  github_repository:
+  github_repo:
     description: 'github_repository'
-    default: ${{ github_repository }}
+    default: ${{ GITHUB_REPOSITORY }}
   # model option
   baseURL:
     description: 'url for your openAI API endpoint'
@@ -91,7 +91,7 @@ runs:
          -e output_path=${{ inputs.output_path }} \
          -e githubIssueReport=${{ inputs.githubIssueReport }} \
          -e token=${{ inputs.token }} \
-         -e github_repository=${{ inputs.github_repo }} \ 
+         -e GITHUB_REPOSITORY=${{ inputs.github_repo }} \ 
          -v "$(pwd):/workdir:rw" \
          ghcr.io/samyuan1990/openai_codeagent-action:latest
     - id: LLMresponse
