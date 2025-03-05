@@ -91,7 +91,7 @@ runs:
          -e output_path=${{ inputs.output_path }} \
          -e githubIssueReport=${{ inputs.githubIssueReport }} \
          -e token=${{ inputs.token }} \
-         -e repository=${{ inputs.github_repo }} \ 
+         -e GITHUB_REPOSITORY=${{ inputs.github_repo }} \ 
          -v "$(pwd):/workdir:rw" \
          ghcr.io/samyuan1990/openai_codeagent-action:latest
     - id: LLMresponse

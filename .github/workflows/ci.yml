@@ -106,7 +106,7 @@ jobs:
            -e maxIterations=1 \
            -e githubIssueReport=true \
            -e token=${{ github.token }} \
-           -e github_repository=${{ github.github_repository }} \
+           -e GITHUB_REPOSITORY=${{ inputs.github_repo }} \ 
            -v "$(pwd):/workdir:rw" \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
            ls $(pwd)
