@@ -105,6 +105,7 @@ jobs:
            -e runType="jsunittest" \
            -e maxIterations=1 \
            -e githubIssueReport=true \
+           -e token=${{ github.token }} \
            -v "$(pwd):/workdir:rw" \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
            ls $(pwd)
