@@ -20,7 +20,7 @@ inputs:
     default: ${{ github.token }}
   github_repo:
     description: 'github_repository'
-    default: ${{ github.repository }}
+    default: "${{ github.repository }}"
   # model option
   baseURL:
     description: 'url for your openAI API endpoint'
