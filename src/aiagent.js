@@ -35,7 +35,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
     meta
   }
 
-  if (!dryRun) {
+  if (!dryRun || dryRun !== 'true') {
     try {
       logger.Info('--------Invoke generate AI:--------')
       const completion = await openai.chat.completions.create({

@@ -72,7 +72,11 @@ async function processOutput(LLMresponses, control_group) {
       // const + intention + date + hash
       const title = `OpenAI_CodeAgent created task [${control_group.runType},${isoDate},${LLMresponses[i].hashValue.substring(0, 7)}]`
       logger.Info(`New issue title going to be: ${title}`)
-      if (!control_group.dryRun && LLMresponses[i].response.trim().length > 0) {
+      const dryRun = control_group.dryRun
+      if (
+        (!dryRun || dryRun !== 'true') &&
+        LLMresponses[i].response.trim().length > 0
+      ) {
         await createGithubIssueAccordingly(LLMresponses[i], octokit, title)
       }
     }
