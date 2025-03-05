@@ -70,7 +70,7 @@ async function processOutput(LLMresponses, control_group) {
     // handle token from github action by default
     if (control_group.githubIssueReport) {
       // const + intention + date + hash
-      const title = `OpenAI_CodeAgent created task [${control_group.runType},${isoDate},${LLMresponses.hashValue}]`
+      const title = `OpenAI_CodeAgent created task [${control_group.runType},${isoDate},${LLMresponses[i].hashValue}]`
       logger.Info(`New issue title going to be: ${title}`)
       if (!control_group.dryRun && LLMresponses[i].response.trim().length > 0) {
         await createGithubIssueAccordingly(LLMresponses[i], octokit, title)
