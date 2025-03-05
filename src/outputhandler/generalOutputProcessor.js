@@ -34,6 +34,7 @@ async function processOutput(LLMresponses, control_group) {
     const absolutePath = path.resolve(outputpath)
     logger.Info(`make output dir, ${absolutePath}`)
   }
+  const isoDate = new Date().toISOString()
   // General output to folder
   let prompt_precent_sum = 0
   let content_precent_sum = 0
@@ -67,15 +68,13 @@ async function processOutput(LLMresponses, control_group) {
     // issue support for each
     // todo if we need handle response const { newIssueNumber, newIssueId, newIssueNodeId }
     // handle token from github action by default
-    if (
-      control_group.githubIssueReport &&
-      LLMresponses[i].response.trim().length > 0
-    ) {
-      await createGithubIssueAccordingly(
-        LLMresponses[i],
-        octokit,
-        control_group.runType
-      )
+    if (control_group.githubIssueReport) {
+      // const + intention + date + hash
+      const title = `OpenAI_CodeAgent created task [${control_group.runType},${isoDate},${LLMresponses.hashValue}]`
+      logger.Info(`New issue title going to be: ${title}`)
+      if (!control_group.dryRun && LLMresponses[i].response.trim().length > 0) {
+        await createGithubIssueAccordingly(LLMresponses[i], octokit, title)
+      }
     }
   }
 
@@ -105,11 +104,7 @@ async function processOutput(LLMresponses, control_group) {
   fs.writeFileSync(filePath, summary_jsonString)
 }
 
-async function createGithubIssueAccordingly(LLMresponses, octokit, intention) {
-  // const + intention + date + hash
-  const isoDate = new Date().toISOString()
-
-  const title = `OpenAI_CodeAgent created task [${intention},${isoDate},${LLMresponses.hashValue}]`
+async function createGithubIssueAccordingly(LLMresponses, octokit, title) {
   const {
     data: { number: newIssueNumber, id: newIssueId, node_id: newIssueNodeId }
   } =

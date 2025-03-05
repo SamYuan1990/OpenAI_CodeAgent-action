@@ -54,6 +54,7 @@ jobs:
           deploymentfile: /workdir/manifests/k8s/config/exporter/exporter.yaml
           runType: CVE2Deployment
           dryRun: ${{ inputs.dryrun }}
+          githubIssueReport: true
       - name: output check
         shell: bash
         run: |

@@ -7,7 +7,6 @@ permissions: write-all
 jobs:
   test-jsunittest:
     name: test-cvetodeployment
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/jsunittest.yml
     with:
       dryrun: false
