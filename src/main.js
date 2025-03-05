@@ -20,7 +20,7 @@ async function run() {
     apiKey
   })
   // controler group
-  const dryRun = getInputOrDefault('dryRun', true)
+  const dryRun = getInputOrDefault('dryRun', '')
   logger.Info(`dry run? ${dryRun}`)
   const runType = getInputOrDefault('runType', '')
   logger.Info(`Will execute for ${runType}`)
