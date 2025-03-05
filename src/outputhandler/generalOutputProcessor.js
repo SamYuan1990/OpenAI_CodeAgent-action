@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const { logger } = require('../utils/logger')
 const { context, getOctokit } = require('@actions/github')
-const core = require('@actions/core')
+const { getInputOrDefault } = require('../utils/inputFilter')
 
 async function processOutput(LLMresponses, control_group) {
   // output processor
@@ -46,7 +46,7 @@ async function processOutput(LLMresponses, control_group) {
   let octokit
   if (control_group.githubIssueReport && !control_group.dryRun) {
     logger.Info(`prepare for create github issue with token`)
-    const token = core.getInput('token')
+    const token = getInputOrDefault('token', '')
     octokit = getOctokit(token)
   }
 
