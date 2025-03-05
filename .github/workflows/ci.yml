@@ -153,6 +153,14 @@ jobs:
       dryrun: true
       build_image: true
 
+  test-ccodescanbrpc:
+    name: test-ccodescan
+    needs: test-container
+    uses: ./.github/workflows/cScanbrpc.yml
+    with:
+      dryrun: true
+      build_image: true
+
   test-cvetodeployment:
     name: test-cvetodeployment
     needs: test-container
