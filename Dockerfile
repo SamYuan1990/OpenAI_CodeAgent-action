@@ -48,7 +48,9 @@ RUN npm install
 
 # 复制应用代码
 COPY . .
+RUN cd ./goAST && go build -o goASTBin . && cd .. && mv ./goAST/goASTBin .
 
+RUN ls -al /app/goASTBin
 RUN mkdir -p /workdir
 
 CMD ["node","./src/index.js"]

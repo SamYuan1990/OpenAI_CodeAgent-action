@@ -112,3 +112,4 @@ src/goAST
 localTestStep
 processlog
 */golangAST.json
+goASTBin
