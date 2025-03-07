@@ -1,4 +1,4 @@
-# Hello, World! OpenAI Code Agent
+# Hello! OpenAI Code Agent
 
 [![Lint Codebase](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml)
 [![Continuous Integration](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml)
@@ -54,7 +54,7 @@ Set `maxIterations` for AST tasks or enable `dry run` mode.
 ### Metrics
 
 - [x] Per-task tracing
-- [ ] Token cost analysis
+- [x] Token cost analysis
 - [x] Prompt component analysis (e.g., one-shot vs. ReAct)
 - [ ] Output effectiveness (filtered invalid responses)
 
@@ -68,6 +68,9 @@ Set `maxIterations` for AST tasks or enable `dry run` mode.
 | avg_content_precent | Average percentage of task context in prompts |
 | LLMresponse         | Raw LLM response (single call)                |
 | final_prompt        | Full prompt sent to LLM                       |
+| avg_time_usage      | Average time spend when invoke LLM            |
+| avg_inputToken      | Average input token to LLM                    |
+| avg_outputToken     | Average output token from LLM                 |
 
 AST task output (directory: `./GenAI_output`):
 
@@ -85,6 +88,15 @@ AST task output (directory: `./GenAI_output`):
   }
 }
 ```
+
+## Current result
+
+| Metric\Task               | Document generate | Deployment suggestion | Code enhancement |
+| ------------------------- | ----------------- | --------------------- | ---------------- |
+| Prompt percent            | 16%               | 5.6%                  | 54.2%            |
+| Content percent           | 83%               | 93%                   | 45%              |
+| Output Token              | 430               | 1207                  | 742              |
+| LLM response time(second) | 26                | 61                    | 43               |
 
 ---
 
@@ -106,6 +118,12 @@ AST task output (directory: `./GenAI_output`):
            -e dryRun="true" \
            -e runType="jsunittest" \
            -e maxIterations=1 \
+           -e deploymentfile= \
+           -e prompt= \
+           -e output_path= \
+           -e githubIssueReport= \
+           -e token= \
+           -e GITHUB_REPOSITORY= \
            -v "$(pwd)":/workdir \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
   ```
@@ -122,7 +140,6 @@ AST task output (directory: `./GenAI_output`):
 
 ## Roadmap
 
-- Scan libxml2 for CVE fixes
 - Enhance unit test generation
 - Add function/file-level skip rules
 - Framework flexibility improvements
