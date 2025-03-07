@@ -1,4 +1,4 @@
-# Hello, World! OpenAI 代码助手
+# Hello! OpenAI 代码助手
 
 [![代码规范检查](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/linter.yml)
 [![持续集成](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/SamYuan1990/OpenAI_CodeAgent/actions/workflows/ci.yml)
@@ -84,6 +84,15 @@ AST 任务的输出示例（目录：`./GenAI_output`）：
   }
 }
 ```
+
+## 当前结果
+
+| Metric\Task               | Document generate | Deployment suggestion | Code enhancement |
+| ------------------------- | ----------------- | --------------------- | ---------------- |
+| Prompt percent            | 16%               | 5.6%                  | 54.2%            |
+| Content percent           | 83%               | 93%                   | 45%              |
+| Output Token              | 430               | 1207                  | 742              |
+| LLM response time(second) | 26                | 61                    | 43               |
 
 ---
 
