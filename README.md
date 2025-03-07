@@ -31,7 +31,7 @@ pipelines.
 ## Collaboration
 
 Workflow Design:  
-![OverAllDesign](./Design.png)
+![OverAllDesign](./docs/pictures/Design.png)
 
 **Contribution Guidelines**:  
 To add language support, provide:
