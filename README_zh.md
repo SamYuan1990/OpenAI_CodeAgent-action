@@ -25,7 +25,7 @@
 ## 合作流程
 
 项目整体设计如下：  
-![总体设计](./Design.png)
+![总体设计](./docs/pictures/Design.png)
 
 欢迎试用或在 GitHub Issue 中提交您的场景需求！  
 **技术贡献说明**：  
