@@ -54,7 +54,7 @@ Set `maxIterations` for AST tasks or enable `dry run` mode.
 ### Metrics
 
 - [x] Per-task tracing
-- [ ] Token cost analysis
+- [x] Token cost analysis
 - [x] Prompt component analysis (e.g., one-shot vs. ReAct)
 - [ ] Output effectiveness (filtered invalid responses)
 
@@ -68,6 +68,9 @@ Set `maxIterations` for AST tasks or enable `dry run` mode.
 | avg_content_precent | Average percentage of task context in prompts |
 | LLMresponse         | Raw LLM response (single call)                |
 | final_prompt        | Full prompt sent to LLM                       |
+| avg_time_usage      | Average time spend when invoke LLM            |
+| avg_inputToken      | Average input token to LLM                    |
+| avg_outputToken     | Average output token from LLM                 |
 
 AST task output (directory: `./GenAI_output`):
 
@@ -106,6 +109,12 @@ AST task output (directory: `./GenAI_output`):
            -e dryRun="true" \
            -e runType="jsunittest" \
            -e maxIterations=1 \
+           -e deploymentfile= \
+           -e prompt= \
+           -e output_path= \
+           -e githubIssueReport= \
+           -e token= \
+           -e GITHUB_REPOSITORY= \
            -v "$(pwd)":/workdir \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
   ```
@@ -122,7 +131,6 @@ AST task output (directory: `./GenAI_output`):
 
 ## Roadmap
 
-- Scan libxml2 for CVE fixes
 - Enhance unit test generation
 - Add function/file-level skip rules
 - Framework flexibility improvements

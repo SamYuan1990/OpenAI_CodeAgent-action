@@ -50,7 +50,7 @@
 ### 指标
 
 - [x] 每轮任务追踪
-- [ ] Token 消耗统计（关联成本）
+- [x] Token 消耗统计（关联成本）
 - [x] 提示词组件分析（如单轮提示、ReAct 模式等）
 - [ ] 输出有效性统计（过滤无效响应比例）
 
@@ -64,6 +64,9 @@
 | avg_content_precent | 任务背景内容在最终输入中的平均占比       |
 | LLMresponse         | 大模型的响应内容（单次调用）             |
 | final_prompt        | 发送至大模型的完整提示词                 |
+| avg_time_usage      | 大模型平均响应时间                       |
+| avg_inputToken      | 大模型平均输入token数                    |
+| avg_outputToken     | 大模型平均数醋token数                    |
 
 AST 任务的输出示例（目录：`./GenAI_output`）：
 
@@ -93,6 +96,24 @@ AST 任务的输出示例（目录：`./GenAI_output`）：
   npm install
   npx local-action . src/main.js .env.example
   ```
+  或容器
+  ```bash
+  docker run -e baseURL="https://api.deepseek.com" \
+           -e apiKey="dummy" \
+           -e model="deep-seek" \
+           -e dirPath="/workdir/src" \
+           -e dryRun="true" \
+           -e runType="jsunittest" \
+           -e maxIterations=1 \
+           -e deploymentfile= \
+           -e prompt= \
+           -e output_path= \
+           -e githubIssueReport= \
+           -e token= \
+           -e GITHUB_REPOSITORY= \
+           -v "$(pwd)":/workdir \
+           ghcr.io/samyuan1990/openai_codeagent-action:latest
+  ```
 
 ---
 
@@ -106,7 +127,6 @@ AST 任务的输出示例（目录：`./GenAI_output`）：
 
 ## 待办事项
 
-- 扫描 libxml2 以验证 CVE 修复逻辑
 - 增强单元测试生成逻辑
 - 支持函数级/文件级跳过规则
 - 框架灵活化适配
