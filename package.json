@@ -69,7 +69,7 @@
     "@babel/parser": "^7.26.8",
     "@babel/traverse": "^7.26.8",
     "gpt-tokenizer": "^2.8.1",
-    "openai": "^4.78.1",
+    "openai": "^4.86.2",
     "tree-sitter": "^0.22.4",
     "tree-sitter-c": "^0.23.5"
   },
