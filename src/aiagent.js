@@ -22,6 +22,7 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   const content_precent = promptContent.content_precent
   const inputToken = promptContent.inputToken
   const filePath = promptContent.filePath
+  const reviewed = false
   const prompt_info = {
     model,
     final_prompt,
@@ -33,6 +34,7 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
     inputToken,
     outputToken,
     filePath,
+    reviewed,
     meta
   }
 
