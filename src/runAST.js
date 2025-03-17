@@ -36,6 +36,7 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
       openai,
       model_parameters.model,
       model_parameters.prompt,
+      control_group,
       dryRun
     )
     // output processor

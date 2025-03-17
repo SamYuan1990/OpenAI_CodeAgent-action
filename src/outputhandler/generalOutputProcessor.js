@@ -50,10 +50,7 @@ async function processOutput(LLMresponses, control_group) {
     total_input_token += LLMresponses[i].inputToken
     total_output_token += LLMresponses[i].outputToken
     const jsonString = JSON.stringify(LLMresponses[i], null, 2)
-    const filePath = path.join(
-      folderName,
-      `file_${LLMresponses[i].hashValue}.out`
-    )
+    const filePath = LLMresponses[i].filePath
     fs.writeFileSync(filePath, jsonString)
     logger.Info(`Record data to file ${filePath} success`)
     logger.Info(`process complete for ${LLMresponses[i].hashValue}`)

@@ -37,7 +37,12 @@ describe('invokeAIviaAgent', () => {
       apiKey
     })
 
-    const promptcontent = preparePrompt(prompt, fileContent)
+    const folderName = '/tmp'
+    const control_group = {
+      folderName
+    }
+
+    const promptcontent = preparePrompt(prompt, fileContent, control_group)
     console.log('debug')
     console.log(promptcontent)
     console.log('debug')

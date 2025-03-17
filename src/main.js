@@ -64,7 +64,12 @@ async function run() {
   let LLMresponses = []
   // once off tasks
   if (control_group.runType === 'CVE2Deployment') {
-    LLMresponses = await cvss_deployment(openai, model_parameters, dryRun)
+    LLMresponses = await cvss_deployment(
+      openai,
+      model_parameters,
+      control_group,
+      dryRun
+    )
   } else {
     // AST tasks
     LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)

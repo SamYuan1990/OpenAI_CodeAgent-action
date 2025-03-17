@@ -25,7 +25,12 @@ describe('invokeAIviaAgent', () => {
     const fileContent = 'Test file content'
     const dryRun = true
 
-    const promptcontent = preparePrompt(prompt, fileContent)
+    const folderName = '/tmp'
+    const control_group = {
+      folderName
+    }
+
+    const promptcontent = preparePrompt(prompt, fileContent, control_group)
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
@@ -48,8 +53,13 @@ describe('invokeAIviaAgent', () => {
       choices: [{ message: { content: 'Mock AI response' } }]
     }
 
+    const folderName = '/tmp'
+    const control_group = {
+      folderName
+    }
+
     openai.chat.completions.create.mockResolvedValue(mockResponse)
-    const promptcontent = preparePrompt(prompt, fileContent)
+    const promptcontent = preparePrompt(prompt, fileContent, control_group)
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
@@ -72,7 +82,12 @@ describe('invokeAIviaAgent', () => {
 
     openai.chat.completions.create.mockRejectedValue(mockError)
 
-    const promptcontent = preparePrompt(prompt, fileContent)
+    const folderName = '/tmp'
+    const control_group = {
+      folderName
+    }
+
+    const promptcontent = preparePrompt(prompt, fileContent, control_group)
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
