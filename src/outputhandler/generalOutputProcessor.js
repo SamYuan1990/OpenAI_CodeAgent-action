@@ -26,14 +26,6 @@ async function processOutput(LLMresponses, control_group) {
     avg_time_usage: 0
   }
   const folderName = control_group.folderName
-  const outputpath = fs.mkdirSync(folderName, {
-    recursive: true,
-    permission: 0o755
-  })
-  if (outputpath != null) {
-    const absolutePath = path.resolve(outputpath)
-    logger.Info(`make output dir, ${absolutePath}`)
-  }
   const isoDate = new Date().toISOString().substring(0, 10)
   // General output to folder
   let prompt_precent_sum = 0

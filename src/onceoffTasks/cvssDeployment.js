@@ -11,9 +11,9 @@ async function cvss_deployment(openai, model_parameters, dryRun) {
   const cvss_content = await fromCVEToPodDeployment()
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`
+  const promptContent = preparePrompt(model_parameters.prompt, content)
   // check if hash in genai output
   // if there skip
-  const promptContent = preparePrompt(model_parameters.prompt, content)
   const LLMresponse = await invokeAIviaAgent(
     openai,
     model_parameters.model,

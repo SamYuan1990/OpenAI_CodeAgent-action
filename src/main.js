@@ -8,6 +8,8 @@ const { processOutput } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
 const { logger } = require('./utils/logger')
 const { getInputOrDefault } = require('./utils/inputFilter')
+const fs = require('fs')
+const path = require('path')
 
 async function run() {
   const baseURL = getInputOrDefault('baseURL', '')
@@ -26,6 +28,14 @@ async function run() {
   logger.Info(`Will execute for ${runType}`)
   const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
   logger.Info(`Will save running result at ${folderName}`)
+  const outputpath = fs.mkdirSync(folderName, {
+    recursive: true,
+    permission: 0o755
+  })
+  if (outputpath != null) {
+    const absolutePath = path.resolve(outputpath)
+    logger.Info(`make output dir, ${absolutePath}`)
+  }
   const githubIssueReport = getInputOrDefault('githubIssueReport', false)
   logger.Info(`enable report via github Issue ${githubIssueReport}`)
 

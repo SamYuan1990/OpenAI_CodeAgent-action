@@ -78,9 +78,10 @@ const taskQueue = {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const filename = task.fileName
       const functionname = task.functionname
-      // check if hash in genai output
-      // if there skip
       const promptContent = preparePrompt(prompt, task.content)
+      // check if hash in genai output
+
+      // if there skip
       const GenAIContent = await invokeAIviaAgent(
         openai,
         model,
