@@ -1,13 +1,4 @@
-const { invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
-const core = require('@actions/core') // Assuming core is imported in your file
-
-// Mock the core.info method
-jest.mock('@actions/core', () => ({
-  getInput: jest.fn(),
-  debug: jest.fn(),
-  setFailed: jest.fn(),
-  info: jest.fn()
-}))
+const { preparePrompt, invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
 
 // Mock the openai object
 const openai = {
@@ -34,25 +25,8 @@ describe('invokeAIviaAgent', () => {
     const fileContent = 'Test file content'
     const dryRun = true
 
-    const result = await invokeAIviaAgent(
-      openai,
-      model,
-      prompt,
-      dryRun,
-      fileContent
-    )
-
-    /*expect(core.info).toHaveBeenCalledWith(
-      ' We are going to talk with Gen AI with Model',
-      model
-    )
-    expect(core.info).toHaveBeenCalledWith(
-      ' We are going to talk with Gen AI with prompt and file content'
-    )
-    expect(core.info).toHaveBeenCalledWith(`${prompt}\n${fileContent}`)
-    expect(core.info).toHaveBeenCalledWith(
-      `just dry run for, ${prompt}\n${fileContent}`
-    )*/
+    const promptcontent = preparePrompt(prompt, fileContent)
+    const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
     expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)
@@ -75,27 +49,8 @@ describe('invokeAIviaAgent', () => {
     }
 
     openai.chat.completions.create.mockResolvedValue(mockResponse)
-
-    const result = await invokeAIviaAgent(
-      openai,
-      model,
-      prompt,
-      dryRun,
-      fileContent
-    )
-
-    /*expect(core.info).toHaveBeenCalledWith(
-      '--------Invoke generate AI:--------'
-    )
-    expect(core.info).toHaveBeenCalledWith(
-      '--------This is output from generate AI:--------'
-    )
-    expect(core.info).toHaveBeenCalledWith(
-      mockResponse.choices[0].message.content
-    )
-    expect(core.info).toHaveBeenCalledWith(
-      '--------End of generate AI output--------'
-    )*/
+    const promptcontent = preparePrompt(prompt, fileContent)
+    const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
     expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)
@@ -117,20 +72,8 @@ describe('invokeAIviaAgent', () => {
 
     openai.chat.completions.create.mockRejectedValue(mockError)
 
-    const result = await invokeAIviaAgent(
-      openai,
-      model,
-      prompt,
-      dryRun,
-      fileContent
-    )
-
-    /*expect(core.info).toHaveBeenCalledWith(
-      '--------Invoke generate AI:--------'
-    )
-    expect(core.info).toHaveBeenCalledWith(
-      `error happen from LLM response ${mockError}`
-    )*/
+    const promptcontent = preparePrompt(prompt, fileContent)
+    const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
     expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)

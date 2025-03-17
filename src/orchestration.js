@@ -1,6 +1,6 @@
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
-const { invokeAIviaAgent } = require('./aiagent')
+const { preparePrompt, invokeAIviaAgent } = require('./aiagent')
 const { scanDirectory } = require('./languageprocessor/cAst')
 const { logger } = require('./utils/logger')
 
@@ -78,12 +78,14 @@ const taskQueue = {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const filename = task.fileName
       const functionname = task.functionname
+      // check if hash in genai output
+      // if there skip
+      const promptContent = preparePrompt(prompt, task.content)
       const GenAIContent = await invokeAIviaAgent(
         openai,
         model,
-        prompt,
         dryRun,
-        task.content
+        promptContent
       )
       const meta = {
         filename,

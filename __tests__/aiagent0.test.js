@@ -1,21 +1,11 @@
-const { invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
+const { preparePrompt, invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
 const OpenAI = require('openai') // Assuming OpenAI is imported in your file
-const core = require('@actions/core') // Assuming core is imported in your file
 
-// Mock the OpenAI and core modules
 jest.mock('openai')
-jest.mock('@actions/core', () => ({
-  getInput: jest.fn(),
-  debug: jest.fn(),
-  setFailed: jest.fn(),
-  info: jest.fn()
-}))
-
 describe('invokeAIviaAgent', () => {
   beforeEach(() => {
     // Clear all instances and calls to constructor and all methods:
     OpenAI.mockClear()
-    core.debug.mockClear()
   })
 
   it('should call OpenAI with the correct parameters and return the completion content', async () => {
@@ -47,15 +37,17 @@ describe('invokeAIviaAgent', () => {
       apiKey
     })
 
-    // Act
+    const promptcontent = preparePrompt(prompt, fileContent)
+    console.log('debug')
+    console.log(promptcontent)
+    console.log('debug')
     const result = await invokeAIviaAgent(
       openai,
       'deepseek-chat',
-      prompt,
       false,
-      fileContent
+      promptcontent
     )
-
+    // Act
     expect(mockCreate).toHaveBeenCalledWith({
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },

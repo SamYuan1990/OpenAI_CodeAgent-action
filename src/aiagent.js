@@ -2,26 +2,24 @@ const crypto = require('crypto')
 const { logger } = require('./utils/logger')
 const { encode } = require('gpt-tokenizer')
 
-async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
+async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
+  // decouple prompt and hash value from here
+  // so that support hash skip before invoke
   logger.Info(' We are going to talk with Gen AI with Model', model)
-  logger.Info(' We are going to talk with Gen AI with prompt and file content')
-  logger.Info(`${prompt}\n${fileContent}`)
-  const final_prompt = `${prompt}\n${fileContent}`
-  const hash = crypto.createHash('sha256')
-  hash.update(final_prompt)
-  const hashValue = hash.digest('hex')
   // process hash and prompt metric here
   // hash
   // prompt metric
-  const prompt_precent = calculatePercentage(prompt, final_prompt)
-  const content_precent = calculatePercentage(fileContent, final_prompt)
   const response = ''
   const meta = {}
   const time_usage = 0
   const startTime = process.hrtime()
   let endTime = ''
-  const inputToken = calculateTokenCount(`${prompt}\n${fileContent}`)
   const outputToken = 0
+  const final_prompt = promptContent.final_prompt
+  const hashValue = promptContent.hashValue
+  const prompt_precent = promptContent.prompt_precent
+  const content_precent = promptContent.content_precent
+  const inputToken = promptContent.inputToken
   const prompt_info = {
     model,
     final_prompt,
@@ -43,7 +41,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
           { role: 'system', content: 'You are a helpful assistant.' },
           {
             role: 'user',
-            content: `${prompt}\n${fileContent}`
+            content: `${final_prompt}`
           }
         ],
         model
@@ -64,7 +62,7 @@ async function invokeAIviaAgent(openai, model, prompt, dryRun, fileContent) {
       prompt_info.response = ''
     }
   } else {
-    logger.Info(`just dry run for, ${prompt}\n${fileContent}`)
+    logger.Info(`just dry run for, ${final_prompt}`)
     // hash
     // prompt metric
     prompt_info.response = ``
@@ -92,6 +90,27 @@ function calculateTokenCount(Text) {
   return Tokens
 }
 
+function preparePrompt(prompt, fileContent) {
+  logger.Info(' We are going to talk with Gen AI with prompt and file content')
+  const final_prompt = `${prompt}\n${fileContent}`
+  logger.Info(`${final_prompt}`)
+  const hash = crypto.createHash('sha256')
+  hash.update(final_prompt)
+  const hashValue = hash.digest('hex')
+  const prompt_precent = calculatePercentage(prompt, final_prompt)
+  const content_precent = calculatePercentage(fileContent, final_prompt)
+  const inputToken = calculateTokenCount(`${final_prompt}`)
+  const promptContent = {
+    final_prompt,
+    hashValue,
+    prompt_precent,
+    content_precent,
+    inputToken
+  }
+  return promptContent
+}
+
 module.exports = {
-  invokeAIviaAgent
+  invokeAIviaAgent,
+  preparePrompt
 }
