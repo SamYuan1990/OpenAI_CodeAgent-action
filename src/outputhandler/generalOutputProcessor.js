@@ -26,14 +26,6 @@ async function processOutput(LLMresponses, control_group) {
     avg_time_usage: 0
   }
   const folderName = control_group.folderName
-  const outputpath = fs.mkdirSync(folderName, {
-    recursive: true,
-    permission: 0o755
-  })
-  if (outputpath != null) {
-    const absolutePath = path.resolve(outputpath)
-    logger.Info(`make output dir, ${absolutePath}`)
-  }
   const isoDate = new Date().toISOString().substring(0, 10)
   // General output to folder
   let prompt_precent_sum = 0
@@ -58,10 +50,7 @@ async function processOutput(LLMresponses, control_group) {
     total_input_token += LLMresponses[i].inputToken
     total_output_token += LLMresponses[i].outputToken
     const jsonString = JSON.stringify(LLMresponses[i], null, 2)
-    const filePath = path.join(
-      folderName,
-      `file_${LLMresponses[i].hashValue}.out`
-    )
+    const filePath = LLMresponses[i].filePath
     fs.writeFileSync(filePath, jsonString)
     logger.Info(`Record data to file ${filePath} success`)
     logger.Info(`process complete for ${LLMresponses[i].hashValue}`)

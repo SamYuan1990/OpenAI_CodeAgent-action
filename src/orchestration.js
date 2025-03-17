@@ -1,8 +1,9 @@
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
-const { invokeAIviaAgent } = require('./aiagent')
+const { preparePrompt, invokeAIviaAgent } = require('./aiagent')
 const { scanDirectory } = require('./languageprocessor/cAst')
 const { logger } = require('./utils/logger')
+const fs = require('fs')
 
 const taskQueue = {
   Functions: [],
@@ -72,18 +73,24 @@ const taskQueue = {
   },
 
   // 运行任务队列
-  async run(openai, model, prompt, dryRun) {
+  async run(openai, model, prompt, control_group, dryRun) {
     const result = []
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const filename = task.fileName
       const functionname = task.functionname
+      const promptContent = preparePrompt(prompt, task.content, control_group)
+      // check if hash in genai output
+      if (fs.existsSync(promptContent.filePath)) {
+        logger.Info('output file exisit, skip')
+        continue
+      }
+      // if there skip
       const GenAIContent = await invokeAIviaAgent(
         openai,
         model,
-        prompt,
         dryRun,
-        task.content
+        promptContent
       )
       const meta = {
         filename,
@@ -94,11 +101,10 @@ const taskQueue = {
       result.push(GenAIContent)
       this.counter++ // 增加计数器
       logger.Info('complete for one task with llm.')
-    }
-    if (this.counter >= this.maxIterations) {
-      logger.Info('Reach out maxIterations exit')
-    } else {
-      logger.Info('All tasks done')
+      if (this.counter >= this.maxIterations) {
+        logger.Info('Reach out maxIterations exit')
+        break
+      }
     }
     logger.Info(`complete ${result.length} jobs`)
     return result

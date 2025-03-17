@@ -1,22 +1,37 @@
 const { fromCVEToPodDeployment } = require('./cve')
-const { invokeAIviaAgent } = require('../aiagent')
+const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
 const fs = require('fs')
 const { getInputOrDefault } = require('../utils/inputFilter')
 const { logger } = require('../utils/logger')
 
-async function cvss_deployment(openai, model_parameters, dryRun) {
+async function cvss_deployment(
+  openai,
+  model_parameters,
+  control_group,
+  dryRun
+) {
   const result = []
   logger.Info('running type CVE2Deployment')
   const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment()
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`
+  const promptContent = preparePrompt(
+    model_parameters.prompt,
+    content,
+    control_group
+  )
+  // check if hash in genai output
+  if (fs.existsSync(promptContent.filePath)) {
+    logger.Info('output file exisit, skip')
+    return result
+  }
+  // if there skip
   const LLMresponse = await invokeAIviaAgent(
     openai,
     model_parameters.model,
-    model_parameters.prompt,
     dryRun,
-    content
+    promptContent
   )
   result.push(LLMresponse)
   return result
