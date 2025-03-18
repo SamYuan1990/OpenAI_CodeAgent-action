@@ -2,7 +2,6 @@
 const fs = require('fs')
 const path = require('path')
 const { logger } = require('../utils/logger')
-const { getInputOrDefault } = require('../utils/inputFilter')
 
 // CVSS 3.1 评分指标
 const cvss_3_1_metrics = {
@@ -233,5 +232,7 @@ async function fetchCveData(url) {
 }
 
 module.exports = {
-  fromCVEToPodDeployment
+  fromCVEToPodDeployment,
+  fetchSeverityScoreBreakdown,
+  fetchCveData
 }
