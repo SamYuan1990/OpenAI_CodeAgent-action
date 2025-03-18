@@ -13,7 +13,7 @@ async function cvss_deployment(
   const result = []
   logger.Info('running type CVE2Deployment')
   const deploymentfile = getInputOrDefault('deploymentfile', '')
-  const cvss_content = await fromCVEToPodDeployment()
+  const cvss_content = await fromCVEToPodDeployment(control_group)
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`
   const promptContent = preparePrompt(
