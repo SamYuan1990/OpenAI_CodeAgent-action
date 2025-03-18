@@ -120,7 +120,7 @@ const myMetrics = {
   'Availability from': ''
 }
 
-async function fromCVEToPodDeployment() {
+async function fromCVEToPodDeployment(control_group) {
   logger.Info(`start process CVE to pod deployment`)
   // 读取 JSON 文件
   const data = JSON.parse(fs.readFileSync('./cve.json', 'utf8'))
@@ -160,7 +160,8 @@ async function fromCVEToPodDeployment() {
         init = true
         for (const [key, value] of Object.entries(severityScoreBreakdown)) {
           myMetrics[key] = value
-          myMetrics[`${key} from`] = cveInfo
+          myMetrics[`${key} from`] =
+            `https://www.cve.org/CVERecord?id=+${cveInfo}`
         }
       } else {
         for (const [key, value] of Object.entries(severityScoreBreakdown)) {
@@ -170,13 +171,15 @@ async function fromCVEToPodDeployment() {
             cvss_3_1_metrics[key].indexOf(value)
           ) {
             myMetrics[key] = value
-            myMetrics[`${key} from`] = cveInfo
+            myMetrics[`${key} from`] =
+              `https://www.cve.org/CVERecord?id=+${cveInfo}`
           }
           if (
             cvss_3_1_metrics[key].indexOf(cValue) ===
             cvss_3_1_metrics[key].indexOf(value)
           ) {
-            myMetrics[`${key} from`] += `,${cveInfo}`
+            myMetrics[`${key} from`] +=
+              `,https://www.cve.org/CVERecord?id=+${cveInfo}`
           }
         }
       }
@@ -184,12 +187,7 @@ async function fromCVEToPodDeployment() {
       logger.Info('Severity score breakdown section not found.')
     }
   }
-  const folderName = getInputOrDefault('output_path', '/workdir/GenAI_output')
-  fs.mkdirSync(folderName, {
-    recursive: true,
-    permission: 0o755
-  })
-  const filePath = path.join(folderName, './cve_result.json')
+  const filePath = path.join(control_group.folderName, './cve_result.json')
   fs.writeFileSync(filePath, JSON.stringify(myMetrics, null, 2))
   let cvssStr = ''
   for (const [metric, values] of Object.entries(myMetrics)) {
