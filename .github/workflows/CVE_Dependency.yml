@@ -1,4 +1,4 @@
-name: CVE to Deployment
+name: CVE to Dependencies
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
@@ -51,7 +51,7 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: '/workdir'
-          runType: CVE2Deployment
+          runType: CVEDependency
           dryRun: ${{ inputs.dryrun }}
           githubIssueReport: true
       - name: output check

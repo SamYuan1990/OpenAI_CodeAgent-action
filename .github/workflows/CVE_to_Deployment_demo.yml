@@ -70,7 +70,7 @@ jobs:
           model: deepseek-chat
           dirpath: '/workdir'
           deploymentfile: /workdir/${{ matrix.PATH }}
-          runType: CVEDependency
+          runType: CVE2Deployment
           dryRun: ${{ inputs.dryrun }}
       - name: output check
         shell: bash
