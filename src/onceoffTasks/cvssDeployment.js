@@ -1,7 +1,6 @@
 const { fromCVEToPodDeployment } = require('./cve')
 const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
 const fs = require('fs')
-const { getInputOrDefault } = require('../utils/inputFilter')
 const { logger } = require('../utils/logger')
 
 async function cvss_deployment(
@@ -12,10 +11,8 @@ async function cvss_deployment(
 ) {
   const result = []
   logger.Info('running type CVE2Deployment')
-  // todo enhance here into main
-  const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment(control_group)
-  const fileContent = fs.readFileSync(deploymentfile, 'utf8')
+  const fileContent = fs.readFileSync(control_group.deploymentfile, 'utf8')
   const content = `${cvss_content},${fileContent}`
   const promptContent = preparePrompt(
     model_parameters.prompt,
