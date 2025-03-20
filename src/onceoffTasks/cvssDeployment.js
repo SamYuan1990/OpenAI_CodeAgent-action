@@ -12,6 +12,7 @@ async function cvss_deployment(
 ) {
   const result = []
   logger.Info('running type CVE2Deployment')
+  // todo enhance here into main
   const deploymentfile = getInputOrDefault('deploymentfile', '')
   const cvss_content = await fromCVEToPodDeployment(control_group)
   const fileContent = fs.readFileSync(deploymentfile, 'utf8')

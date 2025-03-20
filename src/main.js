@@ -4,6 +4,7 @@
 const { runAst } = require('./runAST')
 const OpenAI = require('openai')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
+const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { processOutput } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
 const { logger } = require('./utils/logger')
@@ -36,6 +37,9 @@ async function run() {
     const absolutePath = path.resolve(outputpath)
     logger.Info(`make output dir, ${absolutePath}`)
   }
+  const dirPath = getInputOrDefault('dirPath', '')
+
+  // optional just for open github issue
   const githubIssueReport = getInputOrDefault('githubIssueReport', false)
   logger.Info(`enable report via github Issue ${githubIssueReport}`)
 
@@ -44,7 +48,8 @@ async function run() {
     maxIterations,
     runType,
     folderName,
-    githubIssueReport
+    githubIssueReport,
+    dirPath
   }
   // end of AI Agent creation
   const model = getInputOrDefault('model', '')
@@ -63,16 +68,31 @@ async function run() {
 
   let LLMresponses = []
   // once off tasks
-  if (control_group.runType === 'CVE2Deployment') {
-    LLMresponses = await cvss_deployment(
-      openai,
-      model_parameters,
-      control_group,
-      dryRun
-    )
-  } else {
-    // AST tasks
-    LLMresponses = await runAst(openai, model_parameters, control_group, dryRun)
+  switch (control_group.runType) {
+    case 'CVE2Deployment':
+      LLMresponses = await cvss_deployment(
+        openai,
+        model_parameters,
+        control_group,
+        dryRun
+      )
+      break
+    case 'CVEDependency':
+      LLMresponses = await CVEDependency(
+        openai,
+        model_parameters,
+        control_group,
+        dryRun
+      )
+      break
+    default:
+      LLMresponses = await runAst(
+        openai,
+        model_parameters,
+        control_group,
+        dryRun
+      )
+      break
   }
   logger.Info(`debug ${LLMresponses.length}`)
   await processOutput(LLMresponses, control_group)

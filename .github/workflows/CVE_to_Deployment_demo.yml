@@ -70,9 +70,8 @@ jobs:
           model: deepseek-chat
           dirpath: '/workdir'
           deploymentfile: /workdir/${{ matrix.PATH }}
-          runType: CVE2Deployment
+          runType: CVEDependency
           dryRun: ${{ inputs.dryrun }}
-          githubIssueReport: true
       - name: output check
         shell: bash
         run: |
@@ -83,12 +82,3 @@ jobs:
           echo '${{ steps.Lint_with_LLM.outputs.avg_time_usage }}'
           echo '${{ steps.Lint_with_LLM.outputs.avg_inputToken }}'
           echo '${{ steps.Lint_with_LLM.outputs.avg_outputToken }}'
-
-      - name: Create new issue
-        uses: imjohnbo/issue-bot@v3
-        if: ${{ inputs.dryrun == false }}
-        with:
-          title: CVE cross check with deployment
-          body: |-
-            :wave: Hi maintainers, here is LLM's deployment suggested according to your CVSS scan result.
-            ${{ steps.Lint_with_LLM.outputs.LLMresponse }}

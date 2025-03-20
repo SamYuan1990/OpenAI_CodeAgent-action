@@ -113,4 +113,4 @@ localTestStep
 processlog
 */golangAST.json
 goASTBin
-*/unique_packages.json
+unique_packages.json
