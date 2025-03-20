@@ -122,7 +122,9 @@ const myMetrics = {
 async function fromCVEToPodDeployment(control_group) {
   logger.Info(`start process CVE to pod deployment`)
   // 读取 JSON 文件
-  const data = JSON.parse(fs.readFileSync('./cve.json', 'utf8'))
+  const data = JSON.parse(
+    fs.readFileSync(`${control_group.dirPath}/cve.json`, 'utf8')
+  )
 
   // 提取所有的 vulnerabilities.id 字段
   const vulnerabilityIds = new Set() // 使用 Set 去重

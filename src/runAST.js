@@ -6,7 +6,6 @@ const {
 } = require('./outputhandler/ouputprocessor')
 const { taskQueue } = require('./orchestration')
 const { logger } = require('./utils/logger')
-const { getInputOrDefault } = require('./utils/inputFilter')
 
 /**
  * The main function for the action.
@@ -14,12 +13,12 @@ const { getInputOrDefault } = require('./utils/inputFilter')
  */
 async function runAst(openai, model_parameters, control_group, dryRun) {
   try {
-    const dirPath = getInputOrDefault('dirPath', '')
+    const dirPath = control_group.dirPath
     // for case loop AST
     // 1st level file reader
     // as AST scan result for your repo
     // define a json structure....
-    logger.Info(`dirPath ${dirPath}`)
+    logger.Info(`set dirPath as ${dirPath}`)
     taskQueue.setmaxIterations(control_group.maxIterations)
     taskQueue.setdirPath(dirPath)
     if (control_group.runType === 'godoc') {

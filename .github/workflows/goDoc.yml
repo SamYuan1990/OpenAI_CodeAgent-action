@@ -17,18 +17,16 @@ jobs:
   test-go-doc-gen:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout action repo for latest image
+      - name: Pull latest image
         if: ${{ inputs.build_image == true }}
-        id: checkout
-        uses: actions/checkout@v4
-      - name: Set up Docker Buildx
+        uses: actions/download-artifact@v4
+        with:
+          name: build-result-docker-artifact
+          path: /home/runner/build-result
+      - name: load image
         if: ${{ inputs.build_image == true }}
-        uses: docker/setup-buildx-action@v3
-      - name: run local dev script
-        if: ${{ inputs.build_image == true }}
-        id: local-image-build
         run: |
-          docker build -t ghcr.io/samyuan1990/openai_codeagent-action:latest .
+          docker load < /home/runner/build-result/build-result.tar
       - name: Checkout
         id: checkout_target
         uses: actions/checkout@v4
