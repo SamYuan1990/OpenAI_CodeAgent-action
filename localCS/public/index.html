@@ -1,98 +1,102 @@
 <!-- public/index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JSON Viewer</title>
     <style>
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        button {
-            margin: 5px;
-        }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      button {
+        margin: 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>JSON Viewer</h1>
     <div>
-        <button onclick="prevFile()">Previous</button>
-        <button onclick="nextFile()">Next</button>
-        <button onclick="markDone()">Mark Done</button>
-        <button onclick="sendTask()">Send Task to Model</button>
+      <button onclick="prevFile()">Previous</button>
+      <button onclick="nextFile()">Next</button>
+      <button onclick="markDone()">Mark Done</button>
+      <button onclick="sendTask()">Send Task to Model</button>
     </div>
-    <pre id="json-content" style="white-space: pre-wrap;"></pre>
+    <pre id="json-content" style="white-space: pre-wrap"></pre>
 
     <script>
-        let currentIndex = 0;
-        let files = [];
+      let currentIndex = 0
+      let files = []
 
-        async function loadFiles() {
-            const response = await fetch('/files');
-            files = await response.json();
-            if (files.length > 0) {
-                loadFile(currentIndex);
-            }
+      async function loadFiles() {
+        const response = await fetch('/files')
+        files = await response.json()
+        if (files.length > 0) {
+          loadFile(currentIndex)
         }
+      }
 
-        async function loadFile(index) {
-            const response = await fetch(`/file/${files[index]}`);
-            const data = await response.json();
-            document.getElementById('json-content').textContent = JSON.stringify(data, null, 2);
+      async function loadFile(index) {
+        const response = await fetch(`/file/${files[index]}`)
+        const data = await response.json()
+        document.getElementById('json-content').textContent = JSON.stringify(
+          data,
+          null,
+          2
+        )
+      }
+
+      function prevFile() {
+        if (currentIndex > 0) {
+          currentIndex--
+          loadFile(currentIndex)
         }
+      }
 
-        function prevFile() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                loadFile(currentIndex);
-            }
+      function nextFile() {
+        if (currentIndex < files.length - 1) {
+          currentIndex++
+          loadFile(currentIndex)
         }
+      }
 
-        function nextFile() {
-            if (currentIndex < files.length - 1) {
-                currentIndex++;
-                loadFile(currentIndex);
-            }
-        }
+      async function markDone() {
+        await fetch(`/mark-done/${files[currentIndex]}`, { method: 'POST' })
+        loadFiles()
+      }
 
-        async function markDone() {
-            await fetch(`/mark-done/${files[currentIndex]}`, { method: 'POST' });
-            loadFiles();
-        }
-
-        async function sendTask() {
-    const field = "final_prompt";
-    if (field) {
-        try {
+      async function sendTask() {
+        const field = 'final_prompt'
+        if (field) {
+          try {
             // 发送任务到后端
             const response = await fetch(`/send-task/${files[currentIndex]}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ field }),
-            });
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ field })
+            })
 
             // 检查响应是否成功
             if (response.ok) {
-                alert('Task sent to model');
-                // 触发页面重新加载
-                window.location.reload();
+              alert('Task sent to model')
+              // 触发页面重新加载
+              window.location.reload()
             } else {
-                alert('Failed to send task to model');
+              alert('Failed to send task to model')
             }
-        } catch (error) {
+          } catch (error) {
             // 处理网络错误或其他异常
-            console.error('Error:', error);
-            alert('An error occurred while sending the task');
+            console.error('Error:', error)
+            alert('An error occurred while sending the task')
+          }
         }
-    }
-}
+      }
 
-        loadFiles();
+      loadFiles()
     </script>
-</body>
+  </body>
 </html>
