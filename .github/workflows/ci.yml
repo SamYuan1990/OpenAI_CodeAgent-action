@@ -179,3 +179,11 @@ jobs:
     with:
       dryrun: true
       build_image: true
+
+  test-consolecvetodependency:
+    name: test-consolecvetodependency
+    needs: test-cvetodeployment
+    uses: ./.github/workflows/CVE_Dependency.yml
+    with:
+      dryrun: true
+      build_image: true
