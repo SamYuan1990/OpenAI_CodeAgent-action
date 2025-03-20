@@ -110,6 +110,8 @@ async function collectInformation(control_group) {
   logger.Info(`start collect information for CVE with dependency`)
   // 读取 cve.json 文件
   const data = fs.readFileSync('./cve.json', 'utf8')
+  logger.Info(`read from cve.json as`)
+  logger.Info(`${data}`)
   const jsonData = JSON.parse(data)
 
   // 用于去重的 Map
@@ -121,7 +123,7 @@ async function collectInformation(control_group) {
     const coordinates = pkg.coordinates
     const dependency_name = extractPackageInfo(coordinates)
     const dependencyName = dependency_name.packageName
-    logger.Info(`find pkg as ${pkg}`)
+    logger.Info(`find pkg as ${dependencyName}`)
     // 检查依赖是否出现在指定目录中
     const appears_at = grepSync(dependencyName, control_group.dirPath)
 

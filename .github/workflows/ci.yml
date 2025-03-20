@@ -131,6 +131,14 @@ jobs:
           echo "avg_inputToken=${VALUE}"
           VALUE=$(jq -r -e .avg_outputToken $(pwd)/GenAI_output/summary.json)
           echo "avg_outputToken=${VALUE}"
+      - name: save image to path
+        run: |
+          docker save ghcr.io/samyuan1990/openai_codeagent-action:latest > /home/runner/build-result/build-result.tar
+      - name: upload to artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-result-docker-artifact
+          path: /home/runner/build-result
 
   test-godoc:
     name: test-godoc
