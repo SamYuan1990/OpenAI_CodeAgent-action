@@ -50,7 +50,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           model: deepseek-chat
-          dirpath: '/workdir'
+          dirpath: '/workdir/server'
           runType: CVEDependency
           dryRun: ${{ inputs.dryrun }}
           githubIssueReport: true
