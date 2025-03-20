@@ -22,6 +22,7 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   const content_precent = promptContent.content_precent
   const inputToken = promptContent.inputToken
   const filePath = promptContent.filePath
+  // todo remove reviewed option
   const reviewed = false
   const prompt_info = {
     model,

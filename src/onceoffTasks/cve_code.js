@@ -151,8 +151,7 @@ async function collectInformation(control_group) {
       // 使用 coordinates 和 vulnId 作为 key
       const key = `${dependencyName}|${vulnId}`
 
-      const prompt = `
-      please help create a report for developer to fix CVE, here are the confirmed information.
+      const prompt = `please help create a report for developer to fix CVE, here are the confirmed information.
       cve: ${cveLink},
       cve description: ${vuln.description},
       appears in project: ${appears_at},
