@@ -114,3 +114,4 @@ processlog
 */golangAST.json
 goASTBin
 unique_packages.json
+/localCS/data/*
