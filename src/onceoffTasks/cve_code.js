@@ -181,6 +181,7 @@ async function collectInformation(control_group) {
   // 如果需要将结果保存到文件
   const filePath = path.join(control_group.folderName, './unique_packages.json')
   fs.writeFileSync(filePath, JSON.stringify(result, null, 2))
+  return result
 }
 
 module.exports = {
