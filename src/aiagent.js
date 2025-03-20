@@ -98,7 +98,7 @@ function calculateTokenCount(Text) {
 function preparePrompt(prompt, fileContent, control_group) {
   logger.Info(' We are going to talk with Gen AI with prompt and file content')
   const final_prompt = `${prompt}\n${fileContent}`
-  logger.Info(`${final_prompt}`)
+  logger.Info(`final prompt genrated as ${final_prompt}`)
   const hash = crypto.createHash('sha256')
   hash.update(final_prompt)
   const hashValue = hash.digest('hex')

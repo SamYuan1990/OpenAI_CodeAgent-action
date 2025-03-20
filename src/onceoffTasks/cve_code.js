@@ -81,7 +81,7 @@ function extractReferencesUrls(cveawg_json) {
 async function CVEDependency(openai, model_parameters, control_group, dryRun) {
   logger.Info(`start process CVE with dependency`)
 
-  const information = collectInformation(control_group)
+  const information = await collectInformation(control_group)
   const result = []
   // in a for loop of information
   for (let i = 0; i < information.length; i++) {
