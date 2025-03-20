@@ -133,6 +133,7 @@ jobs:
           echo "avg_outputToken=${VALUE}"
       - name: save image to path
         run: |
+          mkdir -p /home/runner/build-result/
           docker save ghcr.io/samyuan1990/openai_codeagent-action:latest > /home/runner/build-result/build-result.tar
       - name: upload to artifact
         uses: actions/upload-artifact@v4
