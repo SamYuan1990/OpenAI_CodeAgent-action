@@ -24,6 +24,11 @@
       <button onclick="markDone()">Mark Done</button>
       <button onclick="sendTask()">Send Task to Model</button>
     </div>
+    <h2>  Task to LLM </h2>
+    <div id="Task-to-LLM" style="white-space: pre-wrap"> </div>
+    <h2>  LLM response </h2>
+    <div id="LLM-response" style="white-space: pre-wrap"> </div>
+    <h2>  Meta </h2>
     <pre id="json-content" style="white-space: pre-wrap"></pre>
 
     <script>
@@ -41,11 +46,16 @@
       async function loadFile(index) {
         const response = await fetch(`/file/${files[index]}`)
         const data = await response.json()
+        const formattedPrompt = data.final_prompt.replace(/\n/g, '<br>');
+        const LLMresponse = data.response.replace(/\n/g, '<br>');
+
         document.getElementById('json-content').textContent = JSON.stringify(
           data,
           null,
           2
         )
+        document.getElementById('Task-to-LLM').innerHTML = formattedPrompt;
+        document.getElementById('LLM-response').innerHTML = LLMresponse;
       }
 
       function prevFile() {
