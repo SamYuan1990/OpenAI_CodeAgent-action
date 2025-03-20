@@ -54,10 +54,6 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
       logger.Info('--------This is output from generate AI:--------')
       logger.Info(completion.choices[0].message.content)
       logger.Info('--------End of generate AI output--------')
-      // hash
-      // prompt metric
-      // response
-      // todo: error handle
       prompt_info.response = completion.choices[0].message.content
       prompt_info.outputToken = calculateTokenCount(
         completion.choices[0].message.content
@@ -96,6 +92,7 @@ function calculateTokenCount(Text) {
 }
 
 function preparePrompt(prompt, fileContent, control_group) {
+  // todo use a template to generate prompt
   logger.Info(' We are going to talk with Gen AI with prompt and file content')
   const final_prompt = `${prompt}\n${fileContent}`
   logger.Info(`final prompt genrated as ${final_prompt}`)

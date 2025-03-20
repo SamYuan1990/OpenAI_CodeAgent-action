@@ -39,6 +39,9 @@ async function run() {
   }
   const dirPath = getInputOrDefault('dirPath', '')
 
+  // optional
+  const deploymentfile = getInputOrDefault('deploymentfile', '')
+
   // optional just for open github issue
   const githubIssueReport = getInputOrDefault('githubIssueReport', false)
   logger.Info(`enable report via github Issue ${githubIssueReport}`)
@@ -49,7 +52,8 @@ async function run() {
     runType,
     folderName,
     githubIssueReport,
-    dirPath
+    dirPath,
+    deploymentfile
   }
   // end of AI Agent creation
   const model = getInputOrDefault('model', '')

@@ -1,7 +1,9 @@
 const core = require('@actions/core')
+const { logger } = require('./logger')
 
 function getInputOrDefault(inputName, defaultValue) {
   // 优先从GitHub Actions输入获取
+  logger.Info(`checking value for ${inputName}`)
   const coreValue = core.getInput(inputName)
   if (coreValue !== undefined && coreValue !== null && coreValue !== '') {
     return coreValue
@@ -13,7 +15,7 @@ function getInputOrDefault(inputName, defaultValue) {
     return envValue
   }
 
-  console.log(`use default value for ${inputName}`)
+  logger.Info(`use default value for ${inputName}`)
   // 最终返回默认值
   return defaultValue
 }
