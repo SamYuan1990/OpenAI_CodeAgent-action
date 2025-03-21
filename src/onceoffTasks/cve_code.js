@@ -10,8 +10,12 @@ const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
 function grepSync(pattern, filePath) {
   try {
     // 执行 grep 命令并获取输出
-    logger.Info(`grep ${pattern} -rw ${filePath}`)
-    const stdout = execSync(`grep ${pattern} -r ${filePath}`).toString()
+    logger.Info(
+      `grep ${pattern} -rw ${filePath} --exclude-dir=node_modules --exclude-dir=vendor`
+    )
+    const stdout = execSync(
+      `grep ${pattern} -r ${filePath} --exclude-dir=node_modules --exclude-dir=vendor`
+    ).toString()
     // 将输出按行拆分并存入数组
     const result = stdout.split('\n').filter(line => line.trim() !== '')
     return result
@@ -122,7 +126,13 @@ async function collectInformation(control_group) {
     const pkg = jsonData.packages[i]
     const coordinates = pkg.coordinates
     const dependency_name = extractPackageInfo(coordinates)
-    const dependencyName = dependency_name.packageName
+    let dependencyName = ''
+    if (dependency_name.packageName.startsWith('golang.org/x/')) {
+      // 提取最后一个斜杠后的部分
+      dependencyName = dependency_name.packageName.split('/').pop()
+    } else {
+      dependencyName = dependency_name.packageName
+    }
     logger.Info(`find pkg as ${dependencyName}`)
     // 检查依赖是否出现在指定目录中
     const appears_at = grepSync(dependencyName, control_group.dirPath)
