@@ -10,7 +10,7 @@ const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
 function grepSync(pattern, filePath) {
   try {
     // 执行 grep 命令并获取输出
-    const grepcmd = `grep ${pattern} -rw ${filePath} --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git --exclude=sbom.json --exclude=syft`
+    const grepcmd = `grep ${pattern} -rw ${filePath} --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git --exclude=sbom.json --exclude=syft --exclude=cve.json`
     logger.Info(grepcmd)
     const stdout = execSync(grepcmd).toString()
     // 将输出按行拆分并存入数组
