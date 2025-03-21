@@ -1,4 +1,4 @@
-name: CVE to Dependencies
+name: Your Own CVE Dependencies
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
@@ -32,7 +32,7 @@ jobs:
           baseURL: https://api.deepseek.com
           apiKey: dummy
           model: deepseek-chat
-          dirpath: '/workdir/server'
+          dirpath: '/workdir'
           runType: CVEDependency
           dryRun: true
       - name: output check
