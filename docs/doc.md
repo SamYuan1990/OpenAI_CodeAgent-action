@@ -29,7 +29,7 @@ engineering decisions
 > This isn’t just about automation—it’s about making CI/CD pipelines more
 > adaptive, efficient, and responsive.
 
-# 👀 Methodology
+# ✏️ Methodology
 
 On one hand, referencing the [ReAct](https://arxiv.org/abs/2210.03629), LLMs
 generate reliable, hallucination-free responses when provided with sufficient
@@ -54,22 +54,15 @@ represent human intention.
 ![pipelineIntegration](./pictures/pipelineIntegration.png) Yep, we package this
 AI agent as a github action as a part of CI/CD pipeline code!
 
-# 🔧 Experiments
-
-As a github action, we provide online experiments publish to everyone at
-[here](https://github.com/SamYuan1990/OpenAI_CodeAgent-action).
-
-Thanks to kubeedge community and brpc community, we have experiments with their
-repo in our maintainers own fork and have results.
-
-- ✅ We submit a code enhancement to brpc community and get a "LGTM" feedback
-  from maintainer.
-
-We invite volunteers to integrate our action into their CI/CD pipelines, give it
-a try, and share your feedback with us. Your insights will help us refine and
-improve the project!
-
 # 📊 Results
+
+## PR or Github issue
+
+🔒 As our scan result related with vulnerability, we hidden all details in
+result to avoid hacker exploitation.
+
+- We already get 3 confirmed dependency update from CNCF project for security.
+- We submitted 1 PR to Apache project for enhancement.
 
 ## Metrics
 
@@ -91,10 +84,7 @@ We define metrics for evaluate our jobs' effectively.
 | Output Token              | 430               | 1207                  | 742              |
 | LLM response time(second) | 26                | 61                    | 43               |
 
-## PR or Github issue
-
-🔒 As our scan result related with vulnerability, we hidden all details in
-result to avoid hacker exploitation.
+# 👀 Exmaple
 
 ## Document generate
 
