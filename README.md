@@ -25,8 +25,8 @@ efficiency.
 
 ### Reuslt:
 
-- CVE Scan with project: we already get 3 confrimed CVE upgrade from a CNCF
-  project.
+- CVE Scan with project: we already get 3 confrimed CVE upgrade from a cloud
+  related project.
 - Code Vulnerabilities Scan: we already submit one PR to an Apache project.
 
 ## Design

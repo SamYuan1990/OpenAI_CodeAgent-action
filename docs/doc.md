@@ -35,7 +35,8 @@ engineering decisions
 🔒 As our scan result related with vulnerability, we hidden all details in
 result to avoid hacker exploitation.
 
-- We already get 3 confirmed dependency update from CNCF project for security.
+- We already get 3 confirmed dependency update in cloud related project for
+  security.
 - We submitted 1 PR to Apache project for enhancement.
 
 ## Metrics
