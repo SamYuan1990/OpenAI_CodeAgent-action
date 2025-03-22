@@ -1,13 +1,12 @@
-# 🚀 Abstract
-
-We’re bringing LLM-powered intelligence to your CI/CD pipeline—no RAG, no
-fine-tuning, just results. Our project integrates source code and tool-generated
-reports (test results, security scans, etc.) directly into smarter, more
-efficient analysis, security checks, and QA. Seamlessly integrate, let
-automation handle repetitive tasks, and focus on what truly matters—building and
-shipping high-quality software.
-
 # 👔 Introduction
+
+From an engineering perspective, for the tasks in our pipeline today, we need to
+gather sufficient information and construct a series of specific instructions.
+By directly issuing these instructions to the large model, we can avoid
+fine-tuning and RAG (Retrieval-Augmented Generation), thereby integrating the
+large model into the pipeline. This approach enables intelligent solutions to
+specific problems, ultimately achieving the goal of enhancing production
+efficiency.
 
 Modern software engineering follows a structured path—from gathering
 requirements to deploying the final product. Copilot has reshaped how developers
@@ -29,47 +28,15 @@ engineering decisions
 > This isn’t just about automation—it’s about making CI/CD pipelines more
 > adaptive, efficient, and responsive.
 
-# 👀 Methodology
-
-On one hand, referencing the [ReAct](https://arxiv.org/abs/2210.03629), LLMs
-generate reliable, hallucination-free responses when provided with sufficient
-ground truth data. With reasoning technologies like Chain of Thought (CoT), LLMs
-can analyze patterns, detect anomalies, and surface actionable insights.
-
-On the other hand, modern software scanning tools already generate structured
-data, but they lack the ability to interpret, connect, and act on it.
-
-## The Challenge:
-
-🔥 Can we extract real intelligence—without RAG, without fine-tuning, just
-results? ![Design](./pictures/Design.png)
-
-Let's shake hands, make it happen. By ground truth as source code or structured
-reports, with a clear human intention, ask LLM to deal with the task. Using
-Google's AI Agent design style to explain our design, we implements tools read
-data from both source code and structured reports, with prompt as prefix
-represent human intention.
-
-🔥 Can we upgrade CI/CD pipelines from passive scanners to AI-driven assistants?
-![pipelineIntegration](./pictures/pipelineIntegration.png) Yep, we package this
-AI agent as a github action as a part of CI/CD pipeline code!
-
-# 🔧 Experiments
-
-As a github action, we provide online experiments publish to everyone at
-[here](https://github.com/SamYuan1990/OpenAI_CodeAgent-action).
-
-Thanks to kubeedge community and brpc community, we have experiments with their
-repo in our maintainers own fork and have results.
-
-- ✅ We submit a code enhancement to brpc community and get a "LGTM" feedback
-  from maintainer.
-
-We invite volunteers to integrate our action into their CI/CD pipelines, give it
-a try, and share your feedback with us. Your insights will help us refine and
-improve the project!
-
 # 📊 Results
+
+## PR or Github issue
+
+🔒 As our scan result related with vulnerability, we hidden all details in
+result to avoid hacker exploitation.
+
+- We already get 3 confirmed dependency update from CNCF project for security.
+- We submitted 1 PR to Apache project for enhancement.
 
 ## Metrics
 
@@ -91,10 +58,17 @@ We define metrics for evaluate our jobs' effectively.
 | Output Token              | 430               | 1207                  | 742              |
 | LLM response time(second) | 26                | 61                    | 43               |
 
-## PR or Github issue
+# 👀 Exmaple
 
-🔒 As our scan result related with vulnerability, we hidden all details in
-result to avoid hacker exploitation.
+## CI Integration
+
+| Category                       | Tools        | Language/Target | Scenario                                                 | Example                                                     |
+| ------------------------------ | ------------ | --------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
+| **Unit Test**                  | Jest         | JavaScript      | Auto-generate unit tests to improve coverage             | [Link](./.github/workflows/ExampleJSunittestGenerate.yml)   |
+| **Doc Gen**                    |              | Go              | Generate GoDoc comments via AST analysis                 | [Link](./.github/workflows/ExampleGODocGenerate.yml)        |
+| **CVE Scan with Pod security** | Syft, Bomber | deployment.yaml | Detect CVEs and suggest Pod Security Policy improvements | [Link](./.github/workflows/ExampleCVEToDeployment.yml)      |
+| **CVE Scan with project**      | Syft, Bomber | n/A             | Detect CVEs and the affect to your repo                  | [Link](./.github/workflows/YouOwnCVEDependency.yml)         |
+| **Code Vulnerabilities Scan**  |              | C               | Detect common CVE reasons as null pointer for code       | [Link](./.github/workflows/ExampleCVulnerabilitiesscan.yml) |
 
 ## Document generate
 
@@ -125,3 +99,28 @@ one by one.
 
 The choice is yours. Hack smarter, not harder. Let AI do the grunt work while
 you enjoy the sunset.
+
+# ✏️ Methodology
+
+On one hand, referencing the [ReAct](https://arxiv.org/abs/2210.03629), LLMs
+generate reliable, hallucination-free responses when provided with sufficient
+ground truth data. With reasoning technologies like Chain of Thought (CoT), LLMs
+can analyze patterns, detect anomalies, and surface actionable insights.
+
+On the other hand, modern software scanning tools already generate structured
+data, but they lack the ability to interpret, connect, and act on it.
+
+## The Challenge:
+
+🔥 Can we extract real intelligence—without RAG, without fine-tuning, just
+results? ![Design](./pictures/Design.png)
+
+Let's shake hands, make it happen. By ground truth as source code or structured
+reports, with a clear human intention, ask LLM to deal with the task. Using
+Google's AI Agent design style to explain our design, we implements tools read
+data from both source code and structured reports, with prompt as prefix
+represent human intention.
+
+🔥 Can we upgrade CI/CD pipelines from passive scanners to AI-driven assistants?
+![pipelineIntegration](./pictures/pipelineIntegration.png) Yep, we package this
+AI agent as a github action as a part of CI/CD pipeline code!
