@@ -51,16 +51,16 @@
     <header id="title-block-header">
       <h1 class="title">Hello! OpenAI Code Agent</h1>
     </header>
-    <h1 id="abstract">🚀 Abstract</h1>
-    <p>
-      We’re bringing LLM-powered intelligence to your CI/CD pipeline—no RAG, no
-      fine-tuning, just results. Our project integrates source code and
-      tool-generated reports (test results, security scans, etc.) directly into
-      smarter, more efficient analysis, security checks, and QA. Seamlessly
-      integrate, let automation handle repetitive tasks, and focus on what truly
-      matters—building and shipping high-quality software.
-    </p>
     <h1 id="introduction">👔 Introduction</h1>
+    <p>
+      From an engineering perspective, for the tasks in our pipeline today, we
+      need to gather sufficient information and construct a series of specific
+      instructions. By directly issuing these instructions to the large model,
+      we can avoid fine-tuning and RAG (Retrieval-Augmented Generation), thereby
+      integrating the large model into the pipeline. This approach enables
+      intelligent solutions to specific problems, ultimately achieving the goal
+      of enhancing production efficiency.
+    </p>
     <p>
       Modern software engineering follows a structured path—from gathering
       requirements to deploying the final product. Copilot has reshaped how
@@ -90,47 +90,19 @@
         adaptive, efficient, and responsive.
       </p>
     </blockquote>
-    <h1 id="methodology">✏️ Methodology</h1>
-    <p>
-      On one hand, referencing the
-      <a href="https://arxiv.org/abs/2210.03629">ReAct</a>, LLMs generate
-      reliable, hallucination-free responses when provided with sufficient
-      ground truth data. With reasoning technologies like Chain of Thought
-      (CoT), LLMs can analyze patterns, detect anomalies, and surface actionable
-      insights.
-    </p>
-    <p>
-      On the other hand, modern software scanning tools already generate
-      structured data, but they lack the ability to interpret, connect, and act
-      on it.
-    </p>
-    <h2 id="the-challenge">The Challenge:</h2>
-    <p>
-      🔥 Can we extract real intelligence—without RAG, without fine-tuning, just
-      results? <img src="./pictures/Design.png" alt="Design" />
-    </p>
-    <p>
-      Let’s shake hands, make it happen. By ground truth as source code or
-      structured reports, with a clear human intention, ask LLM to deal with the
-      task. Using Google’s AI Agent design style to explain our design, we
-      implements tools read data from both source code and structured reports,
-      with prompt as prefix represent human intention.
-    </p>
-    <p>
-      🔥 Can we upgrade CI/CD pipelines from passive scanners to AI-driven
-      assistants?
-      <img src="./pictures/pipelineIntegration.png" alt="pipelineIntegration" />
-      Yep, we package this AI agent as a github action as a part of CI/CD
-      pipeline code!
-    </p>
     <h1 id="results">📊 Results</h1>
     <h2 id="pr-or-github-issue">PR or Github issue</h2>
     <p>
       🔒 As our scan result related with vulnerability, we hidden all details in
-      result to avoid hacker exploitation. - We already get 3 confirmed
-      dependency update from CNCF project for security. - We submitted 1 PR to
-      Apache project for enhancement.
+      result to avoid hacker exploitation.
     </p>
+    <ul>
+      <li>
+        We already get 3 confirmed dependency update from CNCF project for
+        security.
+      </li>
+      <li>We submitted 1 PR to Apache project for enhancement.</li>
+    </ul>
     <h2 id="metrics">Metrics</h2>
     <p>We define metrics for evaluate our jobs’ effectively.</p>
     <ul>
@@ -189,6 +161,74 @@
       </tbody>
     </table>
     <h1 id="exmaple">👀 Exmaple</h1>
+    <h2 id="ci-integration">CI Integration</h2>
+    <table>
+      <colgroup>
+        <col style="width: 17%" />
+        <col style="width: 6%" />
+        <col style="width: 8%" />
+        <col style="width: 32%" />
+        <col style="width: 34%" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Tools</th>
+          <th>Language/Target</th>
+          <th>Scenario</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Unit Test</strong></td>
+          <td>Jest</td>
+          <td>JavaScript</td>
+          <td>Auto-generate unit tests to improve coverage</td>
+          <td>
+            <a href="./.github/workflows/ExampleJSunittestGenerate.yml">Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Doc Gen</strong></td>
+          <td></td>
+          <td>Go</td>
+          <td>Generate GoDoc comments via AST analysis</td>
+          <td>
+            <a href="./.github/workflows/ExampleGODocGenerate.yml">Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>CVE Scan with Pod security</strong></td>
+          <td>Syft, Bomber</td>
+          <td>deployment.yaml</td>
+          <td>Detect CVEs and suggest Pod Security Policy improvements</td>
+          <td>
+            <a href="./.github/workflows/ExampleCVEToDeployment.yml">Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>CVE Scan with project</strong></td>
+          <td>Syft, Bomber</td>
+          <td>n/A</td>
+          <td>Detect CVEs and the affect to your repo</td>
+          <td>
+            <a href="./.github/workflows/YouOwnCVEDependency.yml">Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Code Vulnerabilities Scan</strong></td>
+          <td></td>
+          <td>C</td>
+          <td>Detect common CVE reasons as null pointer for code</td>
+          <td>
+            <a href="./.github/workflows/ExampleCVulnerabilitiesscan.yml"
+              >Link</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="document-generate">Document generate</h2>
     <figure>
       <img src="./pictures/DocumentGeneration.png" alt="DocumentGeneration" />
@@ -226,6 +266,39 @@
     <p>
       The choice is yours. Hack smarter, not harder. Let AI do the grunt work
       while you enjoy the sunset.
+    </p>
+    <h1 id="methodology">✏️ Methodology</h1>
+    <p>
+      On one hand, referencing the
+      <a href="https://arxiv.org/abs/2210.03629">ReAct</a>, LLMs generate
+      reliable, hallucination-free responses when provided with sufficient
+      ground truth data. With reasoning technologies like Chain of Thought
+      (CoT), LLMs can analyze patterns, detect anomalies, and surface actionable
+      insights.
+    </p>
+    <p>
+      On the other hand, modern software scanning tools already generate
+      structured data, but they lack the ability to interpret, connect, and act
+      on it.
+    </p>
+    <h2 id="the-challenge">The Challenge:</h2>
+    <p>
+      🔥 Can we extract real intelligence—without RAG, without fine-tuning, just
+      results? <img src="./pictures/Design.png" alt="Design" />
+    </p>
+    <p>
+      Let’s shake hands, make it happen. By ground truth as source code or
+      structured reports, with a clear human intention, ask LLM to deal with the
+      task. Using Google’s AI Agent design style to explain our design, we
+      implements tools read data from both source code and structured reports,
+      with prompt as prefix represent human intention.
+    </p>
+    <p>
+      🔥 Can we upgrade CI/CD pipelines from passive scanners to AI-driven
+      assistants?
+      <img src="./pictures/pipelineIntegration.png" alt="pipelineIntegration" />
+      Yep, we package this AI agent as a github action as a part of CI/CD
+      pipeline code!
     </p>
   </body>
 </html>

@@ -5,21 +5,15 @@
 
 [中文文档](./README_zh.md)
 
-## Scenarios & Features
+From an engineering perspective, for the tasks in our pipeline today, we need to
+gather sufficient information and construct a series of specific instructions.
+By directly issuing these instructions to the large model, we can avoid
+fine-tuning and RAG (Retrieval-Augmented Generation), thereby integrating the
+large model into the pipeline. This approach enables intelligent solutions to
+specific problems, ultimately achieving the goal of enhancing production
+efficiency.
 
-This project integrates source code and tool-generated reports (e.g., test
-results, security scans) into Large Language Models (LLMs) to enable intelligent
-analysis without RAG or fine-tuning. The capability is embedded into CI/CD
-pipelines.
-
-| **Category**        | **Tools**                    | **Purpose**              | **Report Content**                     | **Relation to Source Code**                    | **Actions on Issues**              |
-| ------------------- | ---------------------------- | ------------------------ | -------------------------------------- | ---------------------------------------------- | ---------------------------------- |
-| **Unit Testing**    | JUnit, pytest, Mocha         | Validate module logic    | Pass rate, failed cases, code coverage | Directly linked to test classes and modules    | Fix failed tests, improve coverage |
-| **Static Analysis** | ESLint, Pylint, SonarQube    | Check style & defects    | Code smells, complexity, duplication   | Directly linked to code files and line numbers | Refactor code, enforce standards   |
-| **Dependency Scan** | Snyk, OWASP Dependency-Check | Detect third-party risks | CVEs, severity, affected versions      | Linked to config files (e.g., `pom.xml`)       | Upgrade dependencies, apply fixes  |
-| **Security Scan**   | OWASP ZAP, SonarQube         | Find vulnerabilities     | Vulnerability types, locations         | Directly linked to code files and line numbers | Patch code, rescan                 |
-
-### Supported Scenarios
+## Features
 
 | Category                       | Tools        | Language/Target | Scenario                                                 | Example                                                     |
 | ------------------------------ | ------------ | --------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
@@ -35,7 +29,7 @@ pipelines.
   project.
 - Code Vulnerabilities Scan: we already submit one PR to an Apache project.
 
-## Collaboration
+## Design
 
 Workflow Design:  
 ![OverAllDesign](./docs/pictures/Design.png)
@@ -86,7 +80,7 @@ AST task output (directory: `./GenAI_output`):
 }
 ```
 
-## Current result
+## Current preformance result
 
 | Metric\Task               | Document generate | Deployment suggestion | Code enhancement |
 | ------------------------- | ----------------- | --------------------- | ---------------- |
@@ -99,8 +93,6 @@ AST task output (directory: `./GenAI_output`):
 
 ## Usage Tips
 
-- **Ethical AI**: Submit LLM-generated changes via GitHub Issues or branches for
-  review.
 - **Container Run**:
   ```bash
   npm install
