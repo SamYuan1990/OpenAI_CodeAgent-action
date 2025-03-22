@@ -21,31 +21,28 @@ pipelines.
 
 ### Supported Scenarios
 
-| Category                      | Tools        | Language/Target | Scenario                                                 | Example                                                     |
-| ----------------------------- | ------------ | --------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
-| **Unit Test**                 | Jest         | JavaScript      | Auto-generate unit tests to improve coverage             | [Link](./.github/workflows/ExampleJSunittestGenerate.yml)   |
-| **Doc Gen**                   |              | Go              | Generate GoDoc comments via AST analysis                 | [Link](./.github/workflows/ExampleGODocGenerate.yml)        |
-| **CVE Scan**                  | Syft, Bomber | deployment.yaml | Detect CVEs and suggest Pod Security Policy improvements | [Link](./.github/workflows/ExampleCVEToDeployment.yml)      |
-| **Code Vulnerabilities Scan** |              | C               | Detect common CVE reasons as null pointer for code       | [Link](./.github/workflows/ExampleCVulnerabilitiesscan.yml) |
+| Category                       | Tools        | Language/Target | Scenario                                                 | Example                                                     |
+| ------------------------------ | ------------ | --------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
+| **Unit Test**                  | Jest         | JavaScript      | Auto-generate unit tests to improve coverage             | [Link](./.github/workflows/ExampleJSunittestGenerate.yml)   |
+| **Doc Gen**                    |              | Go              | Generate GoDoc comments via AST analysis                 | [Link](./.github/workflows/ExampleGODocGenerate.yml)        |
+| **CVE Scan with Pod security** | Syft, Bomber | deployment.yaml | Detect CVEs and suggest Pod Security Policy improvements | [Link](./.github/workflows/ExampleCVEToDeployment.yml)      |
+| **CVE Scan with project**      | Syft, Bomber | n/A             | Detect CVEs and the affect to your repo                  | [Link](./.github/workflows/YouOwnCVEDependency.yml)         |
+| **Code Vulnerabilities Scan**  |              | C               | Detect common CVE reasons as null pointer for code       | [Link](./.github/workflows/ExampleCVulnerabilitiesscan.yml) |
+
+### Reuslt:
+
+- CVE Scan with project: we already get 3 confrimed CVE upgrade from a CNCF
+  project.
+- Code Vulnerabilities Scan: we already submit one PR to an Apache project.
 
 ## Collaboration
 
 Workflow Design:  
 ![OverAllDesign](./docs/pictures/Design.png)
 
-**Contribution Guidelines**:  
-To add language support, provide:
-
-- [ ] AST scanning tool adaptation
-- [ ] LLM output filtering rules
-
 ---
 
 ## Non-Functional Metrics
-
-### Loop Control
-
-Set `maxIterations` for AST tasks or enable `dry run` mode.
 
 ### Logging & Archiving
 
@@ -104,7 +101,7 @@ AST task output (directory: `./GenAI_output`):
 
 - **Ethical AI**: Submit LLM-generated changes via GitHub Issues or branches for
   review.
-- **Local Run**:
+- **Container Run**:
   ```bash
   npm install
   npx local-action . src/main.js .env.example
@@ -127,19 +124,6 @@ AST task output (directory: `./GenAI_output`):
            -v "$(pwd)":/workdir \
            ghcr.io/samyuan1990/openai_codeagent-action:latest
   ```
-
----
-
-## Pre-Release Checks
-
-1. Scan this repo for unit test generation
-2. Scan KubeEdge for doc generation
-3. Scan Kepler for CVE detection
-
----
-
-## Roadmap
-
-- Enhance unit test generation
-- Add function/file-level skip rules
-- Framework flexibility improvements
+- **Local Run**: You can generate GenAI_output and download it to your local,
+  then use [./localCS](./localCS)'s simple UI to check and review the content.
+  To run localCS, `export apiKey=xxx && node server.js`
