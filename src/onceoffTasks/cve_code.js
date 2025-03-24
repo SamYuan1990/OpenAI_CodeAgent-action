@@ -8,11 +8,11 @@ const { logger } = require('../utils/logger')
 const { JustInvokeAI } = require('../aiagent')
 
 function grepSync(pattern, filePath) {
+  const grep_result = {
+    matches: [],
+    files: []
+  }
   try {
-    const grep_result = {
-      matches: [],
-      files: []
-    }
     // 执行 grep 命令并获取输出
     const grepcmd = `grep ${pattern} -rw ${filePath} --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git --exclude=sbom.json --exclude=syft --exclude=cve.json`
     logger.Info(grepcmd)
@@ -32,7 +32,7 @@ function grepSync(pattern, filePath) {
     // 如果命令执行失败，返回空数组或抛出错误
     // console.error(`Error: ${error.stderr.toString()}`)
     logger.Info(error)
-    return []
+    return grep_result
   }
 }
 
