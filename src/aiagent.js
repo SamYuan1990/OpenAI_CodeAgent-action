@@ -97,7 +97,7 @@ function calculateTokenCount(Text) {
 function preparePrompt(prompt, fileContent, control_group) {
   // todo use a template to generate prompt
   logger.Info('We are going to talk with Gen AI with prompt and file content')
-  logger.Info(`${fileContent}`)
+  logger.Info(JSON.stringify(fileContent))
   logger.Info(`${prompt}`)
   //const final_prompt = `${prompt}\n${fileContent}`
 
