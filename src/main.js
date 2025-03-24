@@ -2,7 +2,7 @@
  * The entrypoint for the action.
  */
 const { runAst } = require('./runAST')
-const openAIfactory = require('./aiconnectfactory')
+const { openAIfactory } = require('./aiconnectfactory')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
 const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { processOutput } = require('./outputhandler/generalOutputProcessor')
