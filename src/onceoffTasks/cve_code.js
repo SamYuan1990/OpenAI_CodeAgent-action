@@ -99,7 +99,7 @@ async function CVEDependency(openai, model_parameters, control_group) {
   const result = []
   // in a for loop of information
   for (let i = 0; i < information.length; i++) {
-    if (!information[i].hasOwnProperty('vulnerabilities')) {
+    if (!information[i].hasOwnProperty('vulnerability')) {
       continue
     }
     const AIresponse = await JustInvokeAI(
@@ -176,7 +176,7 @@ async function collectInformation(control_group) {
           appears_at: appears,
           files,
           references_url,
-          vulnerrbility: vuln
+          vulnerability: vuln
         })
       }
     }
