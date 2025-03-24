@@ -53,7 +53,8 @@ async function run() {
     folderName,
     githubIssueReport,
     dirPath,
-    deploymentfile
+    deploymentfile,
+    dryRun
   }
   // end of AI Agent creation
   const model = getInputOrDefault('model', '')
@@ -77,25 +78,18 @@ async function run() {
       LLMresponses = await cvss_deployment(
         openai,
         model_parameters,
-        control_group,
-        dryRun
+        control_group
       )
       break
     case 'CVEDependency':
       LLMresponses = await CVEDependency(
         openai,
         model_parameters,
-        control_group,
-        dryRun
+        control_group
       )
       break
     default:
-      LLMresponses = await runAst(
-        openai,
-        model_parameters,
-        control_group,
-        dryRun
-      )
+      LLMresponses = await runAst(openai, model_parameters, control_group)
       break
   }
   logger.Info(`debug ${LLMresponses.length}`)

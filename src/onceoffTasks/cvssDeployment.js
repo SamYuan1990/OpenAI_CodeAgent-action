@@ -1,14 +1,9 @@
 const { fromCVEToPodDeployment } = require('./cve')
-const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
+const { JustInvokeAI } = require('../aiagent')
 const fs = require('fs')
 const { logger } = require('../utils/logger')
 
-async function cvss_deployment(
-  openai,
-  model_parameters,
-  control_group,
-  dryRun
-) {
+async function cvss_deployment(openai, model_parameters, control_group) {
   const result = []
   logger.Info('running type CVE2Deployment')
   const cvss_content = await fromCVEToPodDeployment(control_group)
@@ -18,24 +13,15 @@ async function cvss_deployment(
     cvssscore: cvss_content,
     deployment: fileContent
   }
-  const promptContent = preparePrompt(
-    model_parameters.prompt,
-    content,
-    control_group
-  )
-  // check if hash in genai output
-  if (fs.existsSync(promptContent.filePath)) {
-    logger.Info('output file exisit, skip')
-    return result
-  }
-  // if there skip
-  const LLMresponse = await invokeAIviaAgent(
+  const AIresponse = await JustInvokeAI(
     openai,
-    model_parameters.model,
-    dryRun,
-    promptContent
+    model_parameters,
+    control_group,
+    content
   )
-  result.push(LLMresponse)
+  if (!AIresponse.duplicate) {
+    result.push(AIresponse.LLMresponse)
+  }
   return result
 }
 

@@ -1,9 +1,8 @@
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
-const { preparePrompt, invokeAIviaAgent } = require('./aiagent')
+const { JustInvokeAI } = require('./aiagent')
 const { scanDirectory } = require('./languageprocessor/cAst')
 const { logger } = require('./utils/logger')
-const fs = require('fs')
 
 const taskQueue = {
   Functions: [],
@@ -73,30 +72,24 @@ const taskQueue = {
   },
 
   // 运行任务队列
-  async run(openai, model, prompt, control_group, dryRun) {
+  async run(openai, model_parameters, control_group) {
     const result = []
     while (this.counter < this.maxIterations && this.tasks.length > 0) {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const filename = task.fileName
       const functionname = task.functionname
       const data_information = { code: task.content }
-      const promptContent = preparePrompt(
-        prompt,
-        data_information,
-        control_group
+      const AIresponse = await JustInvokeAI(
+        openai,
+        model_parameters,
+        control_group,
+        data_information
       )
-      // check if hash in genai output
-      if (fs.existsSync(promptContent.filePath)) {
-        logger.Info('output file exisit, skip')
+      if (AIresponse.duplicate) {
         continue
       }
       // if there skip
-      const GenAIContent = await invokeAIviaAgent(
-        openai,
-        model,
-        dryRun,
-        promptContent
-      )
+      const GenAIContent = AIresponse.LLMresponse
       const meta = {
         filename,
         functionname

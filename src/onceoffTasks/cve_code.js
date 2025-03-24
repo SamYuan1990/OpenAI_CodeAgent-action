@@ -5,7 +5,7 @@ const { execSync } = require('child_process')
 const { fetchCveData } = require('./cve')
 const path = require('path')
 const { logger } = require('../utils/logger')
-const { preparePrompt, invokeAIviaAgent } = require('../aiagent')
+const { JustInvokeAI } = require('../aiagent')
 
 function grepSync(pattern, filePath) {
   try {
@@ -15,10 +15,19 @@ function grepSync(pattern, filePath) {
     const stdout = execSync(grepcmd).toString()
     // 将输出按行拆分并存入数组
     const result = stdout.split('\n').filter(line => line.trim() !== '')
-    return result
+    // 提取文件名并去重
+    const fileList = result
+      .map(line => line.split(':')[0]) // 提取文件名（grep 输出格式为 "filename:matched content"）
+      .filter((file, index, self) => self.indexOf(file) === index) // 去重
+
+    return {
+      matches: result, // 匹配结果
+      files: fileList // 文件列表
+    }
   } catch (error) {
     // 如果命令执行失败，返回空数组或抛出错误
     // console.error(`Error: ${error.stderr.toString()}`)
+    logger.Info(error)
     return []
   }
 }
@@ -79,31 +88,22 @@ function extractReferencesUrls(cveawg_json) {
   return Array.from(urls) // 将 Set 转换为数组并返回
 }
 
-async function CVEDependency(openai, model_parameters, control_group, dryRun) {
+async function CVEDependency(openai, model_parameters, control_group) {
   logger.Info(`start process CVE with dependency`)
 
   const information = await collectInformation(control_group)
   const result = []
   // in a for loop of information
   for (let i = 0; i < information.length; i++) {
-    // todo use a template to generate prompt
-    const promptContent = preparePrompt(
-      //information[i].prompt,
-      model_parameters.prompt,
-      information[i],
-      control_group
-    )
-    if (fs.existsSync(promptContent.filePath)) {
-      logger.Info('output file exisit, skip')
-      continue
-    }
-    const LLMresponse = await invokeAIviaAgent(
+    const AIresponse = await JustInvokeAI(
       openai,
-      model_parameters.model,
-      dryRun,
-      promptContent
+      model_parameters,
+      control_group,
+      information[i]
     )
-    result.push(LLMresponse)
+    if (!AIresponse.duplicate) {
+      result.push(AIresponse.LLMresponse)
+    }
   }
   return result
 }
@@ -136,7 +136,7 @@ async function collectInformation(control_group) {
     const appears_at = grepSync(dependencyName, control_group.dirPath)
 
     // 如果依赖未出现，跳过当前包
-    if (appears_at.length === 0) {
+    if (appears_at.files.length === 0) {
       logger.Info(
         `seems the package doesn't appears in code as direct dependency, skip`
       )
@@ -158,15 +158,18 @@ async function collectInformation(control_group) {
       const references_url = extractReferencesUrls(cveawg_json)
       // 使用 coordinates 和 vulnId 作为 key
       const key = `${dependencyName}|${vulnId}`
+      const appears = appears_at.matches
+      const files = appears_at.files
       // 如果 Map 中不存在该 key，则添加
       if (!uniquePackages.has(key)) {
         uniquePackages.set(key, {
           coordinates,
           cveLink,
           dependencyName,
-          appears_at,
+          appears_at: appears,
+          files,
           references_url,
-          vulnerability: vuln
+          vulnerrbility: vuln
         })
       }
     }
