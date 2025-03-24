@@ -79,7 +79,12 @@ const taskQueue = {
       const task = this.tasks.shift() // 从队列中取出一个任务
       const filename = task.fileName
       const functionname = task.functionname
-      const promptContent = preparePrompt(prompt, task.content, control_group)
+      const data_information = { code: task.content }
+      const promptContent = preparePrompt(
+        prompt,
+        data_information,
+        control_group
+      )
       // check if hash in genai output
       if (fs.existsSync(promptContent.filePath)) {
         logger.Info('output file exisit, skip')

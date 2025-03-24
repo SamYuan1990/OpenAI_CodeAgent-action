@@ -88,8 +88,9 @@ async function CVEDependency(openai, model_parameters, control_group, dryRun) {
   for (let i = 0; i < information.length; i++) {
     // todo use a template to generate prompt
     const promptContent = preparePrompt(
-      information[i].prompt,
-      '',
+      //information[i].prompt,
+      model_parameters.prompt,
+      information[i],
       control_group
     )
     if (fs.existsSync(promptContent.filePath)) {
@@ -157,13 +158,6 @@ async function collectInformation(control_group) {
       const references_url = extractReferencesUrls(cveawg_json)
       // 使用 coordinates 和 vulnId 作为 key
       const key = `${dependencyName}|${vulnId}`
-
-      const prompt = `please help create a report for developer to fix CVE, here are the confirmed information.
-      cve: ${cveLink},
-      cve description: ${vuln.description},
-      appears in project: ${appears_at},
-      reference: ${references_url}
-      `
       // 如果 Map 中不存在该 key，则添加
       if (!uniquePackages.has(key)) {
         uniquePackages.set(key, {
@@ -172,7 +166,6 @@ async function collectInformation(control_group) {
           dependencyName,
           appears_at,
           references_url,
-          prompt,
           vulnerability: vuln
         })
       }

@@ -21,8 +21,8 @@ describe('invokeAIviaAgent', () => {
 
   it('should log the correct information and return prompt_info with empty response when dryRun is true', async () => {
     const model = 'gpt-4'
-    const prompt = 'Test prompt'
-    const fileContent = 'Test file content'
+    const fileContent = { fileContent: 'Test file content' }
+    const prompt = 'Test prompt\n <%= fileContent %>'
     const dryRun = true
 
     const folderName = '/tmp'
@@ -34,20 +34,20 @@ describe('invokeAIviaAgent', () => {
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
-    expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)
+    expect(result.final_prompt).toBe(promptcontent.final_prompt)
     expect(result.response).toBe('')
     expect(result.prompt_precent).toBe(
-      calculatePercentage(prompt, `${prompt}\n${fileContent}`)
+      calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      calculatePercentage(fileContent, `${prompt}\n${fileContent}`)
+      1 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 
   it('should call openai.chat.completions.create and return prompt_info with AI response when dryRun is false', async () => {
     const model = 'gpt-4'
-    const prompt = 'Test prompt'
-    const fileContent = 'Test file content'
+    const fileContent = { fileContent: 'Test file content' }
+    const prompt = 'Test prompt\n <%= fileContent %>'
     const dryRun = false
     const mockResponse = {
       choices: [{ message: { content: 'Mock AI response' } }]
@@ -63,20 +63,20 @@ describe('invokeAIviaAgent', () => {
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
-    expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)
+    expect(result.final_prompt).toBe(promptcontent.final_prompt)
     expect(result.response).toBe(mockResponse.choices[0].message.content)
     expect(result.prompt_precent).toBe(
-      calculatePercentage(prompt, `${prompt}\n${fileContent}`)
+      calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      calculatePercentage(fileContent, `${prompt}\n${fileContent}`)
+      1 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 
   it('should handle errors from openai.chat.completions.create and return prompt_info with empty response', async () => {
     const model = 'gpt-4'
-    const prompt = 'Test prompt'
-    const fileContent = 'Test file content'
+    const fileContent = { fileContent: 'Test file content' }
+    const prompt = 'Test prompt\n <%= fileContent %>'
     const dryRun = false
     const mockError = new Error('Mock AI error')
 
@@ -91,13 +91,13 @@ describe('invokeAIviaAgent', () => {
     const result = await invokeAIviaAgent(openai, model, dryRun, promptcontent)
 
     expect(result.model).toBe(model)
-    expect(result.final_prompt).toBe(`${prompt}\n${fileContent}`)
+    expect(result.final_prompt).toBe(promptcontent.final_prompt)
     expect(result.response).toBe('')
     expect(result.prompt_precent).toBe(
-      calculatePercentage(prompt, `${prompt}\n${fileContent}`)
+      calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      calculatePercentage(fileContent, `${prompt}\n${fileContent}`)
+      1 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 })

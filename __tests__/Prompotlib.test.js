@@ -3,9 +3,9 @@ const { predefinePrompt } = require('../src/Prompotlib') // Adjust the path acco
 
 // Mock prompts
 const cveHelmPrompt = `please give me a pod deployment suggestion, according to CVSS 3.1
-            scrore and deployment.yaml,`
-const godocPrompt = `please help generate go doc for this function, `
-const jsunittestPrompt = `please help generate unit test for my nodejs code, `
+            scrore <%= cvssscore %> and deployment.yaml <%= deployment %>`
+const godocPrompt = `please help generate go doc for this function, <%= code %>`
+const jsunittestPrompt = `please help generate unit test for my nodejs code, <%= code %>`
 
 describe('predefinePrompt', () => {
   it('should return cveHelmPrompt when runType is CVE2Deployment', () => {
@@ -25,11 +25,11 @@ describe('predefinePrompt', () => {
 
   it('should return undefined when runType is not recognized', () => {
     const control_group = { runType: 'unknown' }
-    expect(predefinePrompt(control_group)).toBeUndefined()
+    expect(predefinePrompt(control_group)).toBe('')
   })
 
   it('should return undefined when runType is not provided', () => {
     const control_group = {}
-    expect(predefinePrompt(control_group)).toBeUndefined()
+    expect(predefinePrompt(control_group)).toBe('')
   })
 })
