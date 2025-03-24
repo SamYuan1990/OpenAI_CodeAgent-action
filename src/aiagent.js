@@ -95,7 +95,6 @@ function calculateTokenCount(Text) {
 }
 
 function preparePrompt(prompt, fileContent, control_group) {
-  // todo use a template to generate prompt
   logger.Info('We are going to talk with Gen AI with prompt and file content')
   logger.Info(JSON.stringify(fileContent))
   logger.Info(`${prompt}`)
@@ -123,7 +122,12 @@ function preparePrompt(prompt, fileContent, control_group) {
   return promptContent
 }
 
-async function JustInvokeAI(openai, model_parameters, control_group, content) {
+async function JustInvokeAI(
+  openAIfactory,
+  model_parameters,
+  control_group,
+  content
+) {
   const result = {
     duplicate: false,
     LLMresponse: {}
@@ -138,6 +142,7 @@ async function JustInvokeAI(openai, model_parameters, control_group, content) {
     result.duplicate = true
     return result
   }
+  const openai = openAIfactory.GetAccess()
   const LLMresponse = await invokeAIviaAgent(
     openai,
     model_parameters.model,

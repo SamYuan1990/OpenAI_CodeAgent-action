@@ -2,7 +2,7 @@
  * The entrypoint for the action.
  */
 const { runAst } = require('./runAST')
-const OpenAI = require('openai')
+const openAIfactory = require('./aiconnectfactory')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
 const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { processOutput } = require('./outputhandler/generalOutputProcessor')
@@ -18,10 +18,8 @@ async function run() {
 
   const apiKey = getInputOrDefault('apiKey', '')
   // creation of AI agent
-  const openai = new OpenAI({
-    baseURL,
-    apiKey
-  })
+  openAIfactory.setBaseURL(baseURL)
+  openAIfactory.setKey(apiKey)
   // controler group
   const dryRun = getInputOrDefault('dryRun', '')
   logger.Info(`dry run? ${dryRun}`)
@@ -76,20 +74,24 @@ async function run() {
   switch (control_group.runType) {
     case 'CVE2Deployment':
       LLMresponses = await cvss_deployment(
-        openai,
+        openAIfactory,
         model_parameters,
         control_group
       )
       break
     case 'CVEDependency':
       LLMresponses = await CVEDependency(
-        openai,
+        openAIfactory,
         model_parameters,
         control_group
       )
       break
     default:
-      LLMresponses = await runAst(openai, model_parameters, control_group)
+      LLMresponses = await runAst(
+        openAIfactory,
+        model_parameters,
+        control_group
+      )
       break
   }
   logger.Info(`debug ${LLMresponses.length}`)

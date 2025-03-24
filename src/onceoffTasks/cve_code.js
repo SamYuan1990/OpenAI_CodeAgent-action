@@ -92,7 +92,7 @@ function extractReferencesUrls(cveawg_json) {
   return Array.from(urls) // 将 Set 转换为数组并返回
 }
 
-async function CVEDependency(openai, model_parameters, control_group) {
+async function CVEDependency(openAIfactory, model_parameters, control_group) {
   logger.Info(`start process CVE with dependency`)
 
   const information = await collectInformation(control_group)
@@ -102,12 +102,15 @@ async function CVEDependency(openai, model_parameters, control_group) {
     if (!information[i].hasOwnProperty('vulnerability')) {
       continue
     }
+    // loop files
+    // if need fix
     const AIresponse = await JustInvokeAI(
-      openai,
+      openAIfactory,
       model_parameters,
       control_group,
       information[i]
     )
+    // LLMresponse chain
     if (!AIresponse.duplicate) {
       result.push(AIresponse.LLMresponse)
     }

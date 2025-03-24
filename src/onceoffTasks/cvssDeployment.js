@@ -3,7 +3,7 @@ const { JustInvokeAI } = require('../aiagent')
 const fs = require('fs')
 const { logger } = require('../utils/logger')
 
-async function cvss_deployment(openai, model_parameters, control_group) {
+async function cvss_deployment(openAIfactory, model_parameters, control_group) {
   const result = []
   logger.Info('running type CVE2Deployment')
   const cvss_content = await fromCVEToPodDeployment(control_group)
@@ -14,7 +14,7 @@ async function cvss_deployment(openai, model_parameters, control_group) {
     deployment: fileContent
   }
   const AIresponse = await JustInvokeAI(
-    openai,
+    openAIfactory,
     model_parameters,
     control_group,
     content

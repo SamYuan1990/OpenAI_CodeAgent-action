@@ -11,7 +11,7 @@ const { logger } = require('./utils/logger')
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function runAst(openai, model_parameters, control_group) {
+async function runAst(openAIfactory, model_parameters, control_group) {
   try {
     const dirPath = control_group.dirPath
     // for case loop AST
@@ -32,7 +32,7 @@ async function runAst(openai, model_parameters, control_group) {
     }
     // loop AST tasks
     const GenAIresponses = await taskQueue.run(
-      openai,
+      openAIfactory,
       model_parameters,
       control_group
     )
