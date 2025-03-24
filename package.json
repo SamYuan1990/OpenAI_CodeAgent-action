@@ -74,8 +74,8 @@
     "tree-sitter-c": "^0.23.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.25.9",
+    "@babel/core": "^7.26.10",
+    "@babel/eslint-parser": "^7.26.10",
     "@babel/preset-env": "^7.26.0",
     "@github/local-action": "^2.2.1",
     "@vercel/ncc": "^0.38.3",
