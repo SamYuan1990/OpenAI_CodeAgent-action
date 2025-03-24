@@ -3,6 +3,7 @@ const { logger } = require('./utils/logger')
 const { encode } = require('gpt-tokenizer')
 const path = require('path')
 const ejs = require('ejs')
+const fs = require('fs')
 
 async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   // decouple prompt and hash value from here
@@ -94,8 +95,9 @@ function calculateTokenCount(Text) {
 }
 
 function preparePrompt(prompt, fileContent, control_group) {
-  // todo use a template to generate prompt
-  logger.Info(' We are going to talk with Gen AI with prompt and file content')
+  logger.Info('We are going to talk with Gen AI with prompt and file content')
+  logger.Info(JSON.stringify(fileContent))
+  logger.Info(`${prompt}`)
   //const final_prompt = `${prompt}\n${fileContent}`
 
   const final_prompt = ejs.render(prompt, fileContent)
@@ -120,7 +122,39 @@ function preparePrompt(prompt, fileContent, control_group) {
   return promptContent
 }
 
+async function JustInvokeAI(
+  openAIfactory,
+  model_parameters,
+  control_group,
+  content
+) {
+  const result = {
+    duplicate: false,
+    LLMresponse: {}
+  }
+  const promptContent = preparePrompt(
+    model_parameters.prompt,
+    content,
+    control_group
+  )
+  if (fs.existsSync(promptContent.filePath)) {
+    logger.Info('output file exisit, skip')
+    result.duplicate = true
+    return result
+  }
+  const openai = openAIfactory.GetAccess()
+  const LLMresponse = await invokeAIviaAgent(
+    openai,
+    model_parameters.model,
+    control_group.dryRun,
+    promptContent
+  )
+  result.LLMresponse = LLMresponse
+  return result
+}
+
 module.exports = {
   invokeAIviaAgent,
-  preparePrompt
+  preparePrompt,
+  JustInvokeAI
 }

@@ -1,5 +1,4 @@
 /* eslint-disable filenames/match-regex */
-const core = require('@actions/core')
 const {
   ProcessJsUnittest,
   ProcessGoDoc
@@ -11,7 +10,7 @@ const { logger } = require('./utils/logger')
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function runAst(openai, model_parameters, control_group, dryRun) {
+async function runAst(openAIfactory, model_parameters, control_group) {
   try {
     const dirPath = control_group.dirPath
     // for case loop AST
@@ -32,11 +31,9 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     }
     // loop AST tasks
     const GenAIresponses = await taskQueue.run(
-      openai,
-      model_parameters.model,
-      model_parameters.prompt,
-      control_group,
-      dryRun
+      openAIfactory,
+      model_parameters,
+      control_group
     )
     // output processor
     logger.Info('start processing GenAI result to file')
@@ -44,11 +41,11 @@ async function runAst(openai, model_parameters, control_group, dryRun) {
     // General output to folder
     // Set Action output
     // specific processor action on source code
-    if (control_group.runType === 'godoc' && !dryRun) {
+    if (control_group.runType === 'godoc' && !control_group.dryRun) {
       logger.Info('start process go doc')
       ProcessGoDoc(GenAIresponses)
     }
-    if (control_group.runType === 'jsunittest' && !dryRun) {
+    if (control_group.runType === 'jsunittest' && !control_group.dryRun) {
       ProcessJsUnittest(dirPath, GenAIresponses)
     }
     return GenAIresponses
