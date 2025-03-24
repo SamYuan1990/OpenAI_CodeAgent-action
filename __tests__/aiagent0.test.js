@@ -29,8 +29,8 @@ describe('invokeAIviaAgent', () => {
 
     const baseURL = 'https://api.example.com'
     const apiKey = 'test-api-key'
-    const fileContent = 'Test file content'
-    const prompt = 'Test prompt'
+    const fileContent = { fileContent: 'Test file content' }
+    const prompt = 'Test prompt\n <%= fileContent %>'
 
     const openai = new OpenAI({
       baseURL,
@@ -56,7 +56,7 @@ describe('invokeAIviaAgent', () => {
     expect(mockCreate).toHaveBeenCalledWith({
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: `${prompt}\n${fileContent}` }
+        { role: 'user', content: promptcontent.final_prompt }
       ],
       model: 'deepseek-chat'
     })

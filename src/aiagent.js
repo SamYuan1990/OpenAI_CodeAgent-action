@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const { logger } = require('./utils/logger')
 const { encode } = require('gpt-tokenizer')
 const path = require('path')
+const ejs = require('ejs')
 
 async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   // decouple prompt and hash value from here
@@ -95,13 +96,16 @@ function calculateTokenCount(Text) {
 function preparePrompt(prompt, fileContent, control_group) {
   // todo use a template to generate prompt
   logger.Info(' We are going to talk with Gen AI with prompt and file content')
-  const final_prompt = `${prompt}\n${fileContent}`
+  //const final_prompt = `${prompt}\n${fileContent}`
+
+  const final_prompt = ejs.render(prompt, fileContent)
+
   logger.Info(`final prompt genrated as ${final_prompt}`)
   const hash = crypto.createHash('sha256')
   hash.update(final_prompt)
   const hashValue = hash.digest('hex')
   const prompt_precent = calculatePercentage(prompt, final_prompt)
-  const content_precent = calculatePercentage(fileContent, final_prompt)
+  const content_precent = 1 - prompt_precent
   const inputToken = calculateTokenCount(`${final_prompt}`)
   const folderName = control_group.folderName
   const filePath = path.join(folderName, `file_${hashValue}.out`)
