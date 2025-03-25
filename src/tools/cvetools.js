@@ -173,6 +173,10 @@ async function collectInformation(control_group) {
 
       const vulnId = vuln.id
       logger.Info(`found CVE as ${vulnId}`)
+      if (!vulnId.startsWith('CVE')) {
+        logger.Info(`skip this for now as not on https://www.cve.org/CVERecord`)
+        continue
+      }
       const cveLink = `https://www.cve.org/CVERecord?id=${vulnId}`
       const cveapilink = `https://cveawg.mitre.org/api/cve/${vulnId}`
 
