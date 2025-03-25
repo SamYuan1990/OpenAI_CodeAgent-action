@@ -6,7 +6,7 @@ const { JustInvokeAI } = require('../agents/aiagent')
 const fs = require('fs')
 
 async function CVEDeep(openAIfactory, model_parameters, control_group) {
-  logger.Info(`start process CVE with dependency`)
+  logger.Info(`start process CVEDeep`)
 
   const information = await collectInformation(control_group)
   const result = []
@@ -19,12 +19,14 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
     // if need fix
     // for loop on information.file
     // get file content
+    logger.Info(`package name ${information[i].dependencyName}`)
+    const loginfo = JSON.stringify(information[i], null, 2)
+    logger.Info(`package detail ${loginfo}`)
     for (let j = 0; j < information[i].files; j++) {
       // information.package + information.desc + file content -> content
       logger.Info(`start process file ${information[i].files[j]}`)
       const filecontent = fs.readFileSync(information[i].files[j])
       logger.Info(`${filecontent}`)
-      logger.Info(`package name ${information[i].dependencyName}`)
       const content = {
         packagename: information[i].dependencyName,
         filecontent,
