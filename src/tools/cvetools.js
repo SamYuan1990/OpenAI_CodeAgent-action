@@ -105,6 +105,9 @@ async function fetchCveData(url) {
 
 function processSeverityScore(cveawg_json) {
   let cvssMetrics = null
+  if (!cveawg_json.containers.hasOwnProperty('adp')) {
+    return null
+  }
   for (let i = 0; i < cveawg_json.containers.adp.length; i++) {
     if (
       cveawg_json.containers.adp[i]['metrics'] !== null &&
