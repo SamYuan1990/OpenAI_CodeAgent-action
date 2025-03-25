@@ -111,9 +111,7 @@ function processSeverityScore(cveawg_json) {
       cveawg_json.containers.adp[i]['metrics'] !== undefined
     ) {
       cvssMetrics = cveawg_json.containers.adp[i].metrics[0]
-      logger.Info(
-        `cvss info from web ${cveawg_json.containers.adp[i].metrics[0].cvssV3_1.vectorString}`
-      )
+      logger.Info(`cvss info from web ${cvssMetrics}`)
       break
     }
   }
