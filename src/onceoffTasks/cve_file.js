@@ -20,8 +20,7 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
     // for loop on information.file
     // get file content
     logger.Info(`package name ${information[i].dependencyName}`)
-    const loginfo = JSON.stringify(information[i], null, 2)
-    logger.Info(`package detail ${loginfo}`)
+    logger.Info(`going to process ${information[i].files.length}`)
     for (let j = 0; j < information[i].files; j++) {
       // information.package + information.desc + file content -> content
       logger.Info(`start process file ${information[i].files[j]}`)

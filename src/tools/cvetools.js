@@ -105,9 +105,6 @@ async function fetchCveData(url) {
 
 function processSeverityScore(cveawg_json) {
   let cvssMetrics = null
-  if (!cveawg_json.containers.hasOwnProperty('adp')) {
-    return null
-  }
   for (let i = 0; i < cveawg_json.containers.adp.length; i++) {
     if (
       cveawg_json.containers.adp[i]['metrics'] !== null &&
@@ -195,7 +192,7 @@ async function collectInformation(control_group) {
       const files = appears_at.files
       // 如果 Map 中不存在该 key，则添加
       if (!uniquePackages.has(key)) {
-        uniquePackages.set(key, {
+        const value = {
           coordinates,
           cveLink,
           dependencyName,
@@ -204,7 +201,10 @@ async function collectInformation(control_group) {
           references_url,
           vulnerability: vuln,
           CVEscore
-        })
+        }
+        const loginfo = JSON.stringify(value, null, 2)
+        logger.Info(`package detail ${loginfo}`)
+        uniquePackages.set(key, value)
       }
     }
   }
