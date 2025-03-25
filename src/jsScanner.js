@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 const { execSync } = require('child_process')
-const { parseLcovFile, scanDirectory } = require('./languageprocessor/nodeAst')
+const { parseLcovFile, scanDirectory } = require('./tools/nodeAst')
 const path = require('path')
 const { logger } = require('./utils/logger')
 /**

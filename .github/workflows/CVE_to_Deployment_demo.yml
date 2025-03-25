@@ -20,20 +20,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - IMAGE: 'cloudcore'
-            PATH: '/build/cloud/07-deployment.yaml'
-          - IMAGE: 'admission'
-            PATH: '/build/admission/deployment.yaml'
-          - IMAGE: 'edgesite-agent'
-            PATH: '/build/edgesite/edgesite-agent.yaml'
-          - IMAGE: 'edgesite-server'
-            PATH: '/build/edgesite/edgesite-server.yaml'
-          - IMAGE: 'iptables-manager'
-            PATH: '/build/iptablesmanager/iptablesmanager-ds.yaml'
-          - IMAGE: 'controller-manager'
-            PATH: '/build/controllermanager/controllermanager-deploy.yaml'
-          - IMAGE: 'conformance'
-            PATH: '/build/conformance/kubernetes/job-conformance.yaml'
+          - PATH: '/build/cloud/07-deployment.yaml'
+          - PATH: '/build/admission/deployment.yaml'
+          - PATH: '/build/edgesite/edgesite-agent.yaml'
+          - PATH: '/build/edgesite/edgesite-server.yaml'
+          - PATH: '/build/iptablesmanager/iptablesmanager-ds.yaml'
+          - PATH: '/build/controllermanager/controllermanager-deploy.yaml'
+          - PATH: '/build/conformance/kubernetes/job-conformance.yaml'
     steps:
       - name: Pull latest image
         if: ${{ inputs.build_image == true }}
@@ -50,15 +43,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: SamYuan1990/kubeedge
-      - uses: actions/setup-go@v5
-      - name: generate CVE.json
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-          go install github.com/devops-kung-fu/bomber@latest 
-          ./syft scan kubeedge/${{matrix.IMAGE}}:v1.20.0 -o cyclonedx-json -vv  > sbom.json 
-          cat sbom.json
-          bomber scan ./sbom.json --output=json --debug > cve.json
-          cat cve.json
       - name: use this action to generate suggestion for deployment settings
         id: Lint_with_LLM
         uses: SamYuan1990/OpenAI_CodeAgent-action@main

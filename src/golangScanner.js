@@ -1,5 +1,5 @@
 /* eslint-disable prefer-promise-reject-errors */
-const { scanGolangCode } = require('./languageprocessor/golangAst')
+const { scanGolangCode } = require('./tools/golangAst')
 const { logger } = require('./utils/logger')
 
 /**

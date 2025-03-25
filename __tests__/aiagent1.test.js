@@ -1,4 +1,4 @@
-const { preparePrompt, invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
+const { preparePrompt, invokeAIviaAgent } = require('../src/agents/aiagent') // Adjust the path accordingly
 
 // Mock the openai object
 const openai = {
