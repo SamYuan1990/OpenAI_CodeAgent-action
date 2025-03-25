@@ -1,5 +1,5 @@
 /* eslint-disable filenames/match-regex */
-const { preparePrompt } = require('../src/aiagent') // 替换为实际路径
+const { preparePrompt } = require('../src/agents/aiagent') // 替换为实际路径
 const ejs = require('ejs')
 const crypto = require('crypto')
 const path = require('path')

@@ -1,5 +1,5 @@
 const { fromCVEToPodDeployment } = require('./cve')
-const { JustInvokeAI } = require('../aiagent')
+const { JustInvokeAI } = require('../agents/aiagent')
 const fs = require('fs')
 const { logger } = require('../utils/logger')
 

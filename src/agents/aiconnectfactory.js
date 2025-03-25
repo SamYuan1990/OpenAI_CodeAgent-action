@@ -5,6 +5,7 @@ const openAIfactory = {
   apiKey: '',
 
   GetAccess() {
+    // todo if we considering create new or keep session
     const baseURL = this.baseURL
     const apiKey = this.apiKey
     const openai = new OpenAI({

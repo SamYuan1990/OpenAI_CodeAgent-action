@@ -1,4 +1,4 @@
-const { preparePrompt, invokeAIviaAgent } = require('../src/aiagent') // Adjust the path accordingly
+const { preparePrompt, invokeAIviaAgent } = require('../src/agents/aiagent') // Adjust the path accordingly
 const OpenAI = require('openai') // Assuming OpenAI is imported in your file
 
 jest.mock('openai')

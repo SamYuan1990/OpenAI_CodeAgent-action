@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const { logger } = require('./utils/logger')
+const { logger } = require('../utils/logger')
 const { encode } = require('gpt-tokenizer')
 const path = require('path')
 const ejs = require('ejs')

@@ -4,7 +4,7 @@ const fs = require('fs')
 const { fetchCveData } = require('./cve')
 const path = require('path')
 const { logger } = require('../utils/logger')
-const { JustInvokeAI } = require('../aiagent')
+const { JustInvokeAI } = require('../agents/aiagent')
 const { grepSync } = require('../tools/grep')
 
 const extractPackageInfo = coordinates => {
