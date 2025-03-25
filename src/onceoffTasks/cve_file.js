@@ -21,7 +21,10 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
     // get file content
     for (let j = 0; j < information[i].files; j++) {
       // information.package + information.desc + file content -> content
+      logger.Info(`start process file ${information[i].files[j]}`)
       const filecontent = fs.readFileSync(information[i].files[j])
+      logger.Info(`${filecontent}`)
+      logger.Info(`package name ${information[i].dependencyName}`)
       const content = {
         packagename: information[i].dependencyName,
         filecontent,
