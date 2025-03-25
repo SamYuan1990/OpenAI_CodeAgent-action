@@ -129,7 +129,7 @@ function processSeverityScore(cveawg_json) {
       'Availability impact': cvssV3_1.availabilityImpact
     }
   } else {
-    return null
+    return {}
   }
 }
 
@@ -182,10 +182,6 @@ async function collectInformation(control_group) {
       const cveawg_json = JSON.parse(CVEINFO)
       const references_url = extractReferencesUrls(cveawg_json)
       const severityScoreBreakdown = processSeverityScore(cveawg_json)
-      let CVEscore = {}
-      if (severityScoreBreakdown) {
-        CVEscore = severityScoreBreakdown
-      }
       // 使用 coordinates 和 vulnId 作为 key
       const key = `${dependencyName}|${vulnId}`
       const appears = appears_at.matches
@@ -200,7 +196,7 @@ async function collectInformation(control_group) {
           files,
           references_url,
           vulnerability: vuln,
-          CVEscore
+          CVEscore: severityScoreBreakdown
         }
         const loginfo = JSON.stringify(value, null, 2)
         logger.Info(`package detail ${loginfo}`)
