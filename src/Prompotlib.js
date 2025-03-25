@@ -8,12 +8,19 @@ if the function is safe, please say your are fine with it.
 if the score higher than 6, please provide fix suggestion, 
    please summary all fix suggestion in chapter summary with one code block, the fix suggestion should nit enough and keep original code block and logic as much as possible. 
 here is the function, <%= code %> `
-const cve_code_prompt = `please help create a report for developer to fix CVE, here are the confirmed information.
+const cve_summary_prompt = `please help create a report for developer to fix CVE, here are the confirmed information.
 cve: <%= cveLink %>,
 cve description: <%= vulnerability.description %>,
 appears in project: <%= appears_at %>,
-reference: <%= references_url %>
-`
+reference: <%= references_url %>`
+const cve_file_prompt = `there is a CVE for package <%= packagename %>, according to CVE description:
+<%= vulnerability.description %>,
+and file content:
+<%= filecontent %>
+Answer me in short for questions:
+may I know if the related function been invoked?
+may I know if the CVE affect the code?`
+
 function predefinePrompt(control_group) {
   switch (control_group.runType) {
     case 'CVE2Deployment':
@@ -25,7 +32,9 @@ function predefinePrompt(control_group) {
     case 'ccodescan':
       return ccodeEnhancePrompt
     case 'CVEDependency':
-      return cve_code_prompt
+      return cve_summary_prompt
+    case 'CVEDeep':
+      return cve_file_prompt
     default:
       // 如果没有匹配的 runType，可以返回一个默认值或抛出错误
       return '' // 或者 throw new Error('Unknown runType');

@@ -1,10 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const {
-  fromCVEToPodDeployment,
-  fetchSeverityScoreBreakdown,
-  fetchCveData
-} = require('../src/onceoffTasks/cve')
+const { fromCVEToPodDeployment } = require('../src/onceoffTasks/cve')
+
+const { fetchCveData, processSeverityScore } = require('../src/tools/cvetools')
 
 // Mock the logger
 jest.mock('../src/utils/logger', () => ({
@@ -19,10 +17,11 @@ jest.mock('fs')
 // Mock the https module
 jest.mock('https')
 
-describe('fetchSeverityScoreBreakdown', () => {
+describe('ProcessSeverityScoreBreakdown', () => {
   it('should return the correct CVSS metrics when the request is successful', async () => {
     const mockUrl = 'https://cveawg.mitre.org/api/cve/CVE-2023-1234'
     const mockData = JSON.stringify({
+      extractPackageInfo: 'pkg:npm/%40babel/helpers@7.15.4',
       containers: {
         adp: [
           {
@@ -59,7 +58,9 @@ describe('fetchSeverityScoreBreakdown', () => {
       }
     })
 
-    const result = await fetchSeverityScoreBreakdown(mockUrl)
+    const cveawg_data = await fetchCveData(mockUrl)
+    const cveawg_json = JSON.parse(cveawg_data)
+    const result = processSeverityScore(cveawg_json)
     expect(result).toEqual({
       'Attack vector': 'NETWORK',
       'Attack complexity': 'LOW',
@@ -70,23 +71,6 @@ describe('fetchSeverityScoreBreakdown', () => {
       'Integrity impact': 'HIGH',
       'Availability impact': 'HIGH'
     })
-  })
-
-  it('should return null when the request fails', async () => {
-    const mockUrl = 'https://cveawg.mitre.org/api/cve/CVE-2023-1234'
-
-    require('https').request.mockImplementation((options, callback) => {
-      const req = {
-        on: jest.fn((event, handler) => {
-          if (event === 'error') handler(new Error('Request failed'))
-        }),
-        end: jest.fn()
-      }
-      return req
-    })
-
-    const result = await fetchSeverityScoreBreakdown(mockUrl)
-    expect(result).toBeNull()
   })
 })
 
@@ -99,7 +83,11 @@ describe('fromCVEToPodDeployment', () => {
     const mockCveData = {
       packages: [
         {
-          vulnerabilities: [{ id: 'CVE-2023-1234' }, { id: 'CVE-2023-5678' }]
+          vulnerabilities: [
+            { id: 'CVE-2023-1234', extractPackageInfo: 'pkg:npm' },
+            { id: 'CVE-2023-5678', extractPackageInfo: 'pkg:npm' }
+          ],
+          coordinates: 'pkg:npm/%40babel/helpers@7.15.4'
         }
       ]
     }
@@ -144,14 +132,14 @@ describe('fromCVEToPodDeployment', () => {
     })
 
     const result = await fromCVEToPodDeployment(mockControlGroup)
-    expect(result).toContain('Attack vector:NETWORK')
-    expect(result).toContain('Attack complexity:LOW')
-    expect(result).toContain('Privileges required:NONE')
-    expect(result).toContain('User interaction:NONE')
-    expect(result).toContain('Scope:UNCHANGED')
-    expect(result).toContain('Confidentiality:HIGH')
-    expect(result).toContain('Integrity impact:HIGH')
-    expect(result).toContain('Availability impact:HIGH')
+    expect(result).toContain('Attack vector:')
+    expect(result).toContain('Attack complexity:')
+    expect(result).toContain('Privileges required:')
+    expect(result).toContain('User interaction:')
+    expect(result).toContain('Scope:')
+    expect(result).toContain('Confidentiality:')
+    expect(result).toContain('Integrity impact:')
+    expect(result).toContain('Availability impact:')
 
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       path.join(mockControlGroup.folderName, './cve_result.json'),

@@ -16,6 +16,12 @@ on: # yamllint disable-line rule:truthy
 jobs:
   test-cvewithdependency:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runType: CVEDependency
+          - runType: CVEDeep
     steps:
       - name: Pull latest image
         if: ${{ inputs.build_image == true }}
@@ -40,7 +46,7 @@ jobs:
           apiKey: dummy
           model: deepseek-chat
           dirpath: '/workdir/server'
-          runType: CVEDependency
+          runType: ${{ matrix.runType }}
           dryRun: ${{ inputs.dryrun }}
       - name: output check
         shell: bash
@@ -57,7 +63,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist_${{ matrix.runType }}
           path: |
             cve.json
             GenAI_output
