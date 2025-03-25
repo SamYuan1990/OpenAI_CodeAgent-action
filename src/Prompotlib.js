@@ -16,7 +16,7 @@ reference: <%= references_url %>`
 const cve_file_prompt = `there is a CVE for package <%= packagename %>, according to CVE description:
 <%= vulnerability.description %>,
 and file content:
-<%= file_content %>
+<%= filecontent %>
 Answer me in short for questions:
 may I know if the related function been invoked?
 may I know if the CVE affect the code?`
