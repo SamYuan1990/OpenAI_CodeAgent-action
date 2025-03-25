@@ -1,7 +1,7 @@
 const { scanGoCodeDirectory } = require('./golangScanner')
 const { scanJSCodeDirectory } = require('./jsScanner')
 const { JustInvokeAI } = require('./aiagent')
-const { scanDirectory } = require('./languageprocessor/cAst')
+const { scanDirectory } = require('./tools/cAst')
 const { logger } = require('./utils/logger')
 
 const taskQueue = {

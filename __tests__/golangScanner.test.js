@@ -3,10 +3,10 @@
 const { scanGoCodeDirectory } = require('../src/golangScanner') // Adjust the path
 const core = require('@actions/core') // Mock core if needed
 
-const { scanGolangCode } = require('../src/languageprocessor/golangAst')
+const { scanGolangCode } = require('../src/tools/golangAst')
 
 // Mock the dependencies
-jest.mock('../src/languageprocessor/golangAst', () => ({
+jest.mock('../src/tools/golangAst', () => ({
   scanGolangCode: jest.fn()
 }))
 
