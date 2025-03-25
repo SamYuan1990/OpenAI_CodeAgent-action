@@ -39,6 +39,9 @@ RUN go version
 
 # 设置工作目录
 WORKDIR /app
+# SBOM and CVE
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
+RUN go install github.com/devops-kung-fu/bomber@latest 
 
 # 复制 package.json 和 package-lock.json
 COPY package*.json ./

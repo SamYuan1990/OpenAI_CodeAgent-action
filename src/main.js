@@ -11,6 +11,7 @@ const { logger } = require('./utils/logger')
 const { getInputOrDefault } = require('./utils/inputFilter')
 const fs = require('fs')
 const path = require('path')
+const { GenCVESync } = require('./tools/syft')
 
 async function run() {
   const baseURL = getInputOrDefault('baseURL', '')
@@ -73,6 +74,7 @@ async function run() {
   // once off tasks
   switch (control_group.runType) {
     case 'CVE2Deployment':
+      GenCVESync()
       LLMresponses = await cvss_deployment(
         openAIfactory,
         model_parameters,
@@ -80,6 +82,7 @@ async function run() {
       )
       break
     case 'CVEDependency':
+      GenCVESync()
       LLMresponses = await CVEDependency(
         openAIfactory,
         model_parameters,
