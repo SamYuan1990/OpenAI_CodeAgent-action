@@ -8,6 +8,7 @@ const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { CVEDeep } = require('./onceoffTasks/cve_file')
 const { GeneralProcessor } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
+const { model_parameters } = require('./agents/model_parameters')
 const { logger } = require('./utils/logger')
 const { getInputOrDefault } = require('./utils/inputFilter')
 const fs = require('fs')
@@ -61,16 +62,8 @@ async function run() {
   logger.Info(`We are going to talk with Gen AI with Model ${model}`)
   const defualt_prompt = predefinePrompt(control_group)
   logger.Info(`default prompt ${defualt_prompt}`)
-  const prompt = getInputOrDefault('prompt', defualt_prompt)
-  logger.Info(
-    `We are going to talk with Gen AI with prompt and file content ${prompt}`
-  )
 
-  const model_parameters = {
-    model,
-    prompt
-  }
-
+  model_parameters.init(model, defualt_prompt)
   GeneralProcessor.init(control_group)
   // once off tasks
   switch (control_group.runType) {

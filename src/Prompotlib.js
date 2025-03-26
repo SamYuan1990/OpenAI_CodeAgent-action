@@ -24,20 +24,20 @@ may I know if the CVE affect the code?`
 function predefinePrompt(control_group) {
   switch (control_group.runType) {
     case 'CVE2Deployment':
-      return cveHelmPrompt
+      return [cveHelmPrompt]
     case 'godoc':
-      return godocPrompt
+      return [godocPrompt]
     case 'jsunittest':
-      return jsunittestPrompt
+      return [jsunittestPrompt]
     case 'ccodescan':
-      return ccodeEnhancePrompt
+      return [ccodeEnhancePrompt]
     case 'CVEDependency':
-      return cve_summary_prompt
+      return [cve_summary_prompt]
     case 'CVEDeep':
-      return cve_file_prompt
+      return [cve_file_prompt]
     default:
       // 如果没有匹配的 runType，可以返回一个默认值或抛出错误
-      return '' // 或者 throw new Error('Unknown runType');
+      return [''] // 或者 throw new Error('Unknown runType');
   }
 }
 

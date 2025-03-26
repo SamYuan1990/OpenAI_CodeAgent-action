@@ -10,26 +10,26 @@ const jsunittestPrompt = `please help generate unit test for my nodejs code, <%=
 describe('predefinePrompt', () => {
   it('should return cveHelmPrompt when runType is CVE2Deployment', () => {
     const control_group = { runType: 'CVE2Deployment' }
-    expect(predefinePrompt(control_group)).toBe(cveHelmPrompt)
+    expect(predefinePrompt(control_group)[0]).toBe(cveHelmPrompt)
   })
 
   it('should return godocPrompt when runType is godoc', () => {
     const control_group = { runType: 'godoc' }
-    expect(predefinePrompt(control_group)).toBe(godocPrompt)
+    expect(predefinePrompt(control_group)[0]).toBe(godocPrompt)
   })
 
   it('should return jsunittestPrompt when runType is jsunittest', () => {
     const control_group = { runType: 'jsunittest' }
-    expect(predefinePrompt(control_group)).toBe(jsunittestPrompt)
+    expect(predefinePrompt(control_group)[0]).toBe(jsunittestPrompt)
   })
 
   it('should return undefined when runType is not recognized', () => {
     const control_group = { runType: 'unknown' }
-    expect(predefinePrompt(control_group)).toBe('')
+    expect(predefinePrompt(control_group)[0]).toBe('')
   })
 
   it('should return undefined when runType is not provided', () => {
     const control_group = {}
-    expect(predefinePrompt(control_group)).toBe('')
+    expect(predefinePrompt(control_group)[0]).toBe('')
   })
 })
