@@ -27,12 +27,18 @@ const GeneralProcessor = {
 
   async process(LLMresponse) {
     logger.Info(`process general output for ${LLMresponse.hashValue}`)
+    logger.Info(`collected prompt_precent for ${LLMresponse.prompt_precent}`)
     this.prompt_precent_sum += LLMresponse.prompt_precent
+    logger.Info(`collected content_precent for ${LLMresponse.prompt_precent}`)
     this.content_precent_sum += LLMresponse.content_precent
+    logger.Info(`collected time_usage for ${LLMresponse.prompt_precent}`)
     this.total_time += LLMresponse.time_usage
+    logger.Info(`collected inputToken for ${LLMresponse.prompt_precent}`)
     this.total_input_token += LLMresponse.inputToken
+    logger.Info(`collected outputToken for ${LLMresponse.prompt_precent}`)
     this.total_output_token += LLMresponse.outputToken
     this.processed_task++
+    logger.Info(`completed with task information collection`)
     const jsonString = JSON.stringify(LLMresponse, null, 2)
     const filePath = LLMresponse.filePath
     fs.writeFileSync(filePath, jsonString)
@@ -52,31 +58,25 @@ const GeneralProcessor = {
   },
 
   summary() {
+    logger.Info(`start summry for ${this.processed_task} tasks`)
     const avg_prompt_precent = this.prompt_precent_sum / this.processed_task
+    logger.Info(`avg_prompt_precent ${avg_prompt_precent}`)
     const avg_content_precent = this.content_precent_sum / this.processed_task
+    logger.Info(`avg_content_precent ${avg_content_precent}`)
     const avg_time_usage = this.total_time / this.processed_task
+    logger.Info(`avg_time_usage ${avg_time_usage}`)
     const avg_inputToken = this.total_input_token / this.processed_task
+    logger.Info(`avg_inputToken ${avg_inputToken}`)
     const avg_outputToken = this.total_output_token / this.processed_task
+    logger.Info(`avg_outputToken ${avg_outputToken}`)
     // Set Action output
     const Output = {
-      avg_prompt_precent: 0,
-      avg_content_precent: 0,
-      LLMresponse: '',
-      final_prompt: '',
-      input_token: 0,
-      output_token: 0,
-      avg_time_usage: 0
+      avg_prompt_precent,
+      avg_content_precent,
+      avg_inputToken,
+      avg_outputToken,
+      avg_time_usage
     }
-    logger.Info(`avg_prompt_precent ${avg_prompt_precent}`)
-    Output.avg_prompt_precent = avg_prompt_precent
-    logger.Info(`avg_content_precent ${avg_content_precent}`)
-    Output.avg_content_precent = avg_content_precent
-    logger.Info(`avg_time_usage ${avg_time_usage}`)
-    Output.avg_time_usage = avg_time_usage
-    logger.Info(`avg_inputToken ${avg_inputToken}`)
-    Output.avg_inputToken = avg_inputToken
-    logger.Info(`avg_outputToken ${avg_outputToken}`)
-    Output.avg_outputToken = avg_outputToken
     const folderName = this.control_group.folderName
     const filePath = path.join(folderName, `summary.json`)
     const summary_jsonString = JSON.stringify(Output, null, 2)
