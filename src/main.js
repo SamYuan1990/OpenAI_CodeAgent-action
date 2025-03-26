@@ -6,7 +6,7 @@ const { openAIfactory } = require('./agents/aiconnectfactory')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
 const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { CVEDeep } = require('./onceoffTasks/cve_file')
-const { processOutput } = require('./outputhandler/generalOutputProcessor')
+const { GeneralProcessor } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
 const { logger } = require('./utils/logger')
 const { getInputOrDefault } = require('./utils/inputFilter')
@@ -71,43 +71,26 @@ async function run() {
     prompt
   }
 
-  let LLMresponses = []
+  GeneralProcessor.init(control_group)
   // once off tasks
   switch (control_group.runType) {
     case 'CVE2Deployment':
       GenCVESync()
-      LLMresponses = await cvss_deployment(
-        openAIfactory,
-        model_parameters,
-        control_group
-      )
+      await cvss_deployment(openAIfactory, model_parameters, control_group)
       break
     case 'CVEDependency':
       GenCVESync()
-      LLMresponses = await CVEDependency(
-        openAIfactory,
-        model_parameters,
-        control_group
-      )
+      await CVEDependency(openAIfactory, model_parameters, control_group)
       break
     case 'CVEDeep':
       GenCVESync()
-      LLMresponses = await CVEDeep(
-        openAIfactory,
-        model_parameters,
-        control_group
-      )
+      await CVEDeep(openAIfactory, model_parameters, control_group)
       break
     default:
-      LLMresponses = await runAst(
-        openAIfactory,
-        model_parameters,
-        control_group
-      )
+      await runAst(openAIfactory, model_parameters, control_group)
       break
   }
-  logger.Info(`debug ${LLMresponses.length}`)
-  await processOutput(LLMresponses, control_group)
+  GeneralProcessor.summary()
   // Log the current timestamp, wait, then log the new timestamp
   logger.Info(`complete at: ${new Date().toTimeString()}`)
 }

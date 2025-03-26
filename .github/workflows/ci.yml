@@ -117,10 +117,7 @@ jobs:
         run: |
           ls $(pwd)
           ls $(pwd)/GenAI_output
-          VALUE=$(jq -r '.LLMresponse | gsub("\n"; " ")' $(pwd)/GenAI_output/summary.json)
-          echo "LLMresponse=${VALUE}"
-          VALUE=$(jq -r '.final_prompt | gsub("\n"; " ")' $(pwd)/GenAI_output/summary.json)
-          echo "final_prompt=${VALUE}"
+          cat $(pwd)/GenAI_output/summary.json
           VALUE=$(jq -r -e .avg_prompt_precent $(pwd)/GenAI_output/summary.json)
           echo "avg_prompt_precent=${VALUE}"
           VALUE=$(jq -r -e .avg_content_precent $(pwd)/GenAI_output/summary.json)
