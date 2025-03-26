@@ -134,7 +134,7 @@ async function JustInvokeAI(
     LLMresponse: {}
   }
   const promptContent = preparePrompt(
-    model_parameters.prompt,
+    model_parameters.getPrompt(),
     content,
     control_group
   )
@@ -146,7 +146,7 @@ async function JustInvokeAI(
   const openai = openAIfactory.GetAccess()
   const LLMresponse = await invokeAIviaAgent(
     openai,
-    model_parameters.model,
+    model_parameters.getModel(),
     control_group.dryRun,
     promptContent
   )
