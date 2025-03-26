@@ -117,6 +117,7 @@ jobs:
         run: |
           ls $(pwd)
           ls $(pwd)/GenAI_output
+          cat $(pwd)/GenAI_output/summary.json
           VALUE=$(jq -r -e .avg_prompt_precent $(pwd)/GenAI_output/summary.json)
           echo "avg_prompt_precent=${VALUE}"
           VALUE=$(jq -r -e .avg_content_precent $(pwd)/GenAI_output/summary.json)
