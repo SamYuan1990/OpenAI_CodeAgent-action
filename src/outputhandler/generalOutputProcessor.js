@@ -28,15 +28,15 @@ const GeneralProcessor = {
   async process(LLMresponse) {
     logger.Info(`process general output for ${LLMresponse.hashValue}`)
     logger.Info(`collected prompt_precent for ${LLMresponse.prompt_precent}`)
-    this.prompt_precent_sum += LLMresponse.prompt_precent
-    logger.Info(`collected content_precent for ${LLMresponse.prompt_precent}`)
-    this.content_precent_sum += LLMresponse.content_precent
-    logger.Info(`collected time_usage for ${LLMresponse.prompt_precent}`)
-    this.total_time += LLMresponse.time_usage
-    logger.Info(`collected inputToken for ${LLMresponse.prompt_precent}`)
-    this.total_input_token += LLMresponse.inputToken
-    logger.Info(`collected outputToken for ${LLMresponse.prompt_precent}`)
-    this.total_output_token += LLMresponse.outputToken
+    this.prompt_precent += LLMresponse.prompt_precent
+    logger.Info(`collected content_precent for ${LLMresponse.content_precent}`)
+    this.content_precent += LLMresponse.content_precent
+    logger.Info(`collected time_usage for ${LLMresponse.time_usage}`)
+    this.time_usage += LLMresponse.time_usage
+    logger.Info(`collected inputToken for ${LLMresponse.inputToken}`)
+    this.input_token += LLMresponse.inputToken
+    logger.Info(`collected outputToken for ${LLMresponse.outputToken}`)
+    this.output_token += LLMresponse.outputToken
     this.processed_task++
     logger.Info(`completed with task information collection`)
     const jsonString = JSON.stringify(LLMresponse, null, 2)
@@ -59,15 +59,15 @@ const GeneralProcessor = {
 
   summary() {
     logger.Info(`start summry for ${this.processed_task} tasks`)
-    const avg_prompt_precent = this.prompt_precent_sum / this.processed_task
+    const avg_prompt_precent = this.prompt_precent / this.processed_task
     logger.Info(`avg_prompt_precent ${avg_prompt_precent}`)
-    const avg_content_precent = this.content_precent_sum / this.processed_task
+    const avg_content_precent = this.content_precent / this.processed_task
     logger.Info(`avg_content_precent ${avg_content_precent}`)
-    const avg_time_usage = this.total_time / this.processed_task
+    const avg_time_usage = this.time_usage / this.processed_task
     logger.Info(`avg_time_usage ${avg_time_usage}`)
-    const avg_inputToken = this.total_input_token / this.processed_task
+    const avg_inputToken = this.input_token / this.processed_task
     logger.Info(`avg_inputToken ${avg_inputToken}`)
-    const avg_outputToken = this.total_output_token / this.processed_task
+    const avg_outputToken = this.output_token / this.processed_task
     logger.Info(`avg_outputToken ${avg_outputToken}`)
     // Set Action output
     const Output = {
