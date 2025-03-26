@@ -4,6 +4,7 @@ const { encode } = require('gpt-tokenizer')
 const path = require('path')
 const ejs = require('ejs')
 const fs = require('fs')
+const { GeneralProcessor } = require('../outputhandler/generalOutputProcessor')
 
 async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   // decouple prompt and hash value from here
@@ -150,6 +151,7 @@ async function JustInvokeAI(
     promptContent
   )
   result.LLMresponse = LLMresponse
+  GeneralProcessor.process(LLMresponse)
   return result
 }
 

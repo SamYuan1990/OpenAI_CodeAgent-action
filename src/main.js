@@ -6,7 +6,7 @@ const { openAIfactory } = require('./agents/aiconnectfactory')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
 const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { CVEDeep } = require('./onceoffTasks/cve_file')
-const { processOutput } = require('./outputhandler/generalOutputProcessor')
+const { GeneralProcessor } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
 const { logger } = require('./utils/logger')
 const { getInputOrDefault } = require('./utils/inputFilter')
@@ -72,6 +72,7 @@ async function run() {
   }
 
   let LLMresponses = []
+  GeneralProcessor.init(control_group)
   // once off tasks
   switch (control_group.runType) {
     case 'CVE2Deployment':
@@ -107,7 +108,7 @@ async function run() {
       break
   }
   logger.Info(`debug ${LLMresponses.length}`)
-  await processOutput(LLMresponses, control_group)
+  GeneralProcessor.summary()
   // Log the current timestamp, wait, then log the new timestamp
   logger.Info(`complete at: ${new Date().toTimeString()}`)
 }
