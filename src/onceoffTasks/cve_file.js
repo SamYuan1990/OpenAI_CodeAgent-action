@@ -16,7 +16,6 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
     if (!information[i].hasOwnProperty('vulnerability')) {
       continue
     }
-    model_parameters.restPrompt()
     // loop files
     // if need fix
     // for loop on information.file
@@ -25,6 +24,7 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
     logger.Info(`going to process ${information[i].files.length}`)
     const files_list = information[i].files
     for (let j = 0; j < files_list.length; j++) {
+      model_parameters.restPrompt()
       // information.package + information.desc + file content -> content
       logger.Info(`start process file ${files_list[j]}`)
       const filecontent = fs.readFileSync(files_list[j], 'utf8')
@@ -55,6 +55,7 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
             control_group,
             information[i]
           )
+          break
           // LLMresponse chain
           // todo safe response to pdf
         }
