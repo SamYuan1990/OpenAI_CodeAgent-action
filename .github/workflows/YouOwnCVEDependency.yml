@@ -21,7 +21,7 @@ jobs:
         uses: SamYuan1990/OpenAI_CodeAgent-action@main
         with:
           baseURL: https://api.deepseek.com
-          apiKey: ${ secrets.API_KEY }
+          apiKey: ${{ secrets.API_KEY }}
           model: deepseek-chat
           dirpath: '/workdir'
           runType: CVEDeep
