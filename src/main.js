@@ -4,7 +4,6 @@
 const { runAst } = require('./runAST')
 const { openAIfactory } = require('./agents/aiconnectfactory')
 const { cvss_deployment } = require('./onceoffTasks/cvssDeployment')
-const { CVEDependency } = require('./onceoffTasks/cve_code')
 const { CVEDeep } = require('./onceoffTasks/cve_file')
 const { GeneralProcessor } = require('./outputhandler/generalOutputProcessor')
 const { predefinePrompt } = require('./Prompotlib')
@@ -71,12 +70,7 @@ async function run() {
       GenCVESync()
       await cvss_deployment(openAIfactory, model_parameters, control_group)
       break
-    case 'CVEDependency':
-      GenCVESync()
-      await CVEDependency(openAIfactory, model_parameters, control_group)
-      break
     case 'CVEDeep':
-      GenCVESync()
       await CVEDeep(openAIfactory, model_parameters, control_group)
       break
     default:

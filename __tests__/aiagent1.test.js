@@ -40,7 +40,7 @@ describe('invokeAIviaAgent', () => {
       calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      1 - calculatePercentage(prompt, promptcontent.final_prompt)
+      100 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 
@@ -69,7 +69,7 @@ describe('invokeAIviaAgent', () => {
       calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      1 - calculatePercentage(prompt, promptcontent.final_prompt)
+      100 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 
@@ -97,7 +97,7 @@ describe('invokeAIviaAgent', () => {
       calculatePercentage(prompt, promptcontent.final_prompt)
     )
     expect(result.content_precent).toBe(
-      1 - calculatePercentage(prompt, promptcontent.final_prompt)
+      100 - calculatePercentage(prompt, promptcontent.final_prompt)
     )
   })
 })

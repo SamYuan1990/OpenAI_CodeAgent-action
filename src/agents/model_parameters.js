@@ -16,6 +16,10 @@ const model_parameters = {
     return this.defualt_prompt[this.index]
   },
 
+  restPrompt() {
+    this.index = 0
+  },
+
   getModel() {
     return this.model
   }

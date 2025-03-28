@@ -53,7 +53,7 @@ describe('preparePrompt', () => {
       final_prompt: 'Hello World!',
       hashValue: 'mockHashValue',
       prompt_precent: 150,
-      content_precent: -149,
+      content_precent: -50,
       inputToken: 3,
       filePath: 'testFolder/file_mockHashValue.out'
     })
@@ -88,7 +88,7 @@ describe('preparePrompt', () => {
       final_prompt: 'Hello !',
       hashValue: 'mockHashValue',
       prompt_precent: 257.14285714285717,
-      content_precent: -256.14285714285717,
+      content_precent: -157.14285714285717,
       inputToken: 2,
       filePath: 'testFolder/file_mockHashValue.out'
     })
