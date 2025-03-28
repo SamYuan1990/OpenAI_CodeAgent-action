@@ -38,7 +38,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: dist_${{ inputs.your_repo }}
+          name: dist
           path: |
             cve.json
             GenAI_output
