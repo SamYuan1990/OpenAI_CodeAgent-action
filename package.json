@@ -71,7 +71,7 @@
     "ejs": "^3.1.10",
     "gpt-tokenizer": "^2.8.1",
     "markdown-pdf": "^11.0.0",
-    "openai": "^4.78.1",
+    "openai": "^4.90.0",
     "tree-sitter": "^0.22.4",
     "tree-sitter-c": "^0.23.5"
   },
