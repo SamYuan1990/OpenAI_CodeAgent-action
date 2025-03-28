@@ -31,10 +31,8 @@ function predefinePrompt(control_group) {
       return [jsunittestPrompt]
     case 'ccodescan':
       return [ccodeEnhancePrompt]
-    case 'CVEDependency':
-      return [cve_summary_prompt]
     case 'CVEDeep':
-      return [cve_file_prompt]
+      return [cve_file_prompt, cve_summary_prompt]
     default:
       // 如果没有匹配的 runType，可以返回一个默认值或抛出错误
       return [''] // 或者 throw new Error('Unknown runType');

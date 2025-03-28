@@ -4,17 +4,19 @@ const { collectInformation } = require('../tools/cvetools')
 const { logger } = require('../utils/logger')
 const { JustInvokeAI } = require('../agents/aiagent')
 const fs = require('fs')
+const { GenCVESync } = require('../tools/syft')
 
 async function CVEDeep(openAIfactory, model_parameters, control_group) {
   logger.Info(`start process CVEDeep`)
+  GenCVESync()
 
   const information = await collectInformation(control_group)
-  const result = []
   // in a for loop of information
   for (let i = 0; i < information.length; i++) {
     if (!information[i].hasOwnProperty('vulnerability')) {
       continue
     }
+    model_parameters.restPrompt()
     // loop files
     // if need fix
     // for loop on information.file
@@ -39,12 +41,40 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
         content
       )
       // LLMresponse chain
-      if (!AIresponse.duplicate) {
-        result.push(AIresponse.LLMresponse)
+      const check_result = extractAnswers(AIresponse.LLMresponse.response)
+      if (check_result.success) {
+        if (
+          check_result.match[1] === 'Yes' ||
+          check_result.match[2] === 'Yes'
+        ) {
+          logger.Info(`Generate CVE reports`)
+          model_parameters.nextPrompt()
+          await JustInvokeAI(
+            openAIfactory,
+            model_parameters,
+            control_group,
+            information[i]
+          )
+          // LLMresponse chain
+          // todo safe response to pdf
+        }
       }
     }
   }
-  return result
+}
+
+function extractAnswers(text) {
+  // 单个正则表达式同时匹配两个问题的回答
+  const regex =
+    /(?:Is the related function invoked\?|Related function invoked\?)[\s\S]*?\b(Yes|No)\b[\s\S]*?(?:Does the CVE affect the code\?|CVE affects the code\?)[\s\S]*?\b(Yes|No)\b/gi
+
+  const match = regex.exec(text)
+
+  if (match && match.length >= 3) {
+    return { success: true, match }
+  }
+
+  return { success: false, match }
 }
 
 module.exports = {
