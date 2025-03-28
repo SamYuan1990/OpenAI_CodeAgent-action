@@ -56,15 +56,15 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
             information[i]
           )
           fs.writeFileSync(
-            `${control_group.folderName}/${information[i].dependencyName}_report.pdf`,
+            `${control_group.folderName}/${information[i].vulnerability.id}_report.md`,
             report.LLMresponse.response
           )
           fs.writeFileSync(
-            `${control_group.folderName}/${information[i].dependencyName}_reason.pdf`,
+            `${control_group.folderName}/${information[i].vulnerability.id}_reason.md`,
             AIresponse.LLMresponse.response
           )
           fs.writeFileSync(
-            `${control_group.folderName}/${information[i].dependencyName}_reason_ask.pdf`,
+            `${control_group.folderName}/${information[i].vulnerability.id}_reason_ask.md`,
             AIresponse.LLMresponse.final_prompt
           )
           break
