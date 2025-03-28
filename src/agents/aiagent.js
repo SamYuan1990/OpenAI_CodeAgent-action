@@ -108,7 +108,7 @@ function preparePrompt(prompt, fileContent, control_group) {
   hash.update(final_prompt)
   const hashValue = hash.digest('hex')
   const prompt_precent = calculatePercentage(prompt, final_prompt)
-  const content_precent = 1 - prompt_precent
+  const content_precent = 100 - prompt_precent
   const inputToken = calculateTokenCount(`${final_prompt}`)
   const folderName = control_group.folderName
   const filePath = path.join(folderName, `file_${hashValue}.out`)
