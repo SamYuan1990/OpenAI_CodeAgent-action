@@ -1,0 +1,65 @@
+name: CVE to Dependencies
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      dryrun:
+        description: 'running mode'
+        required: true
+        default: true
+        type: boolean
+      build_image:
+        description: 'build image or not'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  test-cvewithdependency:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runType: CVEDeep
+    steps:
+      - name: Pull latest image
+        if: ${{ inputs.build_image == true }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-result-docker-artifact
+          path: /home/runner/build-result
+      - name: load image
+        if: ${{ inputs.build_image == true }}
+        run: |
+          docker load < /home/runner/build-result/build-result.tar
+      - name: Checkout Target repo
+        id: checkout_target
+        uses: actions/checkout@v4
+        with:
+          repository: SamYuan1990/console
+      - name: use this action to generate suggestion for deployment settings
+        id: Lint_with_LLM
+        uses: SamYuan1990/OpenAI_CodeAgent-action@main
+        with:
+          baseURL: https://api.deepseek.com
+          apiKey: dummy
+          model: deepseek-chat
+          dirpath: '/workdir/server'
+          runType: ${{ matrix.runType }}
+          dryRun: ${{ inputs.dryrun }}
+      - name: output check
+        shell: bash
+        run: |
+          echo '${{ steps.Lint_with_LLM.outputs.avg_prompt_precent }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_content_precent }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_time_usage }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_inputToken }}'
+          echo '${{ steps.Lint_with_LLM.outputs.avg_outputToken }}'
+      - name: Upload Artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist_${{ matrix.runType }}
+          path: |
+            cve.json
+            GenAI_output
