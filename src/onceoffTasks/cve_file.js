@@ -63,6 +63,10 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
             `${control_group.folderName}/${information[i].dependencyName}_reason.pdf`,
             AIresponse.LLMresponse.response
           )
+          fs.writeFileSync(
+            `${control_group.folderName}/${information[i].dependencyName}_reason_ask.pdf`,
+            AIresponse.LLMresponse.final_prompt
+          )
           break
           // LLMresponse chain
           // todo safe response to pdf

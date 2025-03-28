@@ -2,8 +2,10 @@ const { fromCVEToPodDeployment } = require('./cve')
 const { JustInvokeAI } = require('../agents/aiagent')
 const fs = require('fs')
 const { logger } = require('../utils/logger')
+const { GenCVESync } = require('../tools/syft')
 
 async function cvss_deployment(openAIfactory, model_parameters, control_group) {
+  GenCVESync()
   const result = []
   logger.Info('running type CVE2Deployment')
   const cvss_content = await fromCVEToPodDeployment(control_group)
