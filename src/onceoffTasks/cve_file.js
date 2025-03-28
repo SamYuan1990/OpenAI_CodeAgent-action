@@ -5,7 +5,6 @@ const { logger } = require('../utils/logger')
 const { JustInvokeAI } = require('../agents/aiagent')
 const fs = require('fs')
 const { GenCVESync } = require('../tools/syft')
-const markdownpdf = require('markdown-pdf')
 
 async function CVEDeep(openAIfactory, model_parameters, control_group) {
   logger.Info(`start process CVEDeep`)
@@ -58,11 +57,11 @@ async function CVEDeep(openAIfactory, model_parameters, control_group) {
           )
           fs.writeFileSync(
             `${control_group.folderName}/${information[i].dependencyName}_report.pdf`,
-            markdownpdf().from.string(report.LLMresponse.response)
+            report.LLMresponse.response
           )
           fs.writeFileSync(
             `${control_group.folderName}/${information[i].dependencyName}_reason.pdf`,
-            markdownpdf().from.string(AIresponse.LLMresponse.response)
+            AIresponse.LLMresponse.response
           )
           break
           // LLMresponse chain
