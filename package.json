@@ -76,8 +76,8 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.25.9",
+    "@babel/core": "^7.26.10",
+    "@babel/eslint-parser": "^7.27.0",
     "@babel/preset-env": "^7.26.0",
     "@github/local-action": "^2.2.1",
     "@vercel/ncc": "^0.38.3",
