@@ -3,7 +3,7 @@ const { logger } = require('./logger')
 
 function getInputOrDefault(inputName, defaultValue) {
   // 优先从GitHub Actions输入获取
-  logger.Info(`checking value for ${inputName}`)
+  logger.Debug(`checking value for ${inputName}`)
   const coreValue = core.getInput(inputName)
   if (coreValue !== undefined && coreValue !== null && coreValue !== '') {
     return coreValue

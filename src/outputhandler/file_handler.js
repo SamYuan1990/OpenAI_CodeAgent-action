@@ -3,7 +3,7 @@ const { logger } = require('../utils/logger')
 
 function writeFileForAarray(filePath, content) {
   const WriteContent = content.join()
-  logger.Info(WriteContent)
+  logger.Debug(WriteContent)
   try {
     fs.writeFileSync(filePath, WriteContent, 'utf8')
     logger.Info('file writed')

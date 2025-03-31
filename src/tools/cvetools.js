@@ -65,8 +65,8 @@ function extractReferencesUrls(cveawg_json) {
 function readCVEdata() {
   // 读取 cve.json 文件
   const data = fs.readFileSync(`/workdir/cve.json`, 'utf8')
-  logger.Info(`read from cve.json as`)
-  logger.Info(`${data}`)
+  logger.Debug(`read from cve.json as`)
+  logger.Debug(`${data}`)
   const jsonData = JSON.parse(data)
   return jsonData
 }
@@ -111,7 +111,7 @@ function processSeverityScore(cveawg_json) {
       cveawg_json.containers.adp[i]['metrics'] !== undefined
     ) {
       cvssMetrics = cveawg_json.containers.adp[i].metrics[0]
-      logger.Info(`cvss info from web ${cvssMetrics}`)
+      logger.Debug(`cvss info from web ${cvssMetrics}`)
       break
     }
   }
@@ -199,7 +199,7 @@ async function collectInformation(control_group) {
           CVEscore: severityScoreBreakdown
         }
         const loginfo = JSON.stringify(value, null, 2)
-        logger.Info(`package detail ${loginfo}`)
+        logger.Debug(`package detail ${loginfo}`)
         uniquePackages.set(key, value)
       }
     }

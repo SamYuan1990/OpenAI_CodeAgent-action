@@ -27,22 +27,22 @@ const GeneralProcessor = {
 
   async process(LLMresponse) {
     logger.Info(`process general output for ${LLMresponse.hashValue}`)
-    logger.Info(`collected prompt_precent for ${LLMresponse.prompt_precent}`)
+    logger.Debug(`collected prompt_precent for ${LLMresponse.prompt_precent}`)
     this.prompt_precent += LLMresponse.prompt_precent
-    logger.Info(`collected content_precent for ${LLMresponse.content_precent}`)
+    logger.Debug(`collected content_precent for ${LLMresponse.content_precent}`)
     this.content_precent += LLMresponse.content_precent
-    logger.Info(`collected time_usage for ${LLMresponse.time_usage}`)
+    logger.Debug(`collected time_usage for ${LLMresponse.time_usage}`)
     this.time_usage += LLMresponse.time_usage
-    logger.Info(`collected inputToken for ${LLMresponse.inputToken}`)
+    logger.Debug(`collected inputToken for ${LLMresponse.inputToken}`)
     this.input_token += LLMresponse.inputToken
-    logger.Info(`collected outputToken for ${LLMresponse.outputToken}`)
+    logger.Debug(`collected outputToken for ${LLMresponse.outputToken}`)
     this.output_token += LLMresponse.outputToken
     this.processed_task++
-    logger.Info(`completed with task information collection`)
+    logger.Debug(`completed with task information collection`)
     const jsonString = JSON.stringify(LLMresponse, null, 2)
     const filePath = LLMresponse.filePath
     fs.writeFileSync(filePath, jsonString)
-    logger.Info(`Record data to file ${filePath} success`)
+    logger.Debug(`Record data to file ${filePath} success`)
     if (this.control_group.githubIssueReport) {
       // const + intention + date + hash
       const title = `OpenAI_CodeAgent created task [${this.control_group.runType},${this.isoDate},${LLMresponse.hashValue.substring(0, 7)}]`

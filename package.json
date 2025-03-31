@@ -70,10 +70,10 @@
     "@babel/traverse": "^7.26.8",
     "ejs": "^3.1.10",
     "gpt-tokenizer": "^2.8.1",
-    "markdown-pdf": "^11.0.0",
     "openai": "^4.90.0",
     "tree-sitter": "^0.22.4",
-    "tree-sitter-c": "^0.23.5"
+    "tree-sitter-c": "^0.23.5",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

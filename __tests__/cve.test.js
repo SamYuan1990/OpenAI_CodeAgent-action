@@ -7,7 +7,8 @@ const { fetchCveData, processSeverityScore } = require('../src/tools/cvetools')
 // Mock the logger
 jest.mock('../src/utils/logger', () => ({
   logger: {
-    Info: jest.fn()
+    Info: jest.fn(),
+    Debug: jest.fn()
   }
 }))
 

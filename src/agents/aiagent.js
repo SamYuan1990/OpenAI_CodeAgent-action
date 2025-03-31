@@ -9,7 +9,7 @@ const { GeneralProcessor } = require('../outputhandler/generalOutputProcessor')
 async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   // decouple prompt and hash value from here
   // so that support hash skip before invoke
-  logger.Info(' We are going to talk with Gen AI with Model', model)
+  logger.Debug(' We are going to talk with Gen AI with Model', model)
   // process hash and prompt metric here
   // hash
   // prompt metric
@@ -55,8 +55,8 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
         ],
         model
       })
-      logger.Info('--------This is output from generate AI:--------')
-      logger.Info(completion.choices[0].message.content)
+      logger.Debug('--------This is output from generate AI:--------')
+      logger.Debug(completion.choices[0].message.content)
       logger.Info('--------End of generate AI output--------')
       prompt_info.response = completion.choices[0].message.content
       prompt_info.outputToken = calculateTokenCount(
@@ -67,7 +67,7 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
       prompt_info.response = ''
     }
   } else {
-    logger.Info(`just dry run for, ${final_prompt}`)
+    logger.Debug(`just dry run for, ${final_prompt}`)
     // hash
     // prompt metric
     prompt_info.response = ``
@@ -97,13 +97,13 @@ function calculateTokenCount(Text) {
 
 function preparePrompt(prompt, fileContent, control_group) {
   logger.Info('We are going to talk with Gen AI with prompt and file content')
-  logger.Info(JSON.stringify(fileContent))
-  logger.Info(`${prompt}`)
+  logger.Debug(JSON.stringify(fileContent))
+  logger.Debug(`${prompt}`)
   //const final_prompt = `${prompt}\n${fileContent}`
 
   const final_prompt = ejs.render(prompt, fileContent)
 
-  logger.Info(`final prompt genrated as ${final_prompt}`)
+  logger.Debug(`final prompt genrated as ${final_prompt}`)
   const hash = crypto.createHash('sha256')
   hash.update(final_prompt)
   const hashValue = hash.digest('hex')
