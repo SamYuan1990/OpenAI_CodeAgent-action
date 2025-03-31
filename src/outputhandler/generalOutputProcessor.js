@@ -42,7 +42,7 @@ const GeneralProcessor = {
     const jsonString = JSON.stringify(LLMresponse, null, 2)
     const filePath = LLMresponse.filePath
     fs.writeFileSync(filePath, jsonString)
-    logger.Info(`Record data to file ${filePath} success`)
+    logger.Debug(`Record data to file ${filePath} success`)
     if (this.control_group.githubIssueReport) {
       // const + intention + date + hash
       const title = `OpenAI_CodeAgent created task [${this.control_group.runType},${this.isoDate},${LLMresponse.hashValue.substring(0, 7)}]`

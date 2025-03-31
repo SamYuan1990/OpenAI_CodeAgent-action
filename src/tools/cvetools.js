@@ -199,7 +199,7 @@ async function collectInformation(control_group) {
           CVEscore: severityScoreBreakdown
         }
         const loginfo = JSON.stringify(value, null, 2)
-        logger.Info(`package detail ${loginfo}`)
+        logger.Debug(`package detail ${loginfo}`)
         uniquePackages.set(key, value)
       }
     }

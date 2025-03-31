@@ -9,7 +9,7 @@ const { GeneralProcessor } = require('../outputhandler/generalOutputProcessor')
 async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
   // decouple prompt and hash value from here
   // so that support hash skip before invoke
-  logger.Info(' We are going to talk with Gen AI with Model', model)
+  logger.Debug(' We are going to talk with Gen AI with Model', model)
   // process hash and prompt metric here
   // hash
   // prompt metric
@@ -67,7 +67,7 @@ async function invokeAIviaAgent(openai, model, dryRun, promptContent) {
       prompt_info.response = ''
     }
   } else {
-    logger.Info(`just dry run for, ${final_prompt}`)
+    logger.Debug(`just dry run for, ${final_prompt}`)
     // hash
     // prompt metric
     prompt_info.response = ``
