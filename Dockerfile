@@ -21,7 +21,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # 验证 Node.js 和 npm 安装
 RUN node -v && npm -v
 
-ENV GO_VERSION=1.21.0
+ENV GO_VERSION=1.24.0
 ENV GO_ARCH=linux-amd64
 ENV GO_TAR=go${GO_VERSION}.${GO_ARCH}.tar.gz
 ENV GO_URL=https://go.dev/dl/${GO_TAR}
