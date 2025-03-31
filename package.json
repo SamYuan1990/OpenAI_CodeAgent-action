@@ -67,7 +67,7 @@
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
     "@babel/parser": "^7.26.8",
-    "@babel/traverse": "^7.26.8",
+    "@babel/traverse": "^7.27.0",
     "ejs": "^3.1.10",
     "gpt-tokenizer": "^2.8.1",
     "openai": "^4.90.0",
