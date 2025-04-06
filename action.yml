@@ -40,23 +40,6 @@ inputs:
   deploymentfile:
     description: 'the deployment yaml if you use CVE2Deployment'
 
-outputs:
-  avg_content_precent:
-    description: 'avg_content_precent'
-    value: ${{ steps.LLMresponse.outputs.avg_content_precent }}
-  avg_prompt_precent:
-    description: 'avg_prompt_precent'
-    value: ${{ steps.LLMresponse.outputs.avg_prompt_precent }}
-  avg_time_usage:
-    description: 'avg_time_usage'
-    value: ${{ steps.LLMresponse.outputs.avg_time_usage }}
-  avg_inputToken:
-    description: 'avg_inputToken'
-    value: ${{ steps.LLMresponse.outputs.avg_inputToken }}
-  avg_outputToken:
-    description: 'avg_outputToken'
-    value: ${{ steps.LLMresponse.outputs.avg_outputToken }}
-
 runs:
   using: 'composite'
   steps:
@@ -88,19 +71,3 @@ runs:
          -e GITHUB_REPOSITORY=${{ inputs.github_repo }} \
          -v "$(pwd):/workdir:rw" \
          ghcr.io/samyuan1990/openai_codeagent-action:latest
-    - id: LLMresponse
-      shell: bash
-      run: |
-        ls $(pwd)
-        ls $(pwd)/GenAI_output
-        cat $(pwd)/GenAI_output/summary.json
-        VALUE=$(jq -r -e .avg_prompt_precent $(pwd)/GenAI_output/summary.json)
-        echo "avg_prompt_precent=${VALUE}" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r -e .avg_content_precent $(pwd)/GenAI_output/summary.json)
-        echo "avg_content_precent=${VALUE}" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r -e .avg_time_usage $(pwd)/GenAI_output/summary.json)
-        echo "avg_time_usage=${VALUE}" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r -e .avg_inputToken $(pwd)/GenAI_output/summary.json)
-        echo "avg_inputToken=${VALUE}" >> $GITHUB_OUTPUT
-        VALUE=$(jq -r -e .avg_outputToken $(pwd)/GenAI_output/summary.json)
-        echo "avg_outputToken=${VALUE}" >> $GITHUB_OUTPUT
