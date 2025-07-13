@@ -1,0 +1,27 @@
+name: Manual Trigger Workflow
+
+on:
+  workflow_dispatch:  # 允许通过GitHub UI或API手动触发
+
+
+
+jobs:
+  manual-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+
+      - name: Run custom script
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          cd src/ast
+          git clone https://github.com/juice-shop/juice-shop.git
+          npm install
+          node server.js &
+          node demo.js
