@@ -13,6 +13,22 @@ large model into the pipeline. This approach enables intelligent solutions to
 specific problems, ultimately achieving the goal of enhancing production
 efficiency.
 
+## Todo after Community over code
+
+It's very greatful as communitication on Community over code.
+### High level to do
+- [ ] We need to have an AST graph and consider with memory trace.
+- [ ] We need to make each single step as atom as possible, Pluggable to support scan for:
+  - [ ] Static scan scope.
+  - [ ] CVE scan scope.
+  - [ ] OWASP 10 socpe.
+  - [ ] Customer design.
+  - [ ] Provide design for interface, so everyone can contribute a new plugin for us.
+  - [ ] At the interface level, impls context management.
+- [ ] We need test case, can use ebpf based obversibility as DeepFlow MCP may have demo to how it works.
+- [ ] Provide metrics, log for further analysis and audit usage.
+- [ ] Continue support for container, GHA way to run it.
+
 ## Features
 
 | Category                       | Tools        | Language/Target | Scenario                                                 | Example                                                     |
