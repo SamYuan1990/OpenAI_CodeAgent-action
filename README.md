@@ -28,6 +28,23 @@ It's very greatful as communitication on Community over code.
 - [ ] We need test case, can use ebpf based obversibility as DeepFlow MCP may have demo to how it works.
 - [ ] Provide metrics, log for further analysis and audit usage.
 - [ ] Continue support for container, GHA way to run it.
+### To achieve aboves
+- [ ] We need prompts and tested with juice shop as test suits to evaluate our prompts.
+  - [ ] From readme or usage file to start up sandbox for testing as long term memory.
+  - [ ] Go through AST.(in hard code)
+  - [ ] We make 1 from top 10 as case for one term.
+  - [ ] Pluggable by prompts, each prompt has it's own content base same structured output.
+  - [ ] Attack on the sandbox.
+  - [ ] Run a full scan on juice shop to see ROI.
+  - [ ] As it's juice shop, so we can have our total score as final result.
+  - [ ] Consider a realy case, we need LLM to give us the verify steps.
+- [ ] We need a java, golang, or muti language based restful server from prompt to walk through AST graph.
+  - [ ] We need an rest api structure.
+  - [ ] We need sample vul project for ourself base on each language.
+  - [ ] Which inluding graph inovkes, vul cases, points to the vuls types for unit test.
+- [ ] We also need to consider the report format, as security owner should know code path, attack approach, verify result, and a sandbox to reproduce, fix suggestion is optional.
+- [ ] We need test with real CVE(in the past to see if we can works), and also impacts from other CVEs.
+- [ ] Go to test with real case, try to find any.
 
 ## Features
 
