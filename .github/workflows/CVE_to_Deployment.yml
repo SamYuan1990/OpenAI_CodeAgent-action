@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Pull latest image
         if: ${{ inputs.build_image == true }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: build-result-docker-artifact
           path: /home/runner/build-result
