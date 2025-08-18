@@ -34,7 +34,7 @@ jobs:
           docker load < /home/runner/build-result/build-result.tar
       - name: Checkout Target repo
         id: checkout_target
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: SamYuan1990/console
       - name: use this action to generate suggestion for deployment settings
